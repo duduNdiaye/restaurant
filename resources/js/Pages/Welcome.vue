@@ -20,7 +20,7 @@ defineProps({
                 <div class="flex items-center">
                     <h1
                         class="text-3xl lg:ml-0 text-center bg-black text-white px-2 md:ml-0  font-title font-extrabold">
-                        EatEasy Restaurant</h1>
+                        EatEasy</h1>
 
                     <div class="pt-2 relative  mx-auto text-gray-600" v-if="showSearchBar">
                         <input
