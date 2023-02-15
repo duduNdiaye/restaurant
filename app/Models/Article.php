@@ -17,4 +17,8 @@ class Article extends Model
     {
         return $this->belongsToMany(Commande::class);
     }
+    public function menujours():BelongsToMany
+    {
+        return $this->belongsToMany(MenuJour::class);
+    }
 }
