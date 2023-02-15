@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->time('tempsPreparation')->nullable();
             $table->string('description');
             $table->string('ingredients');
+            $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();
         });
     }
@@ -34,5 +36,8 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('articles');
+        Schema::table('articles', function (Blueprint $table) {
+            $table->dropConstrainedForeignIdFor(User::class);
+        });
     }
 };

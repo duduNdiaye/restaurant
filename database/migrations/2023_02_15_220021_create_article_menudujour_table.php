@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Article;
+use App\Models\MenuJour;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,8 +14,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('menu_jours', function (Blueprint $table) {
+        Schema::create('article_menudujour', function (Blueprint $table) {
             $table->foreignIdFor(Article::class)->constrained();
+            $table->foreignIdFor(MenuJour::class)->constrained();
+            $table->primary(["article_id","menu_jour_id"]);
         });
     }
 
@@ -26,8 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('menu_jours', function (Blueprint $table) {
-            $table->dropConstrainedForeignIdFor(Article::class);
-        });
+        Schema::dropIfExists('article_menudujour');
     }
 };
