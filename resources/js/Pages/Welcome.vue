@@ -1746,10 +1746,7 @@ export default {
       navbarHeight: 0,
     };
   },
-  components: {
-    TransitionRoot,
-    TransitionChild,
-  },
+
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
     const navbar = document.querySelector("#navbar");
