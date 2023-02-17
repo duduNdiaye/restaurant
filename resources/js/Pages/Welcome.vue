@@ -7,6 +7,7 @@ defineProps({
   canRegister: Boolean,
   laravelVersion: String,
   phpVersion: String,
+  articles: {},
 });
 </script>
 
@@ -143,7 +144,7 @@ defineProps({
     <div class="bg-grocery h-screen lg:block md:block hidden">
       <section class="text-gray-600 body-font">
         <div
-          class="container mx-auto flex flex-col px-5 lg:py-56 py-16 justify-center items-center"
+          class="container mx-auto flex flex-col px-5 lg:py-56 md:py-48 py-16 justify-center items-center"
         >
           <div class="w-full md:w-2/3 flex flex-col mb-16 items-center text-center">
             <h1 class="title-font sm:text-6xl text-3xl mb-4 font-black text-gray-900">
@@ -1663,30 +1664,34 @@ defineProps({
         </div>
       </aside>
       <div class="w-full px-4 pb-8 lg:p-8">
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3">
+        <div
+          class="grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
+        >
           <article
-            class="product-card w-[21rem] cart-type-neon h-[27rem] overflow-hidden rounded border border-border-200 bg-white shadow-sm transition-all duration-50 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
+            v-for="article in articles"
+            :key="article.id"
+            class="product-card cart-type-neon overflow-hidden rounded border border-border-200 bg-white shadow-sm transition-all duration-50 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
           >
             <div class="flex items-center justify-between px-4 py-2">
-              <span class="text-lg font-bold">Biscuit</span>
+              <span class="text-lg font-bold">{{ article.categorie }}</span>
             </div>
             <span
               class="box-border block overflow-hidden w-auto h-auto bg-transparent opacity-100 border-0 m-0 p-0 inset-0"
             >
               <img
-                src="./pizza-3569779_640.jpg"
+                src="../../../storage/app/public/pexels-sydney-troxell-708587.jpg"
                 alt="Product image"
-                class="w-full mb-6 product-image"
+                class="w-full h-56 mb-6 product-image"
               />
               <header class="p-1 md:p-6">
                 <div class="py-2 flex flex-col">
-                  <span class="text-sm font-semibold text-heading md:text-base"
-                    >$1.60</span
+                  <span class="text-sm font-semibold text-heading md:text-base">
+                    {{ article.prix }}</span
                   >
                   <h3
                     class="mb-4 cursor-pointer truncate text-xs text-gray-500 md:text-sm"
                   >
-                    Apples
+                    {{ article.nom }}
                   </h3>
                   <button
                     class="group flex h-7 w-full items-center justify-between rounded bg-gray-100 text-xs text-body-dark transition-colors hover:border-accent hover:bg-vert hover:text-light focus:border-vert focus:bg-vert focus:text-light focus:outline-none md:h-9 md:text-sm"
@@ -1769,13 +1774,13 @@ export default {
         this.showSearchBar = false;
       }
     },
-    hondleScroll() {
-      const navbarHeight = document.querySelector("#navbar").offsetHeight;
-      const asideHeight = document.querySelector("aside").offsetHeight;
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const top = Math.max(0, scrollTop - navbarHeight);
-      this.asideTop = top + "px";
-    },
+    // hondleScroll() {
+    //   const navbarHeight = document.querySelector("#navbar").offsetHeight;
+    //   const asideHeight = document.querySelector("aside").offsetHeight;
+    //   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    //   const top = Math.max(0, scrollTop - navbarHeight);
+    //   this.asideTop = top + "px";
+    // },
   },
 };
 </script>
