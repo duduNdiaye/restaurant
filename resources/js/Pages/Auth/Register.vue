@@ -12,6 +12,12 @@ const form = useForm({
     name: '',
     email: '',
     password: '',
+    tel:'',
+    heureOuvert:'',
+    heureFerme:'',
+    photo:'',
+    adresse:'',
+    description:'',
     password_confirmation: '',
     terms: false,
 });
