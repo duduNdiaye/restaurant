@@ -17,7 +17,8 @@ defineProps({
   <div class="bg-gray-100">
     <header>
       <nav
-        class="fixed md:flex border-b-2 border-gray-200 text-center items-center justify-between bg-white px-4 py-3 w-full"
+        id="navbar"
+        class="fixed md:flex border-b-2 z-50 transform-cpu border-gray-200 text-center items-center justify-between bg-white px-4 py-3 w-full"
       >
         <div class="flex items-center">
           <h1
@@ -475,7 +476,7 @@ defineProps({
     </footer>
 
     <button
-      class="bg-vert lg:block md:block hidden h-28 w-28 rounded-lg fixed flex items-center justify-center inset-y-72 right-0"
+      class="bg-vert z-50 transform-gpu lg:block md:block hidden h-28 w-28 rounded-lg fixed flex items-center justify-center inset-y-72 right-0"
       @click="showComponent = true"
     >
       <div class="flex flex-col">
@@ -514,7 +515,7 @@ defineProps({
     <div
       :class="[
         showModal
-          ? 'modal duration-700 ease-in-out translate-y-4 opacity-100 fixed top-[-1rem] left-0  w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-40 bg-gray-700'
+          ? 'modal duration-700 z-50 transform-gpu ease-in-out translate-y-4 opacity-100 fixed top-[-1rem] left-0  w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-40 bg-gray-700'
           : 'translate-y-0 w-0 h-0 duration-700 ease-in-out opacity-0',
       ]"
       class="fixed top-32 left-0"
@@ -566,7 +567,7 @@ defineProps({
 
     <div
       :class="[showComponent ? 'right-0' : 'right-[-100%] lg:block md:block hidden']"
-      class="border-l-2 border-gray-100 duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[32rem] w-[22rem] h-screen bg-white text-white p-3"
+      class="border-l-2 border-gray-100 z-50 transform-gpu duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[32rem] w-[22rem] h-screen bg-white text-white p-3"
     >
       <div class="flex justify-between border-b-2 border-gray-100 py-3">
         <div class="justify-start">
@@ -621,14 +622,14 @@ defineProps({
         </div>
       </div>
     </div>
-    <section
-      class="flex border-t border-solid border-border-200 border-opacity-100 h-screen"
-    >
+    <div class="flex border-t border-solid border-border-200 border-opacity-100">
       <aside
-        class="hidden z-[-2rem] bg-white h-full bg-light xl:block xl:w-72 undefined p-3 px-8 overflow-y-auto"
+        :class="{ 'lg:sticky lg:top-16 relative': isAsideSticky }"
+        ref="aside"
+        class="hidden bg-white h-[39.2rem] bg-light xl:block xl:w-72 undefined p-3 px-8 overflow-y-auto"
       >
         <div class="max-h-full flex-grow overflow-hidden">
-          <ul class="text-gray-700">
+          <ul class="text-gray-700 mt-8">
             <li class="my-2 py-2 flex">
               <svg
                 viewBox="0 0 1024 1024"
@@ -1663,14 +1664,14 @@ defineProps({
           </ul>
         </div>
       </aside>
-      <div class="w-full px-4 pb-8 lg:p-8">
+      <div class="w-full h-fit px-4 pb-8 lg:p-8">
         <div
           class="grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
         >
           <article
             v-for="article in articles"
             :key="article.id"
-            class="product-card cart-type-neon overflow-hidden rounded border border-border-200 bg-white shadow-sm transition-all duration-50 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
+            class="product-card cart-type-neon overflow-hidden rounded border border-border-200 bg-white shadow-sm duration-50 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
           >
             <div class="flex items-center justify-between px-4 py-2">
               <span class="text-lg font-bold">{{ article.categorie }}</span>
@@ -1685,8 +1686,8 @@ defineProps({
               />
               <header class="p-1 md:p-6">
                 <div class="py-2 flex flex-col">
-                  <span class="text-sm font-semibold text-heading md:text-base">
-                    {{ article.prix }}</span
+                  <span class="text-sm font-bold text-heading md:text-base">
+                    {{ article.prix }} FCFA</span
                   >
                   <h3
                     class="mb-4 cursor-pointer truncate text-xs text-gray-500 md:text-sm"
@@ -1724,13 +1725,13 @@ defineProps({
       </div>
 
       <!-- Ajouter d'autres articles ici -->
-    </section>
+    </div>
   </div>
 </template>
 
 <script>
 import { TransitionRoot, TransitionChild } from "@headlessui/vue";
-
+import { ref, onMounted } from "vue";
 export default {
   data() {
     return {
@@ -1742,8 +1743,8 @@ export default {
       showComponent: false,
       showModal: false,
       showModal1: false,
-      isSticky: false,
-      asideTop: "0px",
+      isAsideSticky: false,
+      navbarHeight: 0,
     };
   },
   components: {
@@ -1752,6 +1753,9 @@ export default {
   },
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
+    const navbar = document.querySelector("#navbar");
+    const navbarStyle = getComputedStyle(navbar);
+    this.navbarHeight = parseInt(navbarStyle.height, 10);
     window.addEventListener("scroll", this.hondleScroll);
   },
   beforeDestroy() {
@@ -1774,13 +1778,14 @@ export default {
         this.showSearchBar = false;
       }
     },
-    // hondleScroll() {
-    //   const navbarHeight = document.querySelector("#navbar").offsetHeight;
-    //   const asideHeight = document.querySelector("aside").offsetHeight;
-    //   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    //   const top = Math.max(0, scrollTop - navbarHeight);
-    //   this.asideTop = top + "px";
-    // },
+    hondleScroll() {
+      const pageYOffset = window.scrollY;
+      if (pageYOffset >= this.navbarHeight) {
+        this.isAsideSticky = true;
+      } else {
+        this.isAsideSticky = false;
+      }
+    },
   },
 };
 </script>
