@@ -59,7 +59,7 @@ const submit = () => {
                     v-model="form.email"
                     type="email"
                     class="mt-1 block w-72"
-                    required
+
                     autocomplete="username"
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
@@ -73,10 +73,10 @@ const submit = () => {
                     v-model="form.password"
                     type="password"
                     class="mt-1 block w-72"
-                    required
+
                     autocomplete="new-password"
                 />
-                <InputError class="mt-2" :message="form.errors.name" />
+                <InputError class="mt-2" :message="form.errors.password" />
             </div>
             <div mt="w-full md:w-1/2 px-3">
             <InputLabel for="password_confirmation" value="Confirmer mot de passe" />
@@ -85,7 +85,6 @@ const submit = () => {
                     v-model="form.password_confirmation"
                     type="password"
                     class="mt-1 block w-72"
-                    required
                     autocomplete="new-password"
                 />
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
@@ -111,7 +110,7 @@ const submit = () => {
                     v-model="form.adresse"
                     type="text"
                     class="mt-1 block w-72"
-                    required
+
                     autocomplete="adresse"
                 />
                 <InputError class="mt-2" :message="form.errors.adresse" />
@@ -136,7 +135,7 @@ const submit = () => {
                     v-model="form.heureFerme"
                     type="number"
                     class="mt-1 block w-72"
-                    required
+
                     autocomplete="heureFerme"
                 />
                 <InputError class="mt-2" :message="form.errors.heureFerme" />

@@ -27,7 +27,7 @@ return new class extends Migration
             $table->boolean('actif')->default(true);
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
-            $table->checkConstraint('heureFerme >= heureOuvert OR heureFerme = 0');
+          //  $table->check('heureFerme >= heureOuvert OR heureFerme = 0');
             $table->string('profile_photo_path', 2048)->nullable();
             $table->timestamps();
         });
