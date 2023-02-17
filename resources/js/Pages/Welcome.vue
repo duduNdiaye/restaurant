@@ -592,7 +592,7 @@ defineProps({
         <div class="justify-end">
           <button
             @click="showComponent = false"
-            class="btn btn-danger rounded-full p-1 bg-gray-200 text-gray-400 absolute top-6 right-2"
+            class="btn btn-danger rounded-full hover:bg-vert hover:text-white p-1 bg-gray-200 text-gray-400 absolute top-6 right-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -1730,7 +1730,6 @@ defineProps({
 </template>
 
 <script>
-import { TransitionRoot, TransitionChild } from "@headlessui/vue";
 import { ref, onMounted } from "vue";
 export default {
   data() {
