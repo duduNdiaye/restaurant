@@ -12,6 +12,12 @@ const form = useForm({
     name: '',
     email: '',
     password: '',
+    tel:'',
+    heureOuvert:'',
+    heureFerme:'',
+    photo:'',
+    adresse:'',
+    description:'',
     password_confirmation: '',
     terms: false,
 });
@@ -28,62 +34,114 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <AuthenticationCardLogo />
+            <h1
+ class="text-3xl lg:ml-0 text-center bg-black text-white px-2 md:ml-0  font-title font-extrabold">
+                        EatEasy</h1>
         </template>
 
         <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Name" />
-                <TextInput
+          <div class="flex flex-wrap">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <InputLabel for="name" value="Nom restaurant" />
+            <TextInput
                     id="name"
                     v-model="form.name"
                     type="text"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
+                    class="mt-1 block w-72"
                     autocomplete="name"
                 />
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
-
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-                <TextInput
+            <div mt="w-full md:w-1/2 px-3">
+            <InputLabel for="email" value="Email" />
+            <TextInput
                     id="email"
                     v-model="form.email"
                     type="email"
-                    class="mt-1 block w-full"
-                    required
+                    class="mt-1 block w-72"
+
                     autocomplete="username"
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
+          </div>
+          <div class="flex flex-wrap mt-4">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <InputLabel for="password" value="Mot de passe" />
+            <TextInput
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="mt-1 block w-full"
-                    required
+                    class="mt-1 block w-72"
+
                     autocomplete="new-password"
                 />
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
-
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-                <TextInput
+            <div mt="w-full md:w-1/2 px-3">
+            <InputLabel for="password_confirmation" value="Confirmer mot de passe" />
+            <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
-                    required
+                    class="mt-1 block w-72"
                     autocomplete="new-password"
                 />
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
+
+          </div>
+          <div class="flex flex-wrap mt-4">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <InputLabel for="tel" value="Numero telephone" />
+            <TextInput
+                    id="tel"
+                    v-model="form.tel"
+                    type="text"
+                    class="mt-1 block w-72"
+                    autocomplete="tel"
+                />
+                <InputError class="mt-2" :message="form.errors.tel" />
+            </div>
+            <div mt="w-full md:w-1/2 px-3">
+            <InputLabel for="adresse" value="Adresse" />
+            <TextInput
+                    id="adresse"
+                    v-model="form.adresse"
+                    type="text"
+                    class="mt-1 block w-72"
+
+                    autocomplete="adresse"
+                />
+                <InputError class="mt-2" :message="form.errors.adresse" />
+            </div>
+          </div>
+          <div class="flex flex-wrap mt-4">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <InputLabel for="heureOuvert" value="Heure ouverture" />
+            <TextInput
+                    id="heureOuvert"
+                    v-model="form.heureOuvert"
+                    type="number"
+                    class="mt-1 block w-72"
+                    autocomplete="heureOuvert"
+                />
+                <InputError class="mt-2" :message="form.errors.heureOuvert" />
+            </div>
+            <div mt="w-full md:w-1/2 px-3">
+            <InputLabel for="heureFerme" value="Heure Fermeture" />
+            <TextInput
+                    id="heureFerme"
+                    v-model="form.heureFerme"
+                    type="number"
+                    class="mt-1 block w-72"
+
+                    autocomplete="heureFerme"
+                />
+                <InputError class="mt-2" :message="form.errors.heureFerme" />
+            </div>
+          </div>
+
 
             <div v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature" class="mt-4">
                 <InputLabel for="terms">
@@ -98,13 +156,13 @@ const submit = () => {
                 </InputLabel>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
+            <div class="flex items-center justify-center mt-8">
                 <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900">
-                    Already registered?
+                    Déja Inscrit?
                 </Link>
 
-                <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
+                <PrimaryButton class="ml-4 font-extrabold bg-black text-slate-200" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    S'inscrire
                 </PrimaryButton>
             </div>
         </form>
