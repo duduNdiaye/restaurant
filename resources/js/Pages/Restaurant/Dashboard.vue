@@ -139,7 +139,7 @@ import TableArticles from '@/Components/Tablearticles.vue';
         <div class="border border-gray-300 rounded-md p-[20px] h-full">
           <router-view>
             <DashboardCard v-show="ShowCards"/>
-            <TableArticles v-show="ShowArticles"/>
+            <TableArticles v-if="ShowArticles"/>
           </router-view>
         </div>
       </div>
