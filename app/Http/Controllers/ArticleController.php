@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ArticleController extends Controller
 {
@@ -15,6 +17,13 @@ class ArticleController extends Controller
     public function index()
     {
         //
+            $m_id=Auth::id();
+            $articles=Article::where('user_id',$m_id)->get();
+            return Inertia::render('Restaurant/Dashboard',
+            ['articles' => $articles,
+        ]);
+
+
     }
 
     /**

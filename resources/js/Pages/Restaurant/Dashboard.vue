@@ -12,7 +12,7 @@ export default {
           ShowCards:true
 	    }
 	  },
-      props: ['user'],
+      props: ['user','articles'],
     methods: {
         sendMessage(){
             var user = JSON.parse(this.user)
@@ -45,8 +45,8 @@ export default {
 </script>
 <script setup>
 
-import DashboardCard from '@/Components/DashboardCard.vue';
-import TableArticles from '@/Components/Tablearticles.vue';
+import DashboardCard from './DashboardCard.vue';
+import TableArticles from './Tablearticles.vue';
 </script>
 <template>
     <div class="w-screen h-screen flex">
@@ -139,7 +139,7 @@ import TableArticles from '@/Components/Tablearticles.vue';
         <div class="border border-gray-300 rounded-md p-[20px] h-full">
           <router-view>
             <DashboardCard v-show="ShowCards"/>
-            <TableArticles v-if="ShowArticles"/>
+            <TableArticles v-if="ShowArticles" :articles="$props.articles"/>
           </router-view>
         </div>
       </div>
