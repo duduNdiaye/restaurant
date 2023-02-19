@@ -2,10 +2,10 @@
 
 use App\Http\Controllers\ArticleController;
 use App\Models\Article;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\CommandeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ use Illuminate\Foundation\Application;
 
 Route::get('/', function () {
     $articles = Article::all();
-    return Inertia::render('Welcome', [
+    return Inertia::render('Client/Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
