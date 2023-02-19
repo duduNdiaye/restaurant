@@ -54,6 +54,9 @@ Route::middleware([
     })->name('dashboard');
 });
 
+Route::controller(CommandeController::class)->group(function () {
+    Route::get('/commandes', 'client_commande')->name('client.commande');
+});
 Route::post('/article/new',[ArticleController::class,'store']);
 Route::put('article/edit',[ArticleController::class,'update']);
 Route::delete('article/delete', [ArticleController::class,'destroy']);
