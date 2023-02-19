@@ -29,4 +29,42 @@ class CommandeController extends Controller
 
         ]);
     }
+
+    public function init()
+    {
+        if (!session('cart_id')) {
+            session(['cart_id' => uniqid()]);
+        }
+        return Inertia::render('Client/Welcome');
+    }
+
+    public function addToCart(Request $request, $id)
+    {
+        $article = Article::find($id);
+        $cart = session()->get('cart');
+
+        if (!$cart) {
+            $cart = [
+                $id => ['name' => $article->nom, 'quantity' => 1, 'prix' => $article->prix]
+            ];
+            session()->put('cart', $cart);
+            return redirect()->back()->with('success', 'Product added to cart successfully!');
+        }
+
+        if (isset($cart[$id])) {
+            $cart[$id]['quantity']++;
+            session()->put('cart', $cart);
+            return redirect()->back()->with('success', 'Product added to cart successfully!');
+        }
+
+        $cart[$id] = ['name' => $article->name, 'quantity' => 1,  'prix' => $article->prix];
+        session()->put('cart', $cart);
+        return redirect()->back()->with('success', 'Product added to cart successfully!');
+    }
+
+    public function showCart()
+    {
+        $cart = session()->get('cart');
+        return view('cart', compact('cart'));
+    }
 }
