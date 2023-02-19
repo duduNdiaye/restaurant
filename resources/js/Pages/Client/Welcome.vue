@@ -18,7 +18,7 @@ defineProps({
     <header>
       <nav
         id="navbar"
-        class="fixed md:flex border-b-2 z-50 transform-cpu border-gray-200 text-center items-center justify-between bg-white px-4 py-3 w-full"
+        class="fixed md:flex border-b-2 z-40 transform-cpu border-gray-200 text-center items-center justify-between bg-white px-4 py-3 w-full"
       >
         <div class="flex items-center">
           <h1
@@ -323,7 +323,7 @@ defineProps({
       </div>
       <div class="flex items-center justify-center p-2 m-2">
         <img
-          src="./der.jpg"
+          src="../der.jpg"
           class="w-[32rem] rounded-lg lg:hidden md:hidden h-52 mt-20 flex items-center justify-center"
           alt=""
         />
@@ -2789,11 +2789,13 @@ defineProps({
             <span
               class="box-border block overflow-hidden w-auto h-auto bg-transparent opacity-100 border-0 m-0 p-0 inset-0"
             >
-              <img
-                src="../../../storage/app/public/pexels-sydney-troxell-708587.jpg"
-                alt="Product image"
-                class="w-full h-56 mb-6 product-image"
-              />
+              <button @click="show = !show">
+                <img
+                  src="../../../../storage/app/public/pexels-sydney-troxell-708587.jpg"
+                  alt="Product image"
+                  class="w-full h-56 mb-6 product-image"
+                />
+              </button>
               <header class="p-1 md:p-6">
                 <div class="py-2 flex flex-col">
                   <span class="text-sm font-bold text-heading md:text-base">
@@ -2836,11 +2838,13 @@ defineProps({
 
       <!-- Ajouter d'autres articles ici -->
     </div>
+    <DetailsArticle @close="show = !show" v-if="show" />
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from "vue";
+import DetailsArticle from "./DetailsArticle.vue";
 export default {
   data() {
     return {
@@ -2855,8 +2859,10 @@ export default {
       isAsideSticky: false,
       navbarHeight: 0,
       showTitre: false,
+      show: false,
     };
   },
+  components: { DetailsArticle },
 
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
@@ -2900,7 +2906,7 @@ export default {
 </script>
 <style>
 .bg-grocery {
-  background-image: url(./grocery.png);
+  background-image: url(../grocery.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

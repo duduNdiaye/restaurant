@@ -19,7 +19,7 @@ use Illuminate\Foundation\Application;
 
 Route::get('/', function () {
     $articles = Article::all();
-    return Inertia::render('Welcome', [
+    return Inertia::render('Client/Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
