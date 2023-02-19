@@ -12,17 +12,17 @@
               <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6">
                   <label for="nom" class="block text-sm font-medium text-gray-700">Nom Article</label>
-                  <input type="text" name="nom" id="nom" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <input type="text" name="nom" id="nom" v-model="article.nom" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                   <label for="prix" class="block text-sm font-medium text-gray-700">Prix</label>
-                  <input type="number" name="prix" id="prix" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <input type="number" name="prix" id="prix" v-model="article.prix" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                   <label for="categorie" class="block text-sm font-medium text-gray-700">Catégorie</label>
-                  <select id="categorie" name="categorie" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <select id="categorie" name="categorie" v-model="article.categorie" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     <option value="aliments">Aliments</option>
                     <option value="boissons">Boissons</option>
                     <option value="desserts">Desserts</option>

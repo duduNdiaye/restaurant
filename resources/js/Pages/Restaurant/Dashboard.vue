@@ -1,5 +1,4 @@
 
-
 <script >
 
 export default {
@@ -12,7 +11,8 @@ export default {
           ShowCards:true
 	    }
 	  },
-      props: ['user','articles'],
+      props: ['user'],
+
     methods: {
         sendMessage(){
             var user = JSON.parse(this.user)
@@ -45,8 +45,14 @@ export default {
 </script>
 <script setup>
 
+import { watch } from 'vue';
 import DashboardCard from './DashboardCard.vue';
 import TableArticles from './Tablearticles.vue';
+ const props = defineProps({
+   articles: {},
+ });
+
+
 </script>
 <template>
     <div class="w-screen h-screen flex">
@@ -114,7 +120,7 @@ import TableArticles from './Tablearticles.vue';
           <!-- User login -->
           <div class="w-[200px] ">
             <div class="flex items-center justify-start space-x-4" @click="toggleDrop">
-              <img class="w-10 h-10 rounded-full border-2 border-gray-50" src="{{  $page.props.user.role  }}" alt="">
+              <img class="w-10 h-10 rounded-full border-2 border-gray-50" src="" alt="">
               <div class="font-semibold dark:text-white text-left">
                 <div>{{  $page.props.user.name  }}</div>
                 <div class="text-xs text-gray-500 dark:text-gray-400">{{  $page.props.user.role  }}</div>
@@ -139,7 +145,7 @@ import TableArticles from './Tablearticles.vue';
         <div class="border border-gray-300 rounded-md p-[20px] h-full">
           <router-view>
             <DashboardCard v-show="ShowCards"/>
-            <TableArticles v-if="ShowArticles" :articles="$props.articles"/>
+            <TableArticles v-if="ShowArticles" :articles-all="articles" />
           </router-view>
         </div>
       </div>

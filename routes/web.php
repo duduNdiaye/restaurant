@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Models\Article;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,10 @@ Route::middleware([
     Route::get('/dashboard', function () {
         switch (Auth::user()->role) {
             case 'restaurant':
-                return Inertia::render('Restaurant/Dashboard');
+                $articles=Article::where('user_id',Auth::id())->get();
+                return Inertia::render('Restaurant/Dashboard',
+                ['articles' => $articles,
+            ]);
                 break;
 
             case 'super-admin':
@@ -49,3 +53,7 @@ Route::middleware([
         }
     })->name('dashboard');
 });
+
+Route::post('/article/new',[ArticleController::class,'store']);
+Route::put('article/edit',[ArticleController::class,'update']);
+Route::delete('article/delete', [ArticleController::class,'destroy']);
