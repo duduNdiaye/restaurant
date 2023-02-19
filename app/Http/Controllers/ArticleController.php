@@ -17,8 +17,9 @@ class ArticleController extends Controller
     public function index()
     {
         //
-            $m_id=Auth::id();
-            $articles=Article::where('user_id',$m_id)->get();
+            // $m_id=Auth::id();
+            // $articles=Article::where('user_id',$m_id)->get();
+            $articles=Article::all();
             return Inertia::render('Restaurant/Dashboard',
             ['articles' => $articles,
         ]);
@@ -34,6 +35,8 @@ class ArticleController extends Controller
     public function create()
     {
         //
+
+
     }
 
     /**
@@ -45,6 +48,10 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         //
+        $article=new Article($request->all());
+        $article->user_id=Auth::id();
+        $article->saveOrFail();
+
     }
 
     /**

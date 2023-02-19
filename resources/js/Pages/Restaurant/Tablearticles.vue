@@ -1,9 +1,6 @@
 <script  setup>
-import ArticleFormModal from './ArticleFormModal.vue';
-const props = defineProps({
-    articles: {},
-
-});
+import ArticleCreateModal from './Article/ArticleCreateModal.vue';
+import ArticleEditModal from './Article/ArticleEditModal .vue';
 </script>
 <template >
 
@@ -31,7 +28,7 @@ const props = defineProps({
             </thead>
             <tbody class="bg-white divide-y divide-gray-200" >
 
-              <tr v-for="article in articles" :key="article.id">
+              <tr v-for="article in articlesAll" :key="article.id">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ article.nom }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ article.prix }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ article.categorie }}</td>
@@ -62,12 +59,12 @@ const props = defineProps({
     </div>
 </div>
 <!-- modal -->
-<ArticleFormModal
+<ArticleCreateModal
  v-if="showCreateModal"
   @click.away="showCreateModal=false"
   formtitle="Ajouter"
   formsubmit="Ajouter"/>
-<ArticleFormModal
+<ArticleEditModal
 v-if="showEditModal"
 @click.away="showEditModal=false"
 formtitle="Modifier"
@@ -80,9 +77,9 @@ formsubmit="Confirmer"
 
   export default  {
     name: 'resources-js-components-tablearticles',
-    props: [
-
-    ],
+    props: {
+        articlesAll:Array
+    },
     mounted () {
 
     },

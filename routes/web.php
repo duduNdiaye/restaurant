@@ -1,11 +1,12 @@
 <?php
 
-use Inertia\Inertia;
+use App\Http\Controllers\ArticleController;
 use App\Models\Article;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\CommandeController;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +38,10 @@ Route::middleware([
     Route::get('/dashboard', function () {
         switch (Auth::user()->role) {
             case 'restaurant':
-                return Inertia::render('Restaurant/Dashboard');
+                $articles=Article::where('user_id',Auth::id())->get();
+                return Inertia::render('Restaurant/Dashboard',
+                ['articles' => $articles,
+            ]);
                 break;
 
             case 'super-admin':
@@ -54,3 +58,6 @@ Route::middleware([
 Route::controller(CommandeController::class)->group(function () {
     Route::get('/commandes', 'client_commande')->name('client.commande');
 });
+Route::post('/article/new',[ArticleController::class,'store']);
+Route::put('article/edit',[ArticleController::class,'update']);
+Route::delete('article/delete', [ArticleController::class,'destroy']);
