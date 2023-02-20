@@ -40,12 +40,13 @@ class CommandeController extends Controller
 
     public function addToCart(Request $request, $id)
     {
+        $this->init();
         $article = Article::find($id);
         $cart = session()->get('cart');
 
         if (!$cart) {
             $cart = [
-                $id => ['name' => $article->nom, 'quantity' => 1, 'prix' => $article->prix]
+                $id => ['nom' => $article->nom, 'quantity' => 1, 'prix' => $article->prix]
             ];
             session()->put('cart', $cart);
             return redirect()->back()->with('success', 'Product added to cart successfully!');
@@ -57,7 +58,7 @@ class CommandeController extends Controller
             return redirect()->back()->with('success', 'Product added to cart successfully!');
         }
 
-        $cart[$id] = ['name' => $article->name, 'quantity' => 1,  'prix' => $article->prix];
+        $cart[$id] = ['nom' => $article->nom, 'quantity' => 1,  'prix' => $article->prix];
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Product added to cart successfully!');
     }
@@ -65,6 +66,6 @@ class CommandeController extends Controller
     public function showCart()
     {
         $cart = session()->get('cart');
-        return view('cart', compact('cart'));
+        return Inertia::render('Client/Welcome', ['cart' => $cart]);
     }
 }

@@ -1,14 +1,50 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
+import { ref } from "vue";
+import axios from "axios";
 
-defineProps({
+const props = defineProps({
   canLogin: Boolean,
   canRegister: Boolean,
   laravelVersion: String,
   phpVersion: String,
   articles: {},
 });
+
+const cart = ref([]);
+const count = ref(0);
+
+const addItemToCart = (article) => {
+  //Vérifie si l'article est déjà dans le panier
+  let index = cart.value.findIndex((item) => item.nom === article.nom);
+  if (index === -1) {
+    cart.value.push({
+      nom: article.nom,
+      prix: article.prix,
+      quantite: 1,
+    });
+  } else {
+    cart.value[index].quantite++;
+  }
+
+  count.value = cart.value.length;
+
+  console.log(cart);
+
+  // if (index === -1) {
+  //   // L'article n'est pas dans le panier, on l'ajoute
+  //   cart.value.push({
+  //     id: article.id,
+  //     name: article.name,
+  //     price: article.price,
+  //     quantity: 1,
+  //   });
+  // } else {
+  //   // L'article est déjà dans le panier, on augmente la quantité
+  //   cart.value[index].quantity++;
+  // }
+};
 </script>
 
 <template>
@@ -618,7 +654,129 @@ defineProps({
           </button>
         </div>
       </div>
-      <div class="flex-grow pt-28 pb-20">
+      <div v-if="count" class="flex-grow pt-4 pb-20">
+        <div
+          v-for="car in cart"
+          :key="car.id"
+          class="flex items-center border-b border-solid border-border-200 border-opacity-75 py-4 text-sm sm:px-6"
+          style="opacity: 1"
+        >
+          <div class="flex-shrink-0">
+            <div
+              class="flex overflow-hidden flex-col-reverse items-center w-8 h-28 mr-6 bg-gray-100 text-black rounded-full"
+            >
+              <button
+                class="cursor-pointer p-2 transition-colors duration-200 hover:bg-accent-hover focus:outline-none hover:!bg-gray-100"
+              >
+                <span class="sr-only">minus</span
+                ><svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  class="h-3 w-3 stroke-2.5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M20 12H4"
+                  ></path>
+                </svg>
+              </button>
+              <div
+                class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
+              >
+                1
+              </div>
+              <button
+                class="cursor-pointer p-2 text-black transition-colors duration-200 hover:bg-accent-hover focus:outline-none hover:!bg-gray-100"
+                title=""
+              >
+                <span class="sr-only">plus</span
+                ><svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div
+            class="relative mx-4 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-gray-100 sm:h-16 sm:w-16"
+          >
+            <span
+              style="
+                box-sizing: border-box;
+                display: block;
+                overflow: hidden;
+                width: initial;
+                height: initial;
+                background: none;
+                opacity: 1;
+                border: 0px;
+                margin: 0px;
+                padding: 0px;
+                position: absolute;
+                inset: 0px;
+              "
+              ><img
+                alt="Baby Spinach"
+                src="../../../../storage/app/public/pexels-eneida-nieves-905847.jpg"
+                decoding="async"
+                data-nimg="fill"
+                sizes="100vw"
+                style="
+                  position: absolute;
+                  inset: 0px;
+                  box-sizing: border-box;
+                  padding: 0px;
+                  border: none;
+                  margin: auto;
+                  display: block;
+                  width: 0px;
+                  height: 0px;
+                  min-width: 100%;
+                  max-width: 100%;
+                  min-height: 100%;
+                  max-height: 100%;
+                  object-fit: contain;
+                "
+            /></span>
+          </div>
+
+          <div class="ml-8">
+            <h3 class="font-bold text-black">{{ car.nom }}</h3>
+            <p class="my-2.5 font-semibold text-vert">{{ car.prix }}</p>
+            <span class="text-xs text-black">1 X 2Pfund</span>
+          </div>
+
+            <span class="font-bold text-black ltr:ml-auto rtl:mr-auto">$0.60</span>
+            <button
+            class="flex bg-gray-200 h-7 w-7  items-center justify-center rounded-full text-muted transition-all duration-200 hover:bg-gray-100 hover:text-red-600 focus:bg-gray-100 focus:text-red-600 focus:outline-none ltr:ml-3 ltr:-mr-2 rtl:mr-3 rtl:-ml-2"
+          >
+            <span class="sr-only">close</span
+            ><svg
+              class="h-3 w-3"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div v-else class="flex-grow pt-28 pb-20">
         <div class="flex h-full flex-col items-center justify-center" style="opacity: 1">
           <svg width="140" height="176" viewBox="0 0 231.91 292">
             <defs>
@@ -2926,7 +3084,7 @@ defineProps({
             >
               <button @click="show = !show">
                 <img
-                  src="../../../../storage/app/public/pexels-sydney-troxell-708587.jpg"
+                  src="../../../../storage/app/public/pexels-eneida-nieves-905847.jpg"
                   alt="Product image"
                   class="w-full h-56 mb-6 product-image"
                 />
@@ -2942,6 +3100,7 @@ defineProps({
                     {{ article.nom }}
                   </h3>
                   <button
+                    @click="addItemToCart(article)"
                     class="group flex h-7 w-full items-center justify-between rounded bg-gray-100 text-xs text-body-dark transition-colors hover:border-accent hover:bg-vert hover:text-light focus:border-vert focus:bg-vert focus:text-light focus:outline-none md:h-9 md:text-sm"
                   >
                     <span class="flex-1">add</span>
@@ -2978,7 +3137,7 @@ defineProps({
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import DetailsArticle from "./DetailsArticle.vue";
 export default {
   data() {
