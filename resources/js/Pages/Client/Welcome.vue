@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 
 const props = defineProps({
@@ -14,6 +14,25 @@ const props = defineProps({
 
 const cart = ref([]);
 const count = ref(0);
+
+const count1 = ref(false);
+
+onMounted(() => {
+
+    count.value = cart.value.length;
+    console.log(count.value)
+    if(count.value == 0 )
+    {
+         localStorage.removeItem("count1");
+         console.log(count1.value);
+    }
+
+    if (localStorage.getItem('cart')) {
+     cart.value = JSON.parse(localStorage.getItem('cart'));
+     count1.value = true;
+
+}
+})
 
 const addItemToCart = (article) => {
   //Vérifie si l'article est déjà dans le panier
@@ -30,7 +49,9 @@ const addItemToCart = (article) => {
 
   count.value = cart.value.length;
 
-  console.log(cart);
+   localStorage.setItem('cart', JSON.stringify(cart.value));
+
+
 
   // if (index === -1) {
   //   // L'article n'est pas dans le panier, on l'ajoute
@@ -44,7 +65,29 @@ const addItemToCart = (article) => {
   //   // L'article est déjà dans le panier, on augmente la quantité
   //   cart.value[index].quantity++;
   // }
+
 };
+
+const removeItemFromCart = (car) => {
+  let index = cart.value.findIndex((item) => item.nom === car.nom);
+  if (index === -1) {
+    return;
+  } else {
+    cart.value[index].quantite = 0;
+    if (cart.value[index].quantite === 0) {
+      cart.value.splice(index, 1);
+    }
+  }
+  count.value = cart.value.length;
+  if(count.value == 0)
+  {
+    count1.value = false;
+  }
+
+  // enregistrer les données du panier dans le localStorage
+  localStorage.setItem('cart', JSON.stringify(cart.value));
+};
+console.log(count1.value);
 </script>
 
 <template>
@@ -610,9 +653,9 @@ const addItemToCart = (article) => {
 
     <div
       :class="[showComponent ? 'right-0' : 'right-[-100%] lg:block md:block hidden']"
-      class="border-l-2 border-gray-100 z-50 transform-gpu duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[32rem] w-[28rem] h-screen bg-white text-white p-3"
+      class="border-l-2 border-gray-100 z-50 transform-gpu duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[29rem] w-[28rem] h-screen bg-white text-white p-3"
     >
-      <div class="flex justify-between border-b-2 border-gray-100 py-3">
+      <div class="flex justify-between border-b-2 border-gray-100 py-1">
         <div class="justify-start">
           <div class="flex text-center items-center justify-center p-2 text-vert">
             <svg
@@ -654,7 +697,7 @@ const addItemToCart = (article) => {
           </button>
         </div>
       </div>
-      <div v-if="count" class="flex-grow pt-4 pb-20">
+      <div v-if="count1" class="flex-grow pt-2 pb-20 h-[32rem] overflow-y-scroll">
         <div
           v-for="car in cart"
           :key="car.id"
@@ -663,7 +706,7 @@ const addItemToCart = (article) => {
         >
           <div class="flex-shrink-0">
             <div
-              class="flex overflow-hidden flex-col-reverse items-center w-8 h-28 mr-6 bg-gray-100 text-black rounded-full"
+              class="flex overflow-hidden flex-col-reverse items-center w-8 h-24 mr-6 bg-gray-100 text-black rounded-full"
             >
               <button
                 class="cursor-pointer p-2 transition-colors duration-200 hover:bg-accent-hover focus:outline-none hover:!bg-gray-100"
@@ -751,29 +794,31 @@ const addItemToCart = (article) => {
           </div>
 
           <div class="ml-8">
-            <h3 class="font-bold text-black">{{ car.nom }}</h3>
-            <p class="my-2.5 font-semibold text-vert">{{ car.prix }}</p>
-            <span class="text-xs text-black">1 X 2Pfund</span>
+            <h3 class="font-black text-lg  text-black">{{ car.nom }}</h3>
+            <p class="my-2.5 font-bold text-vert">{{ car.prix }}</p>
+            <span class="text-sm text-gray-500">1 X 2Pfund</span>
           </div>
 
-            <span class="font-bold text-black ltr:ml-auto rtl:mr-auto">$0.60</span>
-            <button
-            class="flex bg-gray-200 h-7 w-7  items-center justify-center rounded-full text-muted transition-all duration-200 hover:bg-gray-100 hover:text-red-600 focus:bg-gray-100 focus:text-red-600 focus:outline-none ltr:ml-3 ltr:-mr-2 rtl:mr-3 rtl:-ml-2"
-          >
-            <span class="sr-only">close</span
-            ><svg
-              class="h-3 w-3"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+          <div class="ml-auto flex">
+            <span class="font-bold mt-1 mr-2 text-black ltr:ml-auto rtl:mr-auto">$0.60</span>
+            <button @click="removeItemFromCart(car)"
+              class="flex bg-gray-200 h-7 w-7 right-0 items-center justify-center rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-red-600 focus:bg-gray-100 focus:text-red-600 focus:outline-none ltr:ml-3 ltr:-mr-2 rtl:mr-3 rtl:-ml-2"
             >
-              <path
-                fill-rule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-          </button>
+              <span class="sr-only">close</span
+              ><svg
+                class="h-3 w-3"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
       <div v-else class="flex-grow pt-28 pb-20">
@@ -910,7 +955,7 @@ const addItemToCart = (article) => {
       </div>
       <a
         :href="route('client.commande')"
-        class="fixed left-100 lg:w-[30rem] w-[26rem] h-16 bg-vert rounded-full bottom-5"
+        class="fixed left-100 lg:w-[28rem] w-[26rem] h-16 bg-vert rounded-full bottom-5"
       >
         <div class="flex justify-between">
           <div class="font-black text-white text-2xl mb-8 py-4 px-6">Commander</div>
