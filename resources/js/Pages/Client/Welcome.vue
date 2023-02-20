@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
 const props = defineProps({
@@ -10,29 +10,42 @@ const props = defineProps({
   laravelVersion: String,
   phpVersion: String,
   articles: {},
+
 });
 
 const cart = ref([]);
 const count = ref(0);
-
 const count1 = ref(false);
+const cartAnimation = ref(false)
+
+const data = () => ({
+  loading: true,
+});
+
+const created = () => {
+  // Charger les données des articles
+  fetch('articles.json')
+    .then(response => response.json())
+    .then(articles => {
+      this.articles = articles;
+      this.loading = false;
+    });
+};
 
 onMounted(() => {
-
-    count.value = cart.value.length;
-    console.log(count.value)
-    if(count.value == 0 )
-    {
-         localStorage.removeItem("count1");
-         console.log(count1.value);
-    }
-
     if (localStorage.getItem('cart')) {
-     cart.value = JSON.parse(localStorage.getItem('cart'));
-     count1.value = true;
-
-}
+        cart.value = JSON.parse(localStorage.getItem('cart'));
+        count.value = cart.value.length;
+    }
+    if(count.value != 0)
+    {
+        count1.value = true;
+    }
 })
+
+const total = computed(() => {
+  return cart.value.reduce((acc, item) => acc + (item.prix * item.quantite), 0);
+});
 
 const addItemToCart = (article) => {
   //Vérifie si l'article est déjà dans le panier
@@ -40,18 +53,24 @@ const addItemToCart = (article) => {
   if (index === -1) {
     cart.value.push({
       nom: article.nom,
-      prix: article.prix,
+      prix: parseFloat(article.prix),
       quantite: 1,
+      total: parseFloat(article.prix)
     });
+    count1.value = true;
   } else {
     cart.value[index].quantite++;
+    cart.value[index].total += parseFloat(article.prix)
   }
 
   count.value = cart.value.length;
 
    localStorage.setItem('cart', JSON.stringify(cart.value));
 
-
+     cartAnimation.value = true;
+  setTimeout(() => {
+    cartAnimation.value = false;
+  }, 1000);
 
   // if (index === -1) {
   //   // L'article n'est pas dans le panier, on l'ajoute
@@ -581,12 +600,12 @@ console.log(count1.value);
               d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
             />
           </svg>
-          <span class="font-bold ml-2 text-sm text-white">0 items</span>
+          <span  :class="{ 'animate-bounce text-red-500': cartAnimation }" class="font-bold ml-2 text-sm text-white" >{{count}} items</span>
         </div>
         <div
           class="flex items-center bg-white text-vert font-bold rounded py-2 w-20 ml-3 mt-2 justify-center"
         >
-          0 F
+          {{total}} F
         </div>
       </div>
     </button>
@@ -653,7 +672,7 @@ console.log(count1.value);
 
     <div
       :class="[showComponent ? 'right-0' : 'right-[-100%] lg:block md:block hidden']"
-      class="border-l-2 border-gray-100 z-50 transform-gpu duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[29rem] w-[28rem] h-screen bg-white text-white p-3"
+      class="border-l-2 border-gray-100 z-50 transform-gpu duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[31rem] w-[28rem] h-screen bg-white text-white p-3"
     >
       <div class="flex justify-between border-b-2 border-gray-100 py-1">
         <div class="justify-start">
@@ -672,7 +691,7 @@ console.log(count1.value);
                 d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
               />
             </svg>
-            <span class="font-bold ml-2 text-vert">0 items</span>
+            <span class="font-bold ml-2 text-vert">{{count}} items</span>
           </div>
         </div>
         <div class="justify-end">
@@ -796,11 +815,11 @@ console.log(count1.value);
           <div class="ml-8">
             <h3 class="font-black text-lg  text-black">{{ car.nom }}</h3>
             <p class="my-2.5 font-bold text-vert">{{ car.prix }}</p>
-            <span class="text-sm text-gray-500">1 X 2Pfund</span>
+            <span class="text-sm text-gray-500">nombre: {{car.quantite}}</span>
           </div>
 
           <div class="ml-auto flex">
-            <span class="font-bold mt-1 mr-2 text-black ltr:ml-auto rtl:mr-auto">$0.60</span>
+            <span class="font-bold mt-1 mr-2 text-black ltr:ml-auto rtl:mr-auto">{{car.total}}FCFA</span>
             <button @click="removeItemFromCart(car)"
               class="flex bg-gray-200 h-7 w-7 right-0 items-center justify-center rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-red-600 focus:bg-gray-100 focus:text-red-600 focus:outline-none ltr:ml-3 ltr:-mr-2 rtl:mr-3 rtl:-ml-2"
             >
@@ -960,9 +979,9 @@ console.log(count1.value);
         <div class="flex justify-between">
           <div class="font-black text-white text-2xl mb-8 py-4 px-6">Commander</div>
           <div
-            class="justify-end text-vert h-[3rem] mt-2 mr-3 py-3 w-[7rem] px-5 rounded-full bg-white font-bold text-xl"
+            class="justify-end text-vert h-[3rem] mt-2 mr-3 py-3 w-[10rem] px-5 rounded-full bg-white font-bold text-xl"
           >
-            0 FCFA
+            {{total}} F
           </div>
         </div>
       </a>
