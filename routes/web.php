@@ -38,10 +38,13 @@ Route::middleware([
     Route::get('/dashboard', function () {
         switch (Auth::user()->role) {
             case 'restaurant':
-                $articles=Article::where('user_id',Auth::id())->get();
-                return Inertia::render('Restaurant/Dashboard',
-                ['articles' => $articles,
-            ]);
+                $articles = Article::where('user_id', Auth::id())->get();
+                return Inertia::render(
+                    'Restaurant/Dashboard',
+                    [
+                        'articles' => $articles,
+                    ]
+                );
                 break;
 
             case 'super-admin':

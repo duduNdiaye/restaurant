@@ -53,7 +53,7 @@
                                     alt=""
                                     class="w-[60rem] h-full mb-6 product-image"
                                     aria-hidden="true"
-                                    src="../der.jpg"
+                                     src="../../../../storage/app/public/pexels-eneida-nieves-905847.jpg"
                                   /> </span
                               ></span>
                             </div>
@@ -71,7 +71,7 @@
                       <h1
                         class="text-lg font-semibold tracking-tight text-heading md:text-xl xl:text-2xl cursor-pointer transition-colors hover:text-accent"
                       >
-                        Baby Spinach
+                        {{article.nom}}
                       </h1>
                       <span
                         ><button
@@ -117,7 +117,7 @@
                     <span class="my-5 flex items-center md:my-10"
                       ><ins
                         class="text-2xl font-semibold text-vert no-underline md:text-3xl"
-                        >$0.60</ins
+                        >{{article.prix}} FCFA</ins
                       ></span
                     >
                     <div class="mt-6 flex flex-col items-center md:mt-6 lg:flex-row">
@@ -130,7 +130,7 @@
                       </div>
                       <span
                         class="whitespace-nowrap ml-6 text-base text-gray-500 ltr:lg:ml-7 rtl:lg:mr-7"
-                        >10 pieces available</span
+                        >{{article.quantite}} piece disponibles</span
                       >
                     </div>
                   </div>
@@ -139,7 +139,7 @@
                   >
                     <span
                       class="text-sm font-semibold text-heading capitalize ltr:mr-6 rtl:ml-6 py-1"
-                      >Categories</span
+                      >{{article.categorie}}</span
                     >
                     <div class="flex flex-row flex-wrap">
                       <button
@@ -154,9 +154,9 @@
                       class="py-1 text-sm font-semibold capitalize text-heading ltr:mr-6 rtl:ml-6"
                       >Sellers</span
                     ><button
-                      class="text-sm ml-12 tracking-wider text-accent underline transition hover:text-accent-hover hover:no-underline"
+                      class="text-sm ml-12 tracking-wider text-vert underline transition hover:text-accent-hover hover:no-underline"
                     >
-                      Grocery Shop
+                     {{article.user_id}}
                     </button>
                   </div>
                 </div>
@@ -167,13 +167,10 @@
                 <h2
                   class="mb-4 text-2xl text-vert font-bold tracking-tight text-heading md:mb-6"
                 >
-                  Details
+                  Description
                 </h2>
                 <p class="text-lg text-left">
-                  Spinach (Spinacia oleracea) is a leafy green flowering plant native to
-                  central and western Asia. It is of the order Caryophyllales, family
-                  Amaranthaceae, subfamily Chenopodioideae. Its leaves are a common edible
-                  vegetable consumed either fresh.
+                 {{article.description}}
                 </p>
               </div>
             </article>
@@ -185,7 +182,9 @@
 </template>
 <script>
 export default {
-  props: ["theme"],
+  props: {
+    article: Object
+  },
   methods: {
     closeModal() {
       this.$emit("close");

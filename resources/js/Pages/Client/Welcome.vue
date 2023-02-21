@@ -1,14 +1,112 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
+import { ref, onMounted, computed } from "vue";
+import axios from "axios";
 
-defineProps({
+const props = defineProps({
   canLogin: Boolean,
   canRegister: Boolean,
   laravelVersion: String,
   phpVersion: String,
   articles: {},
+
 });
+
+const cart = ref([]);
+const count = ref(0);
+const count1 = ref(false);
+const cartAnimation = ref(false)
+
+const data = () => ({
+  loading: true,
+});
+
+const created = () => {
+  // Charger les données des articles
+  fetch('articles.json')
+    .then(response => response.json())
+    .then(articles => {
+      this.articles = articles;
+      this.loading = false;
+    });
+};
+
+onMounted(() => {
+    if (localStorage.getItem('cart')) {
+        cart.value = JSON.parse(localStorage.getItem('cart'));
+        count.value = cart.value.length;
+    }
+    if(count.value != 0)
+    {
+        count1.value = true;
+    }
+})
+
+const total = computed(() => {
+  return cart.value.reduce((acc, item) => acc + (item.prix * item.quantite), 0);
+});
+
+const addItemToCart = (article) => {
+  //Vérifie si l'article est déjà dans le panier
+  let index = cart.value.findIndex((item) => item.nom === article.nom);
+  if (index === -1) {
+    cart.value.push({
+      nom: article.nom,
+      prix: parseFloat(article.prix),
+      quantite: 1,
+      total: parseFloat(article.prix)
+    });
+    count1.value = true;
+  } else {
+    cart.value[index].quantite++;
+    cart.value[index].total += parseFloat(article.prix)
+  }
+
+  count.value = cart.value.length;
+
+   localStorage.setItem('cart', JSON.stringify(cart.value));
+
+     cartAnimation.value = true;
+  setTimeout(() => {
+    cartAnimation.value = false;
+  }, 1000);
+
+  // if (index === -1) {
+  //   // L'article n'est pas dans le panier, on l'ajoute
+  //   cart.value.push({
+  //     id: article.id,
+  //     name: article.name,
+  //     price: article.price,
+  //     quantity: 1,
+  //   });
+  // } else {
+  //   // L'article est déjà dans le panier, on augmente la quantité
+  //   cart.value[index].quantity++;
+  // }
+
+};
+
+const removeItemFromCart = (car) => {
+  let index = cart.value.findIndex((item) => item.nom === car.nom);
+  if (index === -1) {
+    return;
+  } else {
+    cart.value[index].quantite = 0;
+    if (cart.value[index].quantite === 0) {
+      cart.value.splice(index, 1);
+    }
+  }
+  count.value = cart.value.length;
+  if(count.value == 0)
+  {
+    count1.value = false;
+  }
+
+  // enregistrer les données du panier dans le localStorage
+  localStorage.setItem('cart', JSON.stringify(cart.value));
+};
+console.log(count1.value);
 </script>
 
 <template>
@@ -484,7 +582,7 @@ defineProps({
 
     <button
       class="bg-vert z-50 transform-gpu lg:block md:block hidden h-28 w-[6.5rem] rounded-lg fixed flex items-center justify-center inset-y-72 right-0"
-      @click="showComponent = true"
+      @mouseover="showComponent = true"
     >
       <div class="flex flex-col">
         <div class="flex text-center items-center justify-center p-2 text-white">
@@ -502,12 +600,12 @@ defineProps({
               d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
             />
           </svg>
-          <span class="font-bold ml-2 text-sm text-white">0 items</span>
+          <span  :class="{ 'animate-bounce text-red-500': cartAnimation }" class="font-bold ml-2 text-sm text-white" >{{count}} items</span>
         </div>
         <div
           class="flex items-center bg-white text-vert font-bold rounded py-2 w-20 ml-3 mt-2 justify-center"
         >
-          0 F
+          {{total}} F
         </div>
       </div>
     </button>
@@ -572,11 +670,11 @@ defineProps({
       </div>
     </div>
 
-    <div
+    <div @mouseleave="showComponent=false"
       :class="[showComponent ? 'right-0' : 'right-[-100%] lg:block md:block hidden']"
-      class="border-l-2 border-gray-100 z-50 transform-gpu duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[32rem] w-[28rem] h-screen bg-white text-white p-3"
+      class="border-l-2 border-gray-100 z-50 transform-gpu duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[31rem] w-[28rem] h-screen bg-white text-white p-3"
     >
-      <div class="flex justify-between border-b-2 border-gray-100 py-3">
+      <div class="flex justify-between border-b-2 border-gray-100 py-1">
         <div class="justify-start">
           <div class="flex text-center items-center justify-center p-2 text-vert">
             <svg
@@ -593,7 +691,7 @@ defineProps({
                 d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
               />
             </svg>
-            <span class="font-bold ml-2 text-vert">0 items</span>
+            <span class="font-bold ml-2 text-vert">{{count}} items</span>
           </div>
         </div>
         <div class="justify-end">
@@ -618,7 +716,131 @@ defineProps({
           </button>
         </div>
       </div>
-      <div class="flex-grow pt-28 pb-20">
+      <div v-if="count1" class="flex-grow pt-2 pb-20 h-[32rem] overflow-y-scroll">
+        <div
+          v-for="car in cart"
+          :key="car.id"
+          class="flex items-center border-b border-solid border-border-200 border-opacity-75 py-4 text-sm sm:px-6"
+          style="opacity: 1"
+        >
+          <div class="flex-shrink-0">
+            <div
+              class="flex overflow-hidden flex-col-reverse items-center w-8 h-24 mr-6 bg-gray-100 text-black rounded-full"
+            >
+              <button
+                class="cursor-pointer p-2 transition-colors duration-200 hover:bg-accent-hover focus:outline-none hover:!bg-gray-100"
+              >
+                <span class="sr-only">minus</span
+                ><svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  class="h-3 w-3 stroke-2.5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M20 12H4"
+                  ></path>
+                </svg>
+              </button>
+              <div
+                class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
+              >
+                1
+              </div>
+              <button
+                class="cursor-pointer p-2 text-black transition-colors duration-200 hover:bg-accent-hover focus:outline-none hover:!bg-gray-100"
+                title=""
+              >
+                <span class="sr-only">plus</span
+                ><svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div
+            class="relative mx-4 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-gray-100 sm:h-16 sm:w-16"
+          >
+            <span
+              style="
+                box-sizing: border-box;
+                display: block;
+                overflow: hidden;
+                width: initial;
+                height: initial;
+                background: none;
+                opacity: 1;
+                border: 0px;
+                margin: 0px;
+                padding: 0px;
+                position: absolute;
+                inset: 0px;
+              "
+              ><img
+                alt="Baby Spinach"
+                src="../../../../storage/app/public/pexels-eneida-nieves-905847.jpg"
+                decoding="async"
+                data-nimg="fill"
+                sizes="100vw"
+                style="
+                  position: absolute;
+                  inset: 0px;
+                  box-sizing: border-box;
+                  padding: 0px;
+                  border: none;
+                  margin: auto;
+                  display: block;
+                  width: 0px;
+                  height: 0px;
+                  min-width: 100%;
+                  max-width: 100%;
+                  min-height: 100%;
+                  max-height: 100%;
+                  object-fit: contain;
+                "
+            /></span>
+          </div>
+
+          <div class="ml-8">
+            <h3 class="font-black text-lg  text-black">{{ car.nom }}</h3>
+            <p class="my-2.5 font-bold text-vert">{{ car.prix }}</p>
+            <span class="text-sm text-gray-500">nombre: {{car.quantite}}</span>
+          </div>
+
+          <div class="ml-auto flex">
+            <span class="font-bold mt-1 mr-2 text-black ltr:ml-auto rtl:mr-auto">{{car.total}}FCFA</span>
+            <button @click="removeItemFromCart(car)"
+              class="flex bg-gray-200 h-7 w-7 right-0 items-center justify-center rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-red-600 focus:bg-gray-100 focus:text-red-600 focus:outline-none ltr:ml-3 ltr:-mr-2 rtl:mr-3 rtl:-ml-2"
+            >
+              <span class="sr-only">close</span
+              ><svg
+                class="h-3 w-3"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div v-else class="flex-grow pt-28 pb-20">
         <div class="flex h-full flex-col items-center justify-center" style="opacity: 1">
           <svg width="140" height="176" viewBox="0 0 231.91 292">
             <defs>
@@ -752,14 +974,14 @@ defineProps({
       </div>
       <a
         :href="route('client.commande')"
-        class="fixed left-100 lg:w-[30rem] w-[26rem] h-16 bg-vert rounded-full bottom-5"
+        class="fixed left-100 lg:w-[28rem] w-[26rem] h-16 bg-vert rounded-full bottom-5"
       >
         <div class="flex justify-between">
           <div class="font-black text-white text-2xl mb-8 py-4 px-6">Commander</div>
           <div
-            class="justify-end text-vert h-[3rem] mt-2 mr-3 py-3 w-[7rem] px-5 rounded-full bg-white font-bold text-xl"
+            class="justify-end text-vert h-[3rem] mt-2 mr-3 py-3 w-[10rem] px-5 rounded-full bg-white font-bold text-xl"
           >
-            0 FCFA
+            {{total}} F
           </div>
         </div>
       </a>
@@ -2924,9 +3146,9 @@ defineProps({
             <span
               class="box-border block overflow-hidden w-auto h-auto bg-transparent opacity-100 border-0 m-0 p-0 inset-0"
             >
-              <button @click="show = !show">
+              <button @click="showModals(article)">
                 <img
-                  src="../../../../storage/app/public/pexels-sydney-troxell-708587.jpg"
+                  src="../../../../storage/app/public/pexels-eneida-nieves-905847.jpg"
                   alt="Product image"
                   class="w-full h-56 mb-6 product-image"
                 />
@@ -2942,9 +3164,10 @@ defineProps({
                     {{ article.nom }}
                   </h3>
                   <button
+                    @click="addItemToCart(article)"
                     class="group flex h-7 w-full items-center justify-between rounded bg-gray-100 text-xs text-body-dark transition-colors hover:border-accent hover:bg-vert hover:text-light focus:border-vert focus:bg-vert focus:text-light focus:outline-none md:h-9 md:text-sm"
                   >
-                    <span class="flex-1">add</span>
+                    <span class="flex-1 font-bold">AJOUTER</span>
                     <span
                       class="grid h-7 w-7 place-items-center bg-gray-200 transition-colors duration-200 group-hover:bg-vert group-focus:bg-vert ltr:rounded-tr ltr:rounded-br rtl:rounded-tl rtl:rounded-bl md:h-9 md:w-9"
                     >
@@ -2967,18 +3190,20 @@ defineProps({
                 </div>
               </header>
             </span>
+
           </article>
         </div>
+        <DetailsArticle @close="selectedArticle = null" v-if="selectedArticle" :article="selectedArticle"/>
       </div>
 
       <!-- Ajouter d'autres articles ici -->
     </div>
-    <DetailsArticle @close="show = !show" v-if="show" />
+
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import DetailsArticle from "./DetailsArticle.vue";
 export default {
   data() {
@@ -2995,6 +3220,7 @@ export default {
       navbarHeight: 0,
       showTitre: false,
       show: false,
+      selectedArticle: null,
     };
   },
   components: { DetailsArticle },
@@ -3036,6 +3262,10 @@ export default {
         this.isAsideSticky = false;
       }
     },
+    showModals(article){
+         this.selectedArticle = article;
+         this.show = !this.show
+    }
   },
 };
 </script>
