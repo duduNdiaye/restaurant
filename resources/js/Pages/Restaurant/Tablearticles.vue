@@ -1,17 +1,13 @@
-<script  setup>
-import ArticleCreateModal from './Article/ArticleCreateModal.vue';
-import ArticleEditModal from './Article/ArticleEditModal .vue';
-</script>
-<template >
+
+<template>
 
 <div class="flex flex-col">
     <button
       class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded my-4"
-      @click="showCreateModal = true"
-    >
+      @click="showmodal">
       Créer un nouvel article
     </button>
-    <h1 class="text-3xl font-semibold mb-6">Liste des articles</h1>
+    <h1 class="text-3xl font-semibold mb-6">Liste des articles </h1>
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
         <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -38,16 +34,14 @@ import ArticleEditModal from './Article/ArticleEditModal .vue';
                   <img :src=" article.photo" alt="Article" class="w-10 h-10 rounded-full" />
                 </td>
                 <td class="border py-2 px-4">
-            <button
+            <button type="submiy"
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
-              @click="showEditModal=true"
-            >
+              >
               Modifier
             </button>
-            <button
+            <button type="button"
               class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-              @click=""
-            >
+              >
               Supprimer
             </button>
           </td>
@@ -59,43 +53,42 @@ import ArticleEditModal from './Article/ArticleEditModal .vue';
     </div>
 </div>
 <!-- modal -->
-<ArticleCreateModal
- v-if="showCreateModal"
-  @click.away="showCreateModal=false"
-  formtitle="Ajouter"
-  formsubmit="Ajouter"/>
-<ArticleEditModal
-v-if="showEditModal"
-@click.away="showEditModal=false"
-formtitle="Modifier"
-formsubmit="Confirmer"
-/>
+<ArticleCreateModal :showmodal="showmodal"  :activemodal="activemodal">
+</ArticleCreateModal>
+<!-- <ArticleEditModal
+v-if="showEditModal && closeModal==false"
+:close-modal="false"
+
+/> -->
+
 
 </template>
 
-<script >
+<script>
+import ArticleCreateModal from './Article/ArticleCreateModal.vue';
 
   export default  {
-    name: 'resources-js-components-tablearticles',
+    name: "tablearticles",
     props: {
-        articlesAll:Array
+        articlesAll: Array,
     },
-    mounted () {
+    data(){
+        return {
+            activemodal: false,
 
-    },
-    data () {
-      return {
-        showCreateModal:false,
-        showEditModal:false,
-      }
+        };
     },
     methods: {
+        showmodal(){
+            this.activemodal=!this.activemodal;
+        }
 
     },
-    computed: {
+    computed:{
 
-    }
-}
+    },
+    components: { ArticleCreateModal }
+};
 
 
 </script>

@@ -7,22 +7,22 @@
 
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ formtitle }} un article</h3>
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Modifier un article</h3>
             <form>
               <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6">
                   <label for="nom" class="block text-sm font-medium text-gray-700">Nom Article</label>
-                  <input type="text" name="nom" id="nom" v-model="article.nom" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <input type="text" name="nom" id="nom" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                   <label for="prix" class="block text-sm font-medium text-gray-700">Prix</label>
-                  <input type="number" name="prix" id="prix" v-model="article.prix" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <input type="number" name="prix" id="prix"  class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                   <label for="categorie" class="block text-sm font-medium text-gray-700">Catégorie</label>
-                  <select id="categorie" name="categorie" v-model="article.categorie" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <select id="categorie" name="categorie"  class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     <option value="aliments">Aliments</option>
                     <option value="boissons">Boissons</option>
                     <option value="desserts">Desserts</option>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="flex justify-start relative space-x-4 mt-4">
   <button class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" @click="showCreateModal=false">Quitter  </button>
-  <button class="px-4 py-2 text-white bg-blue-400 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">{{ formsubmit }}</button>
+  <button class="px-4 py-2 text-white bg-blue-400 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">Modifier</button>
 </div>
               </div>
             </form>
@@ -58,12 +58,11 @@
 
 </template>
 
-<script lang="js">
+<script >
 
   export default  {
     name: 'resources-js-components-article-form-modal',
-    props: ['formtitle',
-'formsubmit'],
+    props: ['closeModal'],
     mounted () {
 
     },

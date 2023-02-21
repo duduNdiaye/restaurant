@@ -47,6 +47,12 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'nom' =>'required|string',
+            'prix'=> 'required|min:100|integer',
+            'categorie'=>'required',
+
+        ]);
         //
         $article=new Article($request->all());
         $article->user_id=Auth::id();
@@ -62,7 +68,7 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
-        //
+
     }
 
     /**
@@ -86,6 +92,8 @@ class ArticleController extends Controller
     public function update(Request $request, Article $article)
     {
         //
+        $article->updateOrFail($request->all());
+        $article->user_id=Auth::id();
     }
 
     /**
@@ -96,6 +104,7 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
+        $article->deleteOrFail();
         //
     }
 }
