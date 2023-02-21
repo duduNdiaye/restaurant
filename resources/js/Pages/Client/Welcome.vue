@@ -582,7 +582,7 @@ console.log(count1.value);
 
     <button
       class="bg-vert z-50 transform-gpu lg:block md:block hidden h-28 w-[6.5rem] rounded-lg fixed flex items-center justify-center inset-y-72 right-0"
-      @click="showComponent = true"
+      @mouseover="showComponent = true"
     >
       <div class="flex flex-col">
         <div class="flex text-center items-center justify-center p-2 text-white">
@@ -670,7 +670,7 @@ console.log(count1.value);
       </div>
     </div>
 
-    <div
+    <div @mouseleave="showComponent=false"
       :class="[showComponent ? 'right-0' : 'right-[-100%] lg:block md:block hidden']"
       class="border-l-2 border-gray-100 z-50 transform-gpu duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[31rem] w-[28rem] h-screen bg-white text-white p-3"
     >
@@ -3146,7 +3146,7 @@ console.log(count1.value);
             <span
               class="box-border block overflow-hidden w-auto h-auto bg-transparent opacity-100 border-0 m-0 p-0 inset-0"
             >
-              <button @click="show = !show">
+              <button @click="showModals(article)">
                 <img
                   src="../../../../storage/app/public/pexels-eneida-nieves-905847.jpg"
                   alt="Product image"
@@ -3167,7 +3167,7 @@ console.log(count1.value);
                     @click="addItemToCart(article)"
                     class="group flex h-7 w-full items-center justify-between rounded bg-gray-100 text-xs text-body-dark transition-colors hover:border-accent hover:bg-vert hover:text-light focus:border-vert focus:bg-vert focus:text-light focus:outline-none md:h-9 md:text-sm"
                   >
-                    <span class="flex-1">add</span>
+                    <span class="flex-1 font-bold">AJOUTER</span>
                     <span
                       class="grid h-7 w-7 place-items-center bg-gray-200 transition-colors duration-200 group-hover:bg-vert group-focus:bg-vert ltr:rounded-tr ltr:rounded-br rtl:rounded-tl rtl:rounded-bl md:h-9 md:w-9"
                     >
@@ -3190,13 +3190,15 @@ console.log(count1.value);
                 </div>
               </header>
             </span>
+
           </article>
         </div>
+        <DetailsArticle @close="selectedArticle = null" v-if="selectedArticle" :article="selectedArticle"/>
       </div>
 
       <!-- Ajouter d'autres articles ici -->
     </div>
-    <DetailsArticle @close="show = !show" v-if="show" />
+
   </div>
 </template>
 
@@ -3218,6 +3220,7 @@ export default {
       navbarHeight: 0,
       showTitre: false,
       show: false,
+      selectedArticle: null,
     };
   },
   components: { DetailsArticle },
@@ -3259,6 +3262,10 @@ export default {
         this.isAsideSticky = false;
       }
     },
+    showModals(article){
+         this.selectedArticle = article;
+         this.show = !this.show
+    }
   },
 };
 </script>
