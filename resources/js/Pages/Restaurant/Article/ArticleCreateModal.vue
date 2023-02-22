@@ -21,18 +21,19 @@ const form = useForm({
 
 });
 const submit = () => {
-    form.post(route('store.article'))
+  form.post(route('store.article'))
     // this.showCreateModal=false
+
 
 };
 </script>
 <!-- le template--->
 <template >
-<div class="fixed z-10 inset-0 overflow-y-auto"  v-if="activemodal">
-<p>bonjour {{ activemodal }}</p>
+<div class="fixed z-10 inset-0 overflow-y-auto" v-if="isSubmitted">
+
       <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true" >
+          <div class="absolute inset-0 bg-gray-500 opacity-75" @click.self="closeModal"></div>
         </div>
 
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
@@ -82,8 +83,8 @@ const submit = () => {
                 </div>
 
                 <div class="flex justify-start relative space-x-4 mt-4">
-  <button class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" @click="showModal" >Quitter  </button>
-  <button class="px-4 py-2 text-white bg-blue-400 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" @click="submit">Ajouter</button>
+  <button class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" @click="closeModal" >Quitter  </button>
+  <button class="px-4 py-2 text-white bg-blue-400 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" @click="submit();closeModal()">Ajouter</button>
 </div>
               </div>
             </form>
@@ -100,12 +101,18 @@ const submit = () => {
     props:['activemodal','showmodal'],
     data(){
         return{
+            isSubmitted:true
         }
     },
     mounted(){
-        console.log(this.activemodal)
+
 
     },
+    methods:{
+        closeModal(){
+            this.$emit('close')
+        }
+    }
 };
 </script>
 

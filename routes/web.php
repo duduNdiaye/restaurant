@@ -62,5 +62,5 @@ Route::controller(CommandeController::class)->group(function () {
     Route::get('/commandes', 'client_commande')->name('client.commande');
 });
 Route::post('/article/new',[ArticleController::class,'store'])->name('store.article');
-Route::put('article/edit',[ArticleController::class,'update']);
-Route::delete('article/delete', [ArticleController::class,'destroy']);
+Route::put('article/edit/{article}',[ArticleController::class,'update'])->name('update.article');
+Route::delete('article/delete/{article}', [ArticleController::class,'destroy'])->name('delete.article');

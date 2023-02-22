@@ -92,8 +92,8 @@ class ArticleController extends Controller
     public function update(Request $request, Article $article)
     {
         //
-        $article->updateOrFail($request->all());
-        $article->user_id=Auth::id();
+        $article->update($request->all());
+
     }
 
     /**

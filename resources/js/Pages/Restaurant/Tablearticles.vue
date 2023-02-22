@@ -34,14 +34,13 @@
                   <img :src=" article.photo" alt="Article" class="w-10 h-10 rounded-full" />
                 </td>
                 <td class="border py-2 px-4">
-            <button type="submiy"
+            <button type="submit"
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
-              >
+              @click="editArtcile(article)">
               Modifier
             </button>
-            <button type="button"
-              class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-              >
+            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+             @click="deleteArticle(article)" >
               Supprimer
             </button>
           </td>
@@ -53,19 +52,28 @@
     </div>
 </div>
 <!-- modal -->
-<ArticleCreateModal :showmodal="showmodal"  :activemodal="activemodal">
+<ArticleCreateModal v-if="activemodal" @close="activemodal=false" >
 </ArticleCreateModal>
-<!-- <ArticleEditModal
-v-if="showEditModal && closeModal==false"
-:close-modal="false"
 
-/> -->
+<ArticleEditModal
+:articles="articledites"
+v-if="activedit"
+@close="activedit=false"
+></ArticleEditModal>
 
+<ArticleDeleteModal
+:article="articleAsupprimer"
+v-if="activedelete"
+@close="activedelete=false"
+>
+</ArticleDeleteModal>
 
 </template>
 
 <script>
 import ArticleCreateModal from './Article/ArticleCreateModal.vue';
+import ArticleEditModal from './Article/ArticleEditModal .vue';
+import ArticleDeleteModal from './Article/ArticleDeleteModal.vue';
 
   export default  {
     name: "tablearticles",
@@ -75,19 +83,32 @@ import ArticleCreateModal from './Article/ArticleCreateModal.vue';
     data(){
         return {
             activemodal: false,
-
+            activedit:false,
+            articledites:null,
+            activedelete:false,
+            articleAsupprimer:null
         };
     },
     methods: {
         showmodal(){
             this.activemodal=!this.activemodal;
+        },
+        editArtcile(article){
+            this.activedit=!this.activedit
+            this.articledites=article
+            console.log(this.activedit)
+        },
+        deleteArticle(article){
+            this.activedelete=!this.activedelete
+            this.articleAsupprimer=article
+            console.log(this.activedelete)
         }
 
     },
     computed:{
 
     },
-    components: { ArticleCreateModal }
+    components: { ArticleCreateModal, ArticleEditModal, ArticleDeleteModal }
 };
 
 
