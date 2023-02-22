@@ -55,15 +55,15 @@ import TableArticles from './Tablearticles.vue';
 
 </script>
 <template>
-    <div class="w-screen h-screen flex">
+    <div class="w-screen h-screen flex "  >
     <!-- Side bar -->
-    <div class="w-[400px] h-full bg-gray-200 text-white" v-show="showSide">
+    <div class="w-[400px] h-full bg-gray-300 text-white" v-show="showSide">
       <div class="h-[50px] bg-gray-900 flex justify-start  items-center ">
         <div class="px-[20px]">
           <h3 class="font-bold text-xl">EasyEAT Dashboard</h3>
         </div>
       </div>
-      <div class="h-[calc(100vh-50px)] bg-gray-800 py-[20px]">
+      <div class="h-[calc(120vh-50px)] bg-gray-800 py-[20px]">
         <div class="flex flex-col justify-between h-full px-[20px] space-y-[10px]">
           <div class=" flex flex-col justify-between space-y-[10px]">
             <router-link to="/home" @click="ShowAllCards" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-200 hover:text-gray-800  transition duration-400 ease-in-out">
@@ -141,11 +141,11 @@ import TableArticles from './Tablearticles.vue';
           </div>
         </div>
       </div>
-      <div class="h-[calc(100vh-50px)] bg-gray-50 p-[20px]">
-        <div class="border border-gray-300 rounded-md p-[20px] h-full">
+      <div class="h-[calc(100vh-50px)] bg-gray-100 p-[20px]">
+        <div class=" bg-gray-100 rounded-md p-[20px] h-full">
           <router-view>
             <DashboardCard v-show="ShowCards"/>
-            <TableArticles v-if="ShowArticles" :articles-all="articles" />
+            <TableArticles v-if="ShowArticles"  :articles-all="articles" />
           </router-view>
         </div>
       </div>
