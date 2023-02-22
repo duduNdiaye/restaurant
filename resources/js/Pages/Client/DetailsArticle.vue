@@ -53,7 +53,7 @@
                                     alt=""
                                     class="w-[60rem] h-full mb-6 product-image"
                                     aria-hidden="true"
-                                     src="../../../../storage/app/public/pexels-eneida-nieves-905847.jpg"
+                                    :src="article.photo"
                                   /> </span
                               ></span>
                             </div>
@@ -71,7 +71,7 @@
                       <h1
                         class="text-lg font-semibold tracking-tight text-heading md:text-xl xl:text-2xl cursor-pointer transition-colors hover:text-accent"
                       >
-                        {{article.nom}}
+                        {{ article.nom }}
                       </h1>
                       <span
                         ><button
@@ -117,12 +117,13 @@
                     <span class="my-5 flex items-center md:my-10"
                       ><ins
                         class="text-2xl font-semibold text-vert no-underline md:text-3xl"
-                        >{{article.prix}} FCFA</ins
+                        >{{ article.prix }} FCFA</ins
                       ></span
                     >
                     <div class="mt-6 flex flex-col items-center md:mt-6 lg:flex-row">
                       <div class="mb-3 w-full lg:mb-0 lg:max-w-[400px]">
                         <button
+                          @click="addItemToCart(article)"
                           class="flex w-full items-center justify-center rounded bg-vert py-4 px-5 text-sm font-light text-white transition-colors duration-300 hover:bg-accent-hover focus:bg-accent-hover focus:outline-none lg:text-base"
                         >
                           <span class="font-bold text-2xl">Je commande</span>
@@ -130,7 +131,7 @@
                       </div>
                       <span
                         class="whitespace-nowrap ml-6 text-base text-gray-500 ltr:lg:ml-7 rtl:lg:mr-7"
-                        >{{article.quantite}} piece disponibles</span
+                        >{{ article.quantite }} piece disponibles</span
                       >
                     </div>
                   </div>
@@ -139,7 +140,7 @@
                   >
                     <span
                       class="text-sm font-semibold text-heading capitalize ltr:mr-6 rtl:ml-6 py-1"
-                      >{{article.categorie}}</span
+                      >{{ article.categorie }}</span
                     >
                     <div class="flex flex-row flex-wrap">
                       <button
@@ -156,7 +157,7 @@
                     ><button
                       class="text-sm ml-12 tracking-wider text-vert underline transition hover:text-accent-hover hover:no-underline"
                     >
-                     {{article.user_id}}
+                      {{ article.user_id }}
                     </button>
                   </div>
                 </div>
@@ -170,11 +171,12 @@
                   Description
                 </h2>
                 <p class="text-lg text-left">
-                 {{article.description}}
+                  {{ article.description }}
                 </p>
               </div>
             </article>
           </article>
+
         </div>
       </div>
     </div>
@@ -183,8 +185,10 @@
 <script>
 export default {
   props: {
-    article: Object
+    article: Object,
+    addItemToCart: Function,
   },
+
   methods: {
     closeModal() {
       this.$emit("close");

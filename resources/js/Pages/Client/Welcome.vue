@@ -10,13 +10,13 @@ const props = defineProps({
   laravelVersion: String,
   phpVersion: String,
   articles: {},
-
 });
 
 const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
-const cartAnimation = ref(false)
+
+const cartAnimation = ref(false);
 
 const data = () => ({
   loading: true,
@@ -24,50 +24,53 @@ const data = () => ({
 
 const created = () => {
   // Charger les données des articles
-  fetch('articles.json')
-    .then(response => response.json())
-    .then(articles => {
+  fetch("articles.json")
+    .then((response) => response.json())
+    .then((articles) => {
       this.articles = articles;
       this.loading = false;
     });
 };
 
 onMounted(() => {
-    if (localStorage.getItem('cart')) {
-        cart.value = JSON.parse(localStorage.getItem('cart'));
-        count.value = cart.value.length;
-    }
-    if(count.value != 0)
-    {
-        count1.value = true;
-    }
-})
-
-const total = computed(() => {
-  return cart.value.reduce((acc, item) => acc + (item.prix * item.quantite), 0);
+  if (localStorage.getItem("cart")) {
+    cart.value = JSON.parse(localStorage.getItem("cart"));
+    count.value = cart.value.length;
+  }
+  if (count.value != 0) {
+    count1.value = true;
+  }
 });
 
+const total = computed(() => {
+  return cart.value.reduce((acc, item) => acc + item.prix * item.quantite, 0);
+});
+
+const panier = ref(false);
+
 const addItemToCart = (article) => {
+    console.log(article.photo)
   //Vérifie si l'article est déjà dans le panier
   let index = cart.value.findIndex((item) => item.nom === article.nom);
   if (index === -1) {
     cart.value.push({
       nom: article.nom,
+      photo: article.photo,
       prix: parseFloat(article.prix),
       quantite: 1,
-      total: parseFloat(article.prix)
+      total: parseFloat(article.prix),
     });
     count1.value = true;
   } else {
     cart.value[index].quantite++;
-    cart.value[index].total += parseFloat(article.prix)
+    cart.value[index].total += parseFloat(article.prix);
   }
 
   count.value = cart.value.length;
 
-   localStorage.setItem('cart', JSON.stringify(cart.value));
+  localStorage.setItem("cart", JSON.stringify(cart.value));
 
-     cartAnimation.value = true;
+  cartAnimation.value = true;
   setTimeout(() => {
     cartAnimation.value = false;
   }, 1000);
@@ -85,6 +88,13 @@ const addItemToCart = (article) => {
   //   cart.value[index].quantity++;
   // }
 
+  panier.value = true; // affiche le modal de validation
+  console.log(panier.value);
+  setTimeout(() => {
+      console.log("here");
+    panier.value = false;
+  }, 2000);
+  console.log(panier.value);
 };
 
 const removeItemFromCart = (car) => {
@@ -98,15 +108,13 @@ const removeItemFromCart = (car) => {
     }
   }
   count.value = cart.value.length;
-  if(count.value == 0)
-  {
+  if (count.value == 0) {
     count1.value = false;
   }
 
   // enregistrer les données du panier dans le localStorage
-  localStorage.setItem('cart', JSON.stringify(cart.value));
+  localStorage.setItem("cart", JSON.stringify(cart.value));
 };
-console.log(count1.value);
 </script>
 
 <template>
@@ -600,12 +608,16 @@ console.log(count1.value);
               d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
             />
           </svg>
-          <span  :class="{ 'animate-bounce text-red-500': cartAnimation }" class="font-bold ml-2 text-sm text-white" >{{count}} items</span>
+          <span
+            :class="{ 'animate-bounce text-red-500': cartAnimation }"
+            class="font-bold ml-2 text-sm text-white"
+            >{{ count }} items</span
+          >
         </div>
         <div
           class="flex items-center bg-white text-vert font-bold rounded py-2 w-20 ml-3 mt-2 justify-center"
         >
-          {{total}} F
+          {{ total }} F
         </div>
       </div>
     </button>
@@ -670,7 +682,8 @@ console.log(count1.value);
       </div>
     </div>
 
-    <div @mouseleave="showComponent=false"
+    <div
+      @mouseleave="showComponent = false"
       :class="[showComponent ? 'right-0' : 'right-[-100%] lg:block md:block hidden']"
       class="border-l-2 border-gray-100 z-50 transform-gpu duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[31rem] w-[28rem] h-screen bg-white text-white p-3"
     >
@@ -691,7 +704,7 @@ console.log(count1.value);
                 d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
               />
             </svg>
-            <span class="font-bold ml-2 text-vert">{{count}} items</span>
+            <span class="font-bold ml-2 text-vert">{{ count }} items</span>
           </div>
         </div>
         <div class="justify-end">
@@ -773,12 +786,12 @@ console.log(count1.value);
             class="relative mx-4 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-gray-100 sm:h-16 sm:w-16"
           >
             <span
+            class="h-full"
               style="
                 box-sizing: border-box;
                 display: block;
                 overflow: hidden;
-                width: initial;
-                height: initial;
+
                 background: none;
                 opacity: 1;
                 border: 0px;
@@ -789,10 +802,11 @@ console.log(count1.value);
               "
               ><img
                 alt="Baby Spinach"
-                src="../../../../storage/app/public/pexels-eneida-nieves-905847.jpg"
+                :src="car.photo"
                 decoding="async"
                 data-nimg="fill"
                 sizes="100vw"
+                class="h-56"
                 style="
                   position: absolute;
                   inset: 0px;
@@ -802,7 +816,7 @@ console.log(count1.value);
                   margin: auto;
                   display: block;
                   width: 0px;
-                  height: 0px;
+                  height: 10px;
                   min-width: 100%;
                   max-width: 100%;
                   min-height: 100%;
@@ -813,14 +827,17 @@ console.log(count1.value);
           </div>
 
           <div class="ml-8">
-            <h3 class="font-black text-lg  text-black">{{ car.nom }}</h3>
+            <h3 class="font-black text-lg text-black">{{ car.nom }}</h3>
             <p class="my-2.5 font-bold text-vert">{{ car.prix }}</p>
-            <span class="text-sm text-gray-500">nombre: {{car.quantite}}</span>
+            <span class="text-sm text-gray-500">nombre: {{ car.quantite }}</span>
           </div>
 
           <div class="ml-auto flex">
-            <span class="font-bold mt-1 mr-2 text-black ltr:ml-auto rtl:mr-auto">{{car.total}}FCFA</span>
-            <button @click="removeItemFromCart(car)"
+            <span class="font-bold mt-1 mr-2 text-black ltr:ml-auto rtl:mr-auto"
+              >{{ car.total }}FCFA</span
+            >
+            <button
+              @click="removeItemFromCart(car)"
               class="flex bg-gray-200 h-7 w-7 right-0 items-center justify-center rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-red-600 focus:bg-gray-100 focus:text-red-600 focus:outline-none ltr:ml-3 ltr:-mr-2 rtl:mr-3 rtl:-ml-2"
             >
               <span class="sr-only">close</span
@@ -981,7 +998,7 @@ console.log(count1.value);
           <div
             class="justify-end text-vert h-[3rem] mt-2 mr-3 py-3 w-[10rem] px-5 rounded-full bg-white font-bold text-xl"
           >
-            {{total}} F
+            {{ total }} F
           </div>
         </div>
       </a>
@@ -3148,7 +3165,7 @@ console.log(count1.value);
             >
               <button @click="showModals(article)">
                 <img
-                  src="../../../../storage/app/public/pexels-eneida-nieves-905847.jpg"
+                  :src="article.photo"
                   alt="Product image"
                   class="w-full h-56 mb-6 product-image"
                 />
@@ -3190,15 +3207,27 @@ console.log(count1.value);
                 </div>
               </header>
             </span>
-
           </article>
         </div>
-        <DetailsArticle @close="selectedArticle = null" v-if="selectedArticle" :article="selectedArticle"/>
+        <DetailsArticle
+          @close="selectedArticle = null"
+          :addItemToCart="addItemToCart"
+          v-if="selectedArticle"
+          :article="selectedArticle"
+        />
+        <transition name="panier">
+            <div v-if="panier"
+              class="bg-vert font-bold flex h-14 text-white rounded-md p-4 fixed top-[39rem] right-4 ">
+              <div class="flex mb-3">
+                <span class="text-2xl font-bold">Article ajoute!</span>
+                <svg class="w-8 h-8 icon ml-4" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill="#000000" d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z"></path></g></svg>
+              </div>
+            </div>
+          </transition>
       </div>
 
       <!-- Ajouter d'autres articles ici -->
     </div>
-
   </div>
 </template>
 
@@ -3262,10 +3291,10 @@ export default {
         this.isAsideSticky = false;
       }
     },
-    showModals(article){
-         this.selectedArticle = article;
-         this.show = !this.show
-    }
+    showModals(article) {
+      this.selectedArticle = article;
+      this.show = !this.show;
+    },
   },
 };
 </script>
@@ -3312,5 +3341,20 @@ export default {
   to {
     transform: translateX(0);
   }
+}
+.panier-enter-active, .panier-leave-active {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: translateX(100%);
+   opacity: 0;
+}
+
+.panier-enter, .panier-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.panier-leave, .panier-enter-to {
+  opacity: 1;
+  transform: translateX(0);
 }
 </style>
