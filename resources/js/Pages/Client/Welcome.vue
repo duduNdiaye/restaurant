@@ -3,6 +3,7 @@ import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
+import { v4 as uuidv4 } from 'uuid';
 
 const props = defineProps({
   canLogin: Boolean,
@@ -15,6 +16,7 @@ const props = defineProps({
 const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
+const orderId = uuidv4();
 
 const cartAnimation = ref(false);
 
@@ -105,6 +107,7 @@ const removeItemFromCart = (car) => {
     cart.value[index].quantite = 0;
     if (cart.value[index].quantite === 0) {
       cart.value.splice(index, 1);
+      count.value--;
     }
   }
   count.value = cart.value.length;
@@ -114,6 +117,41 @@ const removeItemFromCart = (car) => {
 
   // enregistrer les données du panier dans le localStorage
   localStorage.setItem("cart", JSON.stringify(cart.value));
+};
+
+const Augmenter = (car) => {
+    let index = cart.value.findIndex((item) => item.nom === car.nom);
+     if (index === -1) {
+    return;
+  } else {
+    cart.value[index].quantite++;
+    cart.value[index].total += parseFloat(car.prix);}
+};
+const Diminuer = (car) => {
+    let index = cart.value.findIndex((item) => item.nom === car.nom);
+     if (index === -1) {
+    return;
+  } else {
+    cart.value[index].quantite--;
+     cart.value[index].total -= parseFloat(car.prix);}
+     if (cart.value[index].quantite === 0) {
+      cart.value.splice(index, 1);
+      count.value-=1;
+    }
+
+    if (count.value == 0) {
+    count1.value = false;
+    }
+
+   localStorage.setItem("cart", JSON.stringify(cart.value));
+};
+
+const Commander = (cart) => {
+      form.put(route('client.commande', {
+        demande_id: props.demande.id,
+        demande_auteur: props.demande.auteur,
+        type: 'feedback'
+    }))
 };
 </script>
 
@@ -684,8 +722,8 @@ const removeItemFromCart = (car) => {
 
     <div
       @mouseleave="showComponent = false"
-      :class="[showComponent ? 'right-0' : 'right-[-100%] lg:block md:block hidden']"
-      class="border-l-2 border-gray-100 z-50 transform-gpu duration-700 ease-in-out fixed right-0 bottom-0 lg:h-screen lg:w-[31rem] w-[28rem] h-screen bg-white text-white p-3"
+      :class="[showComponent ? 'right-0' : 'right-[-100%] shadow-xl lg:block md:block hidden']"
+      class="border-l-2 border-gray-100 z-50 transform-gpu duration-400 ease-in-out fixed right-0 top-[4.3rem] lg:h-[35rem] lg:w-[27rem] w-[25rem] h-[29rem] bg-white text-white p-3"
     >
       <div class="flex justify-between border-b-2 border-gray-100 py-1">
         <div class="justify-start">
@@ -729,7 +767,7 @@ const removeItemFromCart = (car) => {
           </button>
         </div>
       </div>
-      <div v-if="count1" class="flex-grow pt-2 pb-20 h-[32rem] overflow-y-scroll">
+      <div v-if="count1" class="flex-grow pt-2 pb-20 lg:h-96 h-72 overflow-y-scroll">
         <div
           v-for="car in cart"
           :key="car.id"
@@ -738,10 +776,10 @@ const removeItemFromCart = (car) => {
         >
           <div class="flex-shrink-0">
             <div
-              class="flex overflow-hidden flex-col-reverse items-center w-8 h-24 mr-6 bg-gray-100 text-black rounded-full"
+              class="flex overflow-hidden flex-col-reverse items-center w-8 h-24 bg-gray-100 text-black rounded-full"
             >
-              <button
-                class="cursor-pointer p-2 transition-colors duration-200 hover:bg-accent-hover focus:outline-none hover:!bg-gray-100"
+              <button @click="Diminuer(car)"
+                class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert  focus:outline-none "
               >
                 <span class="sr-only">minus</span
                 ><svg
@@ -760,10 +798,10 @@ const removeItemFromCart = (car) => {
               <div
                 class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
               >
-                1
+                {{car.quantite}}
               </div>
-              <button
-                class="cursor-pointer p-2 text-black transition-colors duration-200 hover:bg-accent-hover focus:outline-none hover:!bg-gray-100"
+              <button @click="Augmenter(car)"
+                class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
                 title=""
               >
                 <span class="sr-only">plus</span
@@ -826,34 +864,24 @@ const removeItemFromCart = (car) => {
             /></span>
           </div>
 
-          <div class="ml-8">
-            <h3 class="font-black text-lg text-black">{{ car.nom }}</h3>
-            <p class="my-2.5 font-bold text-vert">{{ car.prix }}</p>
+          <div>
+            <h3 class="font-black text-sm text-black">{{ car.nom }}</h3>
+            <p class=" text-sm font-bold text-vert">{{ car.prix }}</p>
             <span class="text-sm text-gray-500">nombre: {{ car.quantite }}</span>
           </div>
 
-          <div class="ml-auto flex">
-            <span class="font-bold mt-1 mr-2 text-black ltr:ml-auto rtl:mr-auto"
-              >{{ car.total }}FCFA</span
-            >
+          <div class="ml-auto flex flex-col">
+
             <button
               @click="removeItemFromCart(car)"
-              class="flex bg-gray-200 h-7 w-7 right-0 items-center justify-center rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-red-600 focus:bg-gray-100 focus:text-red-600 focus:outline-none ltr:ml-3 ltr:-mr-2 rtl:mr-3 rtl:-ml-2"
+              class="flex ml-16 mb-2 bg-gray-200 h-7 w-7 right-0 items-center justify-center rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-red-600 focus:bg-gray-100 focus:text-red-600 focus:outline-none ltr:ml-3 ltr:-mr-2 rtl:mr-3 rtl:-ml-2"
             >
               <span class="sr-only">close</span
-              ><svg
-                class="h-3 w-3"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
+              ><svg width="81px" height="81px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.15" d="M18 18V6H6V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18Z" fill="#000000"></path> <path d="M10 10V16M14 10V16M18 6V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V6M4 6H20M15 6V5C15 3.89543 14.1046 3 13 3H11C9.89543 3 9 3.89543 9 5V6" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
             </button>
+              <span class="font-semibold ml-4 mt-1 mr-2 text-gray-500 ltr:ml-auto rtl:mr-auto"
+              >{{ car.total }}FCFA</span
+            >
           </div>
         </div>
       </div>
@@ -989,19 +1017,19 @@ const removeItemFromCart = (car) => {
           <h4 class="mt-6 text-vert font-semibold">No products found</h4>
         </div>
       </div>
-      <a
-        :href="route('client.commande')"
-        class="fixed left-100 lg:w-[28rem] w-[26rem] h-16 bg-vert rounded-full bottom-5"
+      <button
+        @click="Commander()"
+        class="fixed right-8 lg:w-[23rem] hover:bg-haver w-[23.5rem] h-12 bg-vert bottom-5"
       >
         <div class="flex justify-between">
-          <div class="font-black text-white text-2xl mb-8 py-4 px-6">Commander</div>
+          <div class="font-black text-white text-xl mb-8 py-3 px-6">Je commande</div>
           <div
-            class="justify-end text-vert h-[3rem] mt-2 mr-3 py-3 w-[10rem] px-5 rounded-full bg-white font-bold text-xl"
+            class="justify-end text-vert h-[2rem]  mt-2 mr-3 py-1 w-[10rem] px-5 rounded-full bg-white font-bold text-xl"
           >
             {{ total }} F
           </div>
         </div>
-      </a>
+      </button>
     </div>
 
     <div
