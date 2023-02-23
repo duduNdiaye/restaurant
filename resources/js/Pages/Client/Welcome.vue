@@ -16,7 +16,7 @@ const props = defineProps({
 const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
-const orderId = uuidv4();
+
 
 const cartAnimation = ref(false);
 
@@ -144,14 +144,6 @@ const Diminuer = (car) => {
     }
 
    localStorage.setItem("cart", JSON.stringify(cart.value));
-};
-
-const Commander = (cart) => {
-      form.put(route('client.commande', {
-        demande_id: props.demande.id,
-        demande_auteur: props.demande.auteur,
-        type: 'feedback'
-    }))
 };
 </script>
 
@@ -1017,8 +1009,8 @@ const Commander = (cart) => {
           <h4 class="mt-6 text-vert font-semibold">No products found</h4>
         </div>
       </div>
-      <button
-        @click="Commander()"
+      <a
+        :href="route('client.commande')"
         class="fixed right-8 lg:w-[23rem] hover:bg-haver w-[23.5rem] h-12 bg-vert bottom-5"
       >
         <div class="flex justify-between">
@@ -1029,7 +1021,7 @@ const Commander = (cart) => {
             {{ total }} F
           </div>
         </div>
-      </button>
+      </a>
     </div>
 
     <div

@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
+import { ref, onMounted, computed } from "vue";
 
 defineProps({
   canLogin: Boolean,
@@ -9,6 +10,50 @@ defineProps({
   phpVersion: String,
   articles: {},
 });
+
+const cart = ref([]);
+const count = ref(0);
+const count1 = ref(false);
+
+onMounted(() => {
+  if (localStorage.getItem("cart")) {
+    cart.value = JSON.parse(localStorage.getItem("cart"));
+    count.value = cart.value.length;
+  }
+  if (count.value != 0) {
+    count1.value = true;
+  }
+});
+
+const Augmenter = (car) => {
+  let index = cart.value.findIndex((item) => item.nom === car.nom);
+  if (index === -1) {
+    return;
+  } else {
+    cart.value[index].quantite++;
+    cart.value[index].total += parseFloat(car.prix);
+  }
+  localStorage.setItem("cart", JSON.stringify(cart.value));
+};
+const Diminuer = (car) => {
+  let index = cart.value.findIndex((item) => item.nom === car.nom);
+  if (index === -1) {
+    return;
+  } else {
+    cart.value[index].quantite--;
+    cart.value[index].total -= parseFloat(car.prix);
+  }
+  if (cart.value[index].quantite === 0) {
+    cart.value.splice(index, 1);
+    count.value -= 1;
+  }
+
+  if (count.value == 0) {
+    count1.value = false;
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart.value));
+};
 </script>
 <template>
   <div class="flex min-h-screen flex-col bg-gray-100 transition-colors duration-150">
@@ -68,382 +113,154 @@ defineProps({
         </div>
       </nav>
     </header>
-    <div class="px-4 py-8 bg-gray-100 lg:py-24 xl:py-14 xl:px-16 2xl:px-20">
+    <div class="px-4 py-8 bg-gray-100 lg:px-4 lg:py-24 xl:py-14 xl:px-16 2xl:px-20">
       <div
-        class="flex flex-col items-center w-full mt-16 max-w-6xl m-auto rtl:space-x-reverse lg:flex-row lg:items-start lg:space-x-8"
+        class="flex flex-col items-center w-full mt-16 max-w-8xl m-auto rtl:space-x-reverse lg:flex-row lg:items-start lg:space-x-8"
       >
-        <div class="w-full space-y-6 lg:max-w-2xl">
-          <div class="p-5 bg-white shadow-xl md:p-8">
-            <div class="mb-5 flex items-center justify-between md:mb-8">
-              <div class="flex items-center space-x-3 rtl:space-x-reverse md:space-x-4">
-                <span
-                  class="flex items-center justify-center w-8 h-8 text-lg rounded-full bg-vert text-white lg:text-xl"
-                  >1</span
-                >
-                <p class="text-lg capitalize text-heading lg:text-xl">Contact Number</p>
-              </div>
-              <button
-                class="flex items-center text-sm font-semibold transition-colors duration-200 text-vert hover:text-vert-hover focus:text-vert-hover focus:outline-none"
-              >
-                <svg
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  class="h-4 w-4 stroke-2 ltr:mr-0.5 rtl:ml-0.5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  ></path></svg
-                >Update
-              </button>
-            </div>
-            <div class="w-full">
-              <div class="react-tel-input">
-                <div class="special-label">Phone</div>
-                <input
-                  class="form-control p-3 ltr:pr-4 rtl:pl-4 ltr:pl-14 rtl:pr-14 flex items-center w-full appearance-none transition duration-300 ease-in-out text-heading text-sm focus:!outline-none focus:ring-0 border border-gray-300 rounded focus:border-gray-200 h-12"
-                  placeholder="1 (702) 123-4567"
-                  disabled=""
-                  type="tel"
-                  value="(+221)778021496"
-                />
-                <div class="flag-dropdown">
-                  <div
-                    class="selected-flag"
-                    title="United States: + 1"
-                    tabindex="0"
-                    role="button"
-                    aria-haspopup="listbox"
-                  >
-                    <div class="flag us"><div class="arrow"></div></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div class="w-full lg:max-w-4xl max-w-8xl">
+          <div class="bg-white mb-3 h-16">
+            <p class="text-lg p-4 font-bold text-center capitalize text-heading lg:text-xl">Resume du panier</p>
           </div>
-          <div class="p-5 bg-white shadow-700 md:p-8">
-            <div class="flex items-center justify-between mb-5 md:mb-8">
-              <div class="flex items-center space-x-3 md:space-x-4 rtl:space-x-reverse">
-                <span
-                  class="rounded-full w-8 h-8 bg-vert flex items-center justify-center text-lg lg:text-xl text-white"
-                  >2</span
-                >
-                <p class="text-lg lg:text-xl text-heading capitalize">Billing Address</p>
+          <div
+            class="p-5 bg-white shadow-700 md:p-8 lg:h-68 lg:w-full"
+            v-for="car in cart"
+            :key="car.id"
+          >
+            <div class="lg:w-full md:w-full  w-full flex">
+              <div class="mr-4">
+                <img :src="car.photo" class="lg:w-36 sm:mr-36 sm:w-36 sm:h-40 md:w-40 md:h-44 lg:h-40 w-56 h-48 object-cover max-w-none sm:max-w-full" alt="" />
               </div>
-              <button
-                class="flex items-center text-sm font-semibold text-vert transition-colors duration-200 focus:outline-none focus:text-vert-hover hover:text-vert-hover"
-              >
-                <svg
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  class="w-4 h-4 stroke-2 ltr:mr-0.5 rtl:ml-0.5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  ></path></svg
-                >Add
-              </button>
-            </div>
-            <div
-              id="headlessui-radiogroup-35"
-              role="radiogroup"
-              aria-labelledby="headlessui-label-36"
-            >
-              <label class="sr-only" id="headlessui-label-36" role="none"
-                >Billing Address</label
-              >
-              <div
-                class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
-                role="none"
-              >
-                <div
-                  id="headlessui-radiogroup-option-37"
-                  role="radio"
-                  aria-checked="true"
-                  tabindex="0"
-                >
-                  <div
-                    class="group relative cursor-pointer rounded border p-4 hover:border-vert border-vert shadow-sm"
-                  >
-                    <p class="mb-3 text-sm font-semibold capitalize text-heading">
-                      Billing
-                    </p>
-                    <p class="text-sm text-sub-heading">
-                      2231 Kidd Avenue, AK, Kipnuk, 99614, United States
-                    </p>
+              <div class="flex flex-col">
+                <div class="mb-4">
+                  <span>{{ car.nom }}</span>
+                </div>
+                <div class="flex items-center justify-between md:mb-5 lg:mb-10 mb-16">
+                  <button class="lg:mr-16  md:mr-16 mr-4 text-white bg-black rounded-full px-4">
+                    Nombre:{{ car.quantite }}
+                  </button>
+                  <span class="lg:mr-24 md:mr-24 mr-2">{{ car.prix }}</span>
+                  <div class="flex-shrink-0 lg:mr-6">
                     <div
-                      class="absolute top-4 flex space-x-2 opacity-0 group-hover:opacity-100 ltr:right-4 rtl:left-4 rtl:space-x-reverse"
+                      class="lg:mr-16 md:mr-16 overflow-hidden flex items-center w-24 h-8 bg-gray-100 text-black rounded-full"
                     >
                       <button
-                        class="flex h-5 w-5 items-center justify-center rounded-full bg-vert text-white"
+                        @click="Diminuer(car)"
+                        class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert focus:outline-none"
                       >
-                        <span class="sr-only">Edit</span
+                        <span class="sr-only">minus</span
                         ><svg
-                          class="h-3 w-3"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          class="h-3 w-3 stroke-2.5"
                         >
                           <path
-                            d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M20 12H4"
                           ></path>
-                        </svg></button
-                      ><button
-                        class="flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white"
+                        </svg>
+                      </button>
+                      <div
+                        class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
                       >
-                        <span class="sr-only">Delete</span
+                        1
+                      </div>
+                      <button
+                        @click="Augmenter(car)"
+                        class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
+                        title=""
+                      >
+                        <span class="sr-only">plus</span
                         ><svg
-                          class="h-3 w-3"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
                         >
                           <path
-                            fill-rule="evenodd"
-                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                            clip-rule="evenodd"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                           ></path>
                         </svg>
                       </button>
                     </div>
                   </div>
+                  <span class="flex">{{ car.total }}</span>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="p-5 bg-white shadow-700 md:p-8">
-            <div class="flex items-center justify-between mb-5 md:mb-8">
-              <div class="flex items-center space-x-3 md:space-x-4 rtl:space-x-reverse">
-                <span
-                  class="rounded-full w-8 h-8 bg-vert flex items-center justify-center text-lg lg:text-xl text-white"
-                  >3</span
-                >
-                <p class="text-lg lg:text-xl text-heading capitalize">Shipping Address</p>
-              </div>
-              <button
-                class="flex items-center text-sm font-semibold text-vert transition-colors duration-200 focus:outline-none focus:text-vert-hover hover:text-vert-hover"
-              >
-                <svg
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  class="w-4 h-4 stroke-2 ltr:mr-0.5 rtl:ml-0.5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  ></path></svg
-                >Add
-              </button>
-            </div>
-            <div
-              id="headlessui-radiogroup-38"
-              role="radiogroup"
-              aria-labelledby="headlessui-label-39"
-            >
-              <label class="sr-only" id="headlessui-label-39" role="none"
-                >Shipping Address</label
-              >
-              <div
-                class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
-                role="none"
-              >
-                <div
-                  id="headlessui-radiogroup-option-40"
-                  role="radio"
-                  aria-checked="true"
-                  tabindex="0"
-                >
-                  <div
-                    class="group relative cursor-pointer rounded border p-4 hover:border-vert border-vert shadow-sm"
-                  >
-                    <p class="mb-3 text-sm font-semibold capitalize text-heading">
-                      Shipping
-                    </p>
-                    <p class="text-sm text-sub-heading">
-                      2148 Straford Park, KY, Winchester, 40391, United States
-                    </p>
-                    <div
-                      class="absolute top-4 flex space-x-2 opacity-0 group-hover:opacity-100 ltr:right-4 rtl:left-4 rtl:space-x-reverse"
-                    >
-                      <button
-                        class="flex h-5 w-5 items-center justify-center rounded-full bg-vert text-white"
+                <div class="flex">
+                  <div class="flex">
+                    <button class="mr-12 text-sm tet-black flex">
+                      <svg
+                        fill="#000000"
+                        class="icon w-4 h-4"
+                        version="1.1"
+                        id="XMLID_298_"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        viewBox="0 0 24 24"
+                        xml:space="preserve"
                       >
-                        <span class="sr-only">Edit</span
-                        ><svg
-                          class="h-3 w-3"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
-                          ></path>
-                        </svg></button
-                      ><button
-                        class="flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white"
-                      >
-                        <span class="sr-only">Delete</span
-                        ><svg
-                          class="h-3 w-3"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                            clip-rule="evenodd"
-                          ></path>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="p-5 bg-white shadow-700 md:p-8">
-            <div class="mb-5 flex items-center justify-between md:mb-8">
-              <div class="flex items-center space-x-3 rtl:space-x-reverse md:space-x-4">
-                <span
-                  class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-lg text-white lg:text-xl"
-                  >4</span
-                >
-                <p class="text-lg capitalize text-heading lg:text-xl">
-                  Delivery Schedule
-                </p>
-              </div>
-            </div>
-            <div
-              id="headlessui-radiogroup-41"
-              role="radiogroup"
-              aria-labelledby="headlessui-label-42"
-            >
-              <label class="sr-only" id="headlessui-label-42" role="none"
-                >Delivery Schedule</label
-              >
-              <div
-                class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
-                role="none"
-              >
-                <div
-                  id="headlessui-radiogroup-option-43"
-                  role="radio"
-                  aria-checked="true"
-                  tabindex="0"
-                >
-                  <div
-                    class="relative p-4 rounded border cursor-pointer group hover:border-vert border-vert shadow-sm"
-                  >
-                    <span class="text-sm text-heading font-semibold block mb-2"
-                      >Express Delivery</span
-                    ><span class="text-sm text-heading block"
-                      >90 min express delivery</span
-                    >
-                  </div>
-                </div>
-                <div
-                  id="headlessui-radiogroup-option-44"
-                  role="radio"
-                  aria-checked="false"
-                  tabindex="-1"
-                >
-                  <div
-                    class="relative p-4 rounded border cursor-pointer group hover:border-vert bg-gray-100 border-transparent"
-                  >
-                    <span class="text-sm text-heading font-semibold block mb-2"
-                      >Morning</span
-                    ><span class="text-sm text-heading block">8.00 AM - 11.00 AM</span>
-                  </div>
-                </div>
-                <div
-                  id="headlessui-radiogroup-option-45"
-                  role="radio"
-                  aria-checked="false"
-                  tabindex="-1"
-                >
-                  <div
-                    class="relative p-4 rounded border cursor-pointer group hover:border-vert bg-gray-100 border-transparent"
-                  >
-                    <span class="text-sm text-heading font-semibold block mb-2">Noon</span
-                    ><span class="text-sm text-heading block">11.00 AM - 2.00 PM</span>
-                  </div>
-                </div>
-                <div
-                  id="headlessui-radiogroup-option-46"
-                  role="radio"
-                  aria-checked="false"
-                  tabindex="-1"
-                >
-                  <div
-                    class="relative p-4 rounded border cursor-pointer group hover:border-vert bg-gray-100 border-transparent"
-                  >
-                    <span class="text-sm text-heading font-semibold block mb-2"
-                      >Afternoon</span
-                    ><span class="text-sm text-heading block">2.00 PM - 5.00 PM</span>
-                  </div>
-                </div>
-                <div
-                  id="headlessui-radiogroup-option-47"
-                  role="radio"
-                  aria-checked="false"
-                  tabindex="-1"
-                >
-                  <div
-                    class="relative p-4 rounded border cursor-pointer group hover:border-vert bg-gray-100 border-transparent"
-                  >
-                    <span class="text-sm text-heading font-semibold block mb-2"
-                      >Evening</span
-                    ><span class="text-sm text-heading block">5.00 PM - 8.00 PM</span>
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g
+                          id="SVGRepo_tracerCarrier"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></g>
+                        <g id="SVGRepo_iconCarrier">
+                          <g id="favorite">
+                            <path
+                              d="M12,23.2l-0.6-0.5C8.7,20.7,0,13.5,0,7.3C0,3.8,2.9,1,6.5,1c2.2,0,4.3,1.1,5.5,2.9l0,0l0,0C13.2,2.1,15.3,1,17.5,1 C21.1,1,24,3.8,24,7.3c0,6.3-8.7,13.4-11.4,15.5L12,23.2z M6.5,2.9C4,2.9,2,4.8,2,7.2c0,4.1,5.1,9.5,10,13.4 c4.9-3.9,10-9.3,10-13.4c0-2.4-2-4.3-4.5-4.3c-1.6,0-3,0.8-3.8,2L12,7.6L10.3,5C9.5,3.7,8.1,2.9,6.5,2.9z"
+                            ></path>
+                          </g>
+                        </g>
+                      </svg>
+                      <span class="ml-2">Ajouter aux Favoris</span>
+                    </button>
+                    <button class="text-sm hover:font-black">Effacer</button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="w-full mt-10 mb-10 sm:mb-12 lg:mb-0 lg:w-96">
-          <div class="w-full lg:ml-12">
+        <div class="w-full mb-10 sm:mb-12 lg:mb-0 lg:w-[40rem]">
+          <div class="w-full bg-white p-6">
             <div class="mb-4 flex flex-col items-center space-x-4 rtl:space-x-reverse">
-              <span class="text-xl font-bold text-heading">Your Order</span>
+              <span class="text-lg font-bold text-heading">Resume de votre commande</span>
             </div>
             <div class="flex flex-col border-b border-border-200 py-3">
               <div class="flex justify-between py-2">
-                <div class="flex items-center justify-between text-xl">
-                  <span class="text-lg text-gray-500"
-                    ><span class="text-xl font-extrabold text-black">1</span
-                    ><span class="mx-2">x</span><span>Brussels Sprout</span> |
-                    <span>1lb</span></span
+                <div class="flex items-center justify-between text-base">
+                  <span class="text-sm text-body"
+                    ><span class="text-sm font-bold text-heading">1</span
+                    ><span class="mx-2">x</span><span>Lime</span> |
+                    <span>4pc(s)</span></span
                   >
                 </div>
-                <span class="text-lg text-gray-500">$3.00</span>
+                <span class="text-sm text-body">$1.50</span>
               </div>
             </div>
             <div class="mt-4 space-y-2">
               <div class="flex justify-between">
-                <p class="text-lg text-gray-500">Sub Total</p>
-                <span class="text-lg text-gray-500">$3.00</span>
+                <p class="text-sm text-body">Sub Total</p>
+                <span class="text-sm text-body">$1.50</span>
               </div>
               <div class="flex justify-between">
-                <p class="text-lg text-gray-500">Tax</p>
-                <span class="text-sm text-gray-500">Calculated at checkout</span>
+                <p class="text-sm text-body">Tax</p>
+                <span class="text-sm text-body">Calculated at checkout</span>
               </div>
               <div class="flex justify-between">
-                <p class="text-sm text-gray-500">Estimated Shipping</p>
-                <span class="text-sm text-gray-500">Calculated at checkout</span>
+                <p class="text-sm text-body">Estimated Shipping</p>
+                <span class="text-sm text-body">Calculated at checkout</span>
               </div>
             </div>
             <button
               data-variant="normal"
-              class="inline-flex items-center justify-center shrink-0 font-bold leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-vert-700 bg-vert text-white text-lg border border-transparent hover:bg-vert-hover px-5 py-0 h-12 mt-5 w-full"
+              class="inline-flex items-center justify-center shrink-0 font-semibold leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-accent-700 bg-vert text-white border border-transparent hover:bg-vert-hover px-5 py-0 h-12 mt-5 w-full"
             >
-              Check Availability
+              Passer a la caisse
             </button>
           </div>
         </div>
