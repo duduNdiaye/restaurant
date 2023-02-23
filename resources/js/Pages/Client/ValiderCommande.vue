@@ -25,6 +25,10 @@ onMounted(() => {
   }
 });
 
+const total = computed(() => {
+  return cart.value.reduce((acc, item) => acc + item.prix * item.quantite, 0);
+});
+
 const Augmenter = (car) => {
   let index = cart.value.findIndex((item) => item.nom === car.nom);
   if (index === -1) {
@@ -113,119 +117,108 @@ const Diminuer = (car) => {
         </div>
       </nav>
     </header>
-    <div class="px-4 py-8 bg-gray-100 lg:px-4 lg:py-24 xl:py-14 xl:px-16 2xl:px-20">
+    <div class="px-4 py-8 bg-gray-100 lg:px-4 md:px-4 lg:py-24 xl:py-14 xl:px-16 2xl:px-20">
       <div
-        class="flex flex-col items-center w-full mt-16 max-w-8xl m-auto rtl:space-x-reverse lg:flex-row lg:items-start lg:space-x-8"
+        class="flex flex-col items-center w-full mt-16 max-w-8xl m-auto rtl:space-x-reverse lg:flex-row md:flex-row md:items-start md:space-x-4  lg:items-start lg:space-x-8"
       >
-        <div class="w-full lg:max-w-4xl max-w-8xl">
+        <div class="w-full lg:max-w-4xl md:max-w-[35rem] max-w-8xl">
           <div class="bg-white mb-3 h-16">
-            <p class="text-lg p-4 font-bold text-center capitalize text-heading lg:text-xl">Resume du panier</p>
+            <div
+              class=" p-4 font-bold flex justify-between  capitalize text-heading lg:text-xl"
+            >
+              <span class="text-gray-500 lg:text-sm lg:block md:block hidden">Votre commande sur EATEASY</span>
+              <span class="flex text-lg text-center">Resume du panier({{count}})</span>
+            </div>
           </div>
           <div
-            class="p-5 bg-white shadow-700 md:p-8 lg:h-68 lg:w-full"
+            class="p-5 bg-white shadow-700 md:p-8 lg:h-68 lg:w-full border-b border-gray-300"
             v-for="car in cart"
             :key="car.id"
           >
-            <div class="lg:w-full md:w-full  w-full flex">
-              <div class="mr-4">
-                <img :src="car.photo" class="lg:w-36 sm:mr-36 sm:w-36 sm:h-40 md:w-40 md:h-44 lg:h-40 w-56 h-48 object-cover max-w-none sm:max-w-full" alt="" />
+            <div
+              class="flex flex-col md:flex-row md:space-x-4 space-y-4 lg:flex-row md:items-start items-center lg:items-start"
+            >
+              <div class="flex-shrink-0 w-32  lg:w-48">
+                <img :src="car.photo" alt="Nom de l'article" class="w-full h-auto md:w-56" />
               </div>
-              <div class="flex flex-col">
-                <div class="mb-4">
-                  <span>{{ car.nom }}</span>
+              <div class="flex flex-col justify-between lg:ml-4 mt-2 lg:mt-0">
+                <div
+                  class="font-medium text-lg lg:text-xl lg:text-start text-center"
+                >
+                  {{ car.nom }}
                 </div>
-                <div class="flex items-center justify-between md:mb-5 lg:mb-10 mb-16">
-                  <button class="lg:mr-16  md:mr-16 mr-4 text-white bg-black rounded-full px-4">
-                    Nombre:{{ car.quantite }}
-                  </button>
-                  <span class="lg:mr-24 md:mr-24 mr-2">{{ car.prix }}</span>
-                  <div class="flex-shrink-0 lg:mr-6">
-                    <div
-                      class="lg:mr-16 md:mr-16 overflow-hidden flex items-center w-24 h-8 bg-gray-100 text-black rounded-full"
-                    >
-                      <button
-                        @click="Diminuer(car)"
-                        class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert focus:outline-none"
-                      >
-                        <span class="sr-only">minus</span
-                        ><svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          class="h-3 w-3 stroke-2.5"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M20 12H4"
-                          ></path>
-                        </svg>
-                      </button>
+                <div class="flex justify-between items-center">
+                  <div class="flex flex-col md:flex-row md:space-x-6 lg:flex-row  lg:items-center lg:space-x-10 space-y-6">
+                    <div class="flex lg:space-x-10 md:space-x-2 space-x-16 mt-1">
                       <div
-                        class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
+                        class="text-sm text-white shrink-0 md:text-xs bg-black md:py-3 md:mt-3 py-1 lg:mt-3 px-4 rounded-full w-fit"
                       >
-                        1
+                        Quantité :{{ car.quantite }}
                       </div>
-                      <button
-                        @click="Augmenter(car)"
-                        class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
-                        title=""
-                      >
-                        <span class="sr-only">plus</span
-                        ><svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
+                      <div class="text-red-500 font-bold lg:mt-4 md:mt-4 ">{{ car.prix }}F</div>
+                    </div>
+                    <div class="flex lg:space-x-[-4rem] md:space-x-[-3rem] space-x-8 ">
+                      <div class="flex-shrink-0 lg:mr-6">
+                        <div
+                          class="lg:mr-16 md:mr-16 overflow-hidden flex items-center w-24 h-8 bg-gray-100 text-black rounded-full"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                          ></path>
-                        </svg>
-                      </button>
+                          <button
+                            @click="Diminuer(car)"
+                            class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert focus:outline-none"
+                          >
+                            <span class="sr-only">minus</span
+                            ><svg
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              class="h-3 w-3 stroke-2.5"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M20 12H4"
+                              ></path>
+                            </svg>
+                          </button>
+                          <div
+                            class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
+                          >
+                            1
+                          </div>
+                          <button
+                            @click="Augmenter(car)"
+                            class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
+                            title=""
+                          >
+                            <span class="sr-only">plus</span
+                            ><svg
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                              ></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="ml-auto text-gray-500 mr-0">Total:{{ car.total }}F</div>
                     </div>
                   </div>
-                  <span class="flex">{{ car.total }}</span>
                 </div>
-                <div class="flex">
-                  <div class="flex">
-                    <button class="mr-12 text-sm tet-black flex">
-                      <svg
-                        fill="#000000"
-                        class="icon w-4 h-4"
-                        version="1.1"
-                        id="XMLID_298_"
-                        xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink"
-                        viewBox="0 0 24 24"
-                        xml:space="preserve"
-                      >
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g
-                          id="SVGRepo_tracerCarrier"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        ></g>
-                        <g id="SVGRepo_iconCarrier">
-                          <g id="favorite">
-                            <path
-                              d="M12,23.2l-0.6-0.5C8.7,20.7,0,13.5,0,7.3C0,3.8,2.9,1,6.5,1c2.2,0,4.3,1.1,5.5,2.9l0,0l0,0C13.2,2.1,15.3,1,17.5,1 C21.1,1,24,3.8,24,7.3c0,6.3-8.7,13.4-11.4,15.5L12,23.2z M6.5,2.9C4,2.9,2,4.8,2,7.2c0,4.1,5.1,9.5,10,13.4 c4.9-3.9,10-9.3,10-13.4c0-2.4-2-4.3-4.5-4.3c-1.6,0-3,0.8-3.8,2L12,7.6L10.3,5C9.5,3.7,8.1,2.9,6.5,2.9z"
-                            ></path>
-                          </g>
-                        </g>
-                      </svg>
-                      <span class="ml-2">Ajouter aux Favoris</span>
-                    </button>
-                    <button class="text-sm hover:font-black">Effacer</button>
-                  </div>
+                <div class="flex items-center space-x-6 mt-6">
+                  <button class="text-gray-600 text-sm mr-2">Ajouter aux favoris</button>
+                  <button class="text-lg hover:font-black">effacer</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="w-full mb-10 sm:mb-12 lg:mb-0 lg:w-[40rem]">
+        <div class="w-full mb-10 sm:mb-12 lg:mb-0 md:w-[20rem] lg:w-[40rem]">
           <div class="w-full bg-white p-6">
             <div class="mb-4 flex flex-col items-center space-x-4 rtl:space-x-reverse">
               <span class="text-lg font-bold text-heading">Resume de votre commande</span>
@@ -235,17 +228,17 @@ const Diminuer = (car) => {
                 <div class="flex items-center justify-between text-base">
                   <span class="text-sm text-body"
                     ><span class="text-sm font-bold text-heading">1</span
-                    ><span class="mx-2">x</span><span>Lime</span> |
+                    ><span class="mx-2">Total a payer</span>
                     <span>4pc(s)</span></span
                   >
                 </div>
-                <span class="text-sm text-body">$1.50</span>
+                <span class="text-lg text-red-500 text-body">{{total}} FCFA</span>
               </div>
             </div>
             <div class="mt-4 space-y-2">
               <div class="flex justify-between">
-                <p class="text-sm text-body">Sub Total</p>
-                <span class="text-sm text-body">$1.50</span>
+                <p class="text-lg text-body text-yellow-500">Nombre d'article</p>
+                <span class="text-sm text-body bg-black text-white rounded-full p-2">{{count}}</span>
               </div>
               <div class="flex justify-between">
                 <p class="text-sm text-body">Tax</p>
@@ -258,7 +251,7 @@ const Diminuer = (car) => {
             </div>
             <button
               data-variant="normal"
-              class="inline-flex items-center justify-center shrink-0 font-semibold leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-accent-700 bg-vert text-white border border-transparent hover:bg-vert-hover px-5 py-0 h-12 mt-5 w-full"
+              class="inline-flex items-center justify-center shrink-0 font-bold text-2xl leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-accent-700 bg-black text-white border border-transparent hover:bg-gray-600 px-5 py-0 h-12 mt-5 w-full"
             >
               Passer a la caisse
             </button>
