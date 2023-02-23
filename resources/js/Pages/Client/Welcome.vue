@@ -715,7 +715,7 @@ const Diminuer = (car) => {
     <div
       @mouseleave="showComponent = false"
       :class="[showComponent ? 'right-0' : 'right-[-100%] shadow-xl lg:block md:block hidden']"
-      class="border-l-2 border-gray-100 z-50 transform-gpu duration-400 ease-in-out fixed right-0 top-[4.3rem] lg:h-[35rem] lg:w-[27rem] w-[25rem] h-[29rem] bg-white text-white p-3"
+      class="border-l-2 border-gray-100 z-50 transform-gpu duration-400 ease-in-out fixed right-0 top-[4.3rem] lg:h-[35rem] lg:w-[27rem] md:w-[24rem] w-[21rem] h-[29rem] bg-white text-white p-3"
     >
       <div class="flex justify-between border-b-2 border-gray-100 py-1">
         <div class="justify-start">
@@ -1011,12 +1011,12 @@ const Diminuer = (car) => {
       </div>
       <a
         :href="route('client.commande')"
-        class="fixed right-8 lg:w-[23rem] hover:bg-haver w-[23.5rem] h-12 bg-vert bottom-5"
+        class="fixed right-8 lg:w-[23rem] hover:bg-haver md:w-[21rem] w-[17rem] h-12 bg-vert bottom-5"
       >
         <div class="flex justify-between">
-          <div class="font-black text-white text-xl mb-8 py-3 px-6">Je commande</div>
+          <div class="font-black text-white lg:text-xl text-sm mb-8 py-3 px-6">Je commande</div>
           <div
-            class="justify-end text-vert h-[2rem]  mt-2 mr-3 py-1 w-[10rem] px-5 rounded-full bg-white font-bold text-xl"
+            class="justify-end text-vert h-[2rem]  mt-2 mr-3 py-1 w-[7rem] px-5 rounded-full bg-white text-md font-bold lg:text-xl"
           >
             {{ total }} F
           </div>

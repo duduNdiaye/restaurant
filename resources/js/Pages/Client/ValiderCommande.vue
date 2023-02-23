@@ -119,14 +119,18 @@ const Diminuer = (car) => {
       >
         <div class="w-full lg:max-w-4xl max-w-8xl">
           <div class="bg-white mb-3 h-16">
-            <p class="text-lg p-4 font-bold text-center capitalize text-heading lg:text-xl">Resume du panier</p>
+            <p
+              class="text-lg p-4 font-bold text-center capitalize text-heading lg:text-xl"
+            >
+              Resume du panier
+            </p>
           </div>
           <div
-            class="p-5 bg-white shadow-700 md:p-8 lg:h-68 lg:w-full"
+            class="p-5 bg-white shadow-700 md:p-8 lg:h-68 lg:w-full border-b border-gray-300"
             v-for="car in cart"
             :key="car.id"
           >
-            <div class="lg:w-full md:w-full  w-full flex">
+            <!-- <div class="lg:w-full md:w-full  w-full flex">
               <div class="mr-4">
                 <img :src="car.photo" class="lg:w-36 sm:mr-36 sm:w-36 sm:h-40 md:w-40 md:h-44 lg:h-40 w-56 h-48 object-cover max-w-none sm:max-w-full" alt="" />
               </div>
@@ -220,6 +224,87 @@ const Diminuer = (car) => {
                     </button>
                     <button class="text-sm hover:font-black">Effacer</button>
                   </div>
+                </div>
+              </div>
+            </div> -->
+            <div
+              class="flex flex-col space-y-4 lg:flex-row items-center lg:items-start mb-4"
+            >
+              <div class="flex-shrink-0 w-32 lg:w-48">
+                <img :src="car.photo" alt="Nom de l'article" class="w-full h-auto" />
+              </div>
+              <div class="flex flex-col justify-between lg:ml-4 mt-2 lg:mt-0">
+                <div
+                  class="font-medium text-lg lg:text-xl mb-2 lg:text-start text-center"
+                >
+                  {{ car.nom }}
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                  <div class="flex items-center lg:space-x-10 space-x-6">
+                    <div class="flex lg:space-x-6 space-x-4">
+                      <div
+                        class="text-sm text-white bg-black py-1 px-4 rounded-full w-fit"
+                      >
+                        Quantité :{{ car.quantite }}
+                      </div>
+                      <div class="text-red-500 font-bold">{{ car.prix }}F</div>
+                    </div>
+                    <div class="flex lg:space-x-2 space-x-4">
+                      <div class="flex-shrink-0 lg:mr-6">
+                        <div
+                          class="lg:mr-16 md:mr-16 overflow-hidden flex items-center w-24 h-8 bg-gray-100 text-black rounded-full"
+                        >
+                          <button
+                            @click="Diminuer(car)"
+                            class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert focus:outline-none"
+                          >
+                            <span class="sr-only">minus</span
+                            ><svg
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              class="h-3 w-3 stroke-2.5"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M20 12H4"
+                              ></path>
+                            </svg>
+                          </button>
+                          <div
+                            class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
+                          >
+                            1
+                          </div>
+                          <button
+                            @click="Augmenter(car)"
+                            class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
+                            title=""
+                          >
+                            <span class="sr-only">plus</span
+                            ><svg
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                              ></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="ml-auto mr-0">{{ car.total }}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                  <button class="text-gray-600 text-sm mr-2">Ajouter aux favoris</button>
+                  <button class="text-lg hover:font-black">effacer</button>
                 </div>
               </div>
             </div>
