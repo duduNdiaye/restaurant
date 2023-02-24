@@ -3,7 +3,7 @@ import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 const props = defineProps({
   canLogin: Boolean,
