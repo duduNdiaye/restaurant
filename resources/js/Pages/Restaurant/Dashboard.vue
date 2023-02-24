@@ -2,51 +2,49 @@
 <script >
 
 export default {
-	  data() {
-	    return {
-	      showDropDown: false,
-	      showSide: true,
-          user: '',
-          ShowArticles:false,
-          ShowCards:true
-	    }
-	  },
-      props: ['user'],
-
+    data() {
+        return {
+            showDropDown: false,
+            showSide: true,
+            user: "",
+            ShowArticles: false,
+            ShowCards: true
+        };
+    },
+    props: ["user"],
     methods: {
-        sendMessage(){
-            var user = JSON.parse(this.user)
+        sendMessage() {
+            var user = JSON.parse(this.user);
             //do you thing here
         }
     },
-	  methods: {
-	    // hide show side bar
-	    toggleSideBar() {
-	      this.showSide = !this.showSide
-
-	    },
-	    // toggle user
-	    toggleDrop() {
-	      this.showDropDown = !this.showDropDown
-
-	    },
-        ShowAllArticles(){
-            this.ShowArticles=true
-            this.ShowCards=false
+    methods: {
+        // hide show side bar
+        toggleSideBar() {
+            this.showSide = !this.showSide;
         },
-        ShowAllCards(){
-            this.ShowArticles=false
-            this.ShowCards=true
+        // toggle user
+        toggleDrop() {
+            this.showDropDown = !this.showDropDown;
         },
-	  }
-
-	};
+        ShowAllArticles() {
+            this.ShowArticles = true;
+            this.ShowCards = false;
+        },
+        ShowAllCards() {
+            this.ShowArticles = false;
+            this.ShowCards = true;
+        },
+    },
+    components: { DashboardOther }
+};
 
 </script>
 <script setup>
 
 import { watch } from 'vue';
 import DashboardCard from './DashboardCard.vue';
+import DashboardOther from './DashboardOther.vue';
 import TableArticles from './Tablearticles.vue';
  const props = defineProps({
    articles: {},
@@ -146,6 +144,7 @@ import TableArticles from './Tablearticles.vue';
           <router-view>
             <DashboardCard v-show="ShowCards"/>
             <TableArticles v-if="ShowArticles"  :articles-all="articles" />
+            <DashboardOther/>
           </router-view>
         </div>
       </div>

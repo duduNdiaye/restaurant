@@ -20,7 +20,7 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    $articles = Article::all();
+    $articles = Article::where('user_id',Auth::id())->orderBy('categorie')->get();
     return Inertia::render('Client/Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
