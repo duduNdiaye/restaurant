@@ -128,22 +128,28 @@ const Augmenter = (car) => {
     cart.value[index].total += parseFloat(car.prix);}
 };
 const Diminuer = (car) => {
-    let index = cart.value.findIndex((item) => item.nom === car.nom);
-     if (index === -1) {
+  let index = cart.value.findIndex((item) => item.nom === car.nom);
+  if (index === -1) {
     return;
   } else {
-    cart.value[index].quantite--;
-     cart.value[index].total -= parseFloat(car.prix);}
-     if (cart.value[index].quantite === 0) {
+    if (cart.value[index].quantite > 1) { // vérifie si la quantité est supérieure à 1
+      cart.value[index].quantite--;
+      cart.value[index].total -= parseFloat(car.prix);
+    }
+    if (cart.value[index].quantite === 1) { // vérifie si la quantité est égale à 1
+      // ne fait rien
+    }
+    if (cart.value[index].quantite === 0) { // vérifie si la quantité est égale à 0
       cart.value.splice(index, 1);
-      count.value-=1;
+      count.value -= 1;
     }
 
-    if (count.value == 0) {
-    count1.value = false;
+    if (count.value === 0) {
+      count1.value = false;
     }
 
-   localStorage.setItem("cart", JSON.stringify(cart.value));
+    localStorage.setItem("cart", JSON.stringify(cart.value));
+  }
 };
 </script>
 
