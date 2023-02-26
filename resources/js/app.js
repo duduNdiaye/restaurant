@@ -1,6 +1,7 @@
 import './bootstrap';
 import '../css/app.css';
-import {ObserveVisibility} from 'vue-observe-visibility'
+import { SetupCalendar, Calendar, DatePicker } from 'v-calendar';
+import { ObserveVisibility } from 'vue-observe-visibility'
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -14,6 +15,9 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         return createApp({ render: () => h(App, props) })
             .use(plugin)
+            .use(SetupCalendar, {})
+            .component('Calendar', Calendar)
+            .component('DatePicker', DatePicker)
             .use(ZiggyVue, Ziggy)
             .use(ObserveVisibility)
             .mount(el);
