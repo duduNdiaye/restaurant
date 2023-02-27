@@ -39,24 +39,53 @@ const Augmenter = (car) => {
   }
   localStorage.setItem("cart", JSON.stringify(cart.value));
 };
+
+const removeItemFromCart = (car) => {
+  let index = cart.value.findIndex((item) => item.nom === car.nom);
+  if (index === -1) {
+    return;
+  } else {
+    cart.value[index].quantite = 0;
+    if (cart.value[index].quantite === 0) {
+      cart.value.splice(index, 1);
+      count.value--;
+    }
+  }
+  count.value = cart.value.length;
+  if (count.value == 0) {
+    count1.value = false;
+  }
+
+  // enregistrer les données du panier dans le localStorage
+  localStorage.setItem("cart", JSON.stringify(cart.value));
+};
+
 const Diminuer = (car) => {
   let index = cart.value.findIndex((item) => item.nom === car.nom);
   if (index === -1) {
     return;
   } else {
-    cart.value[index].quantite--;
-    cart.value[index].total -= parseFloat(car.prix);
-  }
-  if (cart.value[index].quantite === 0) {
-    cart.value.splice(index, 1);
-    count.value -= 1;
-  }
+    if (cart.value[index].quantite > 1) {
+      // vérifie si la quantité est supérieure à 1
+      cart.value[index].quantite--;
+      cart.value[index].total -= parseFloat(car.prix);
+    }
+    if (cart.value[index].quantite === 1) {
+      // vérifie si la quantité est égale à 1
+      // ne fait rien
+    }
+    if (cart.value[index].quantite === 0) {
+      // vérifie si la quantité est égale à 0
+      cart.value.splice(index, 1);
+      count.value -= 1;
+    }
 
-  if (count.value == 0) {
-    count1.value = false;
-  }
+    if (count.value === 0) {
+      count1.value = false;
+    }
 
-  localStorage.setItem("cart", JSON.stringify(cart.value));
+    localStorage.setItem("cart", JSON.stringify(cart.value));
+  }
 };
 </script>
 <template>
@@ -117,17 +146,21 @@ const Diminuer = (car) => {
         </div>
       </nav>
     </header>
-    <div class="px-4 py-8 bg-gray-100 lg:px-4 md:px-4 lg:py-24 xl:py-14 xl:px-16 2xl:px-20">
+    <div
+      class="px-4 py-8 bg-gray-100 lg:px-4 md:px-4 lg:py-24 xl:py-14 xl:px-16 2xl:px-20"
+    >
       <div
-        class="flex flex-col items-center w-full mt-16 max-w-8xl m-auto rtl:space-x-reverse lg:flex-row md:flex-row md:items-start md:space-x-4  lg:items-start lg:space-x-8"
+        class="flex flex-col items-center w-full mt-16 max-w-8xl m-auto rtl:space-x-reverse lg:flex-row md:flex-row md:items-start md:space-x-4 lg:items-start lg:space-x-8"
       >
-        <div class="w-full lg:max-w-4xl md:max-w-[35rem] max-w-8xl">
+        <div class="w-full lg:max-w-[90rem] md:max-w-[35rem] max-w-8xl">
           <div class="bg-white mb-3 h-16">
             <div
-              class=" p-4 font-bold flex justify-between  capitalize text-heading lg:text-xl"
+              class="p-4 font-bold flex justify-between capitalize text-heading lg:text-xl"
             >
-              <span class="text-gray-500 lg:text-sm lg:block md:block hidden">Votre commande sur EATEASY</span>
-              <span class="flex text-lg text-center">Resume du panier({{count}})</span>
+              <span class="text-gray-500 lg:text-sm lg:block md:block hidden"
+                >Votre commande sur EATEASY</span
+              >
+              <span class="flex text-lg text-center">Resume du panier({{ count }})</span>
             </div>
           </div>
           <div
@@ -138,26 +171,32 @@ const Diminuer = (car) => {
             <div
               class="flex flex-col md:flex-row md:space-x-4 space-y-4 lg:flex-row md:items-start items-center lg:items-start"
             >
-              <div class="flex-shrink-0 w-32  lg:w-48">
-                <img :src="car.photo" alt="Nom de l'article" class="w-full h-auto md:w-56" />
+              <div class="flex-shrink-0 w-32 lg:w-48">
+                <img
+                  :src="car.photo"
+                  alt="Nom de l'article"
+                  class="w-full h-auto md:w-56"
+                />
               </div>
               <div class="flex flex-col justify-between lg:ml-4 mt-2 lg:mt-0">
-                <div
-                  class="font-medium text-lg lg:text-xl lg:text-start text-center"
-                >
+                <div class="font-medium text-lg lg:text-xl lg:text-start text-center">
                   {{ car.nom }}
                 </div>
                 <div class="flex justify-between items-center">
-                  <div class="flex flex-col md:flex-row md:space-x-6 lg:flex-row  lg:items-center lg:space-x-10 space-y-6">
+                  <div
+                    class="flex flex-col md:flex-row md:space-x-6 lg:flex-row lg:items-center lg:space-x-10 space-y-6"
+                  >
                     <div class="flex lg:space-x-10 md:space-x-2 space-x-16 mt-1">
                       <div
                         class="text-sm text-white shrink-0 md:text-xs bg-black md:py-3 md:mt-3 py-1 lg:mt-3 px-4 rounded-full w-fit"
                       >
                         Quantité :{{ car.quantite }}
                       </div>
-                      <div class="text-red-500 font-bold lg:mt-4 md:mt-4 ">{{ car.prix }}F</div>
+                      <div class="text-gray-500 font-bold lg:mt-4 md:mt-4">
+                        {{ car.prix }}F
+                      </div>
                     </div>
-                    <div class="flex lg:space-x-[-4rem] md:space-x-[-3rem] space-x-8 ">
+                    <div class="flex lg:space-x-[-4rem] md:space-x-[-3rem] space-x-8">
                       <div class="flex-shrink-0 lg:mr-6">
                         <div
                           class="lg:mr-16 md:mr-16 overflow-hidden flex items-center w-24 h-8 bg-gray-100 text-black rounded-full"
@@ -206,47 +245,106 @@ const Diminuer = (car) => {
                           </button>
                         </div>
                       </div>
-                      <div class="ml-auto text-gray-500 mr-0">Total:{{ car.total }}F</div>
+                      <div class="ml-auto text-red-500 font-bold mr-0">
+                        Total:{{ car.total }}F
+                      </div>
                     </div>
                   </div>
                 </div>
                 <div class="flex items-center space-x-6 mt-6">
                   <button class="text-gray-600 text-sm mr-2">Ajouter aux favoris</button>
-                  <button class="text-lg hover:font-black">effacer</button>
+                  <button
+                    @click="removeItemFromCart(car)"
+                    class="text-lg hover:font-black"
+                  >
+                    effacer
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="w-full mb-10 sm:mb-12 lg:mb-0 md:w-[20rem] lg:w-[40rem]">
-          <div class="w-full bg-white p-6">
+        <div class="w-full mb-10 sm:mb-12 lg:mb-0 md:w-[20rem] lg:w-[30rem]">
+          <div class="w-full bg-white p-2">
             <div class="mb-4 flex flex-col items-center space-x-4 rtl:space-x-reverse">
               <span class="text-lg font-bold text-heading">Resume de votre commande</span>
             </div>
-            <div class="flex flex-col border-b border-border-200 py-3">
+            <div class="mt-4">
+              <div class="flex justify-between items-center">
+                <p class="text-lg text-body text-yellow-400 px-3">Nombre d'article</p>
+                <span
+                  class="text-sm text-body bg-black text-white rounded-full px-2 flex items-center"
+                  >{{ count }}</span
+                >
+              </div>
+
+              <button @click="DefinirDate()"
+                class="border-t px-2 hover:shadow border-gray-200 border-b h-10 flex justify-center text-center items-center text-gray-500 w-full"
+              >
+                <svg
+                  class="h-6 w-6 icon mr-3"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.8284 6.75736C12.3807 6.75736 12.8284 7.20507 12.8284 7.75736V12.7245L16.3553 14.0653C16.8716 14.2615 17.131 14.8391 16.9347 15.3553C16.7385 15.8716 16.1609 16.131 15.6447 15.9347L11.4731 14.349C11.085 14.2014 10.8284 13.8294 10.8284 13.4142V7.75736C10.8284 7.20507 11.2761 6.75736 11.8284 6.75736Z"
+                      fill="#0F1729"
+                    ></path>
+                  </g>
+                </svg>
+                <span class="mr-2 uppercase font-bold">Pour</span>
+                <span class="mr-auto font-bold uppercase text-red-500"
+                  >Aujourd'hui a 12h</span
+                >
+              </button>
+              <button @click="CloseComment()"
+                class="px-3 hover:shadow border-gray-200 border-b h-10 flex justify-center text-center items-center text-gray-500 w-full"
+              >
+                <svg
+                  fill="#000000"
+                  class="h-6 w-6 mr-3"
+                  viewBox="0 0 1920 1920"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      d="M277.974 49.076c65.267-65.379 171.733-65.49 237.448 0l232.186 232.187 1055.697 1055.809L1919.958 1920l-582.928-116.653-950.128-950.015 79.15-79.15 801.792 801.68 307.977-307.976-907.362-907.474L281.22 747.65 49.034 515.464c-65.379-65.603-65.379-172.069 0-237.448Zm1376.996 1297.96-307.977 307.976 45.117 45.116 384.999 77.023-77.023-385-45.116-45.116ZM675.355 596.258l692.304 692.304-79.149 79.15-692.304-692.305 79.149-79.15ZM396.642 111.88c-14.33 0-28.547 5.374-39.519 16.345l-228.94 228.94c-21.718 21.718-21.718 57.318 0 79.149l153.038 153.037 308.089-308.09-153.037-153.036c-10.972-10.971-25.301-16.345-39.63-16.345Z"
+                      fill-rule="evenodd"
+                    ></path>
+                  </g>
+                </svg>
+                <span class="mr-auto">Ajouter un commentaire</span>
+              </button>
+
+              <select class="w-80 rounded-full mt-4 border-gray-200 focus:ring-black focus:border-none">
+                <option value="1" class="text-center">A emporter</option>
+                <option value="2" class="text-center ">Livraison</option>
+                <option value="3" class="text-center">Sur place</option>
+              </select>
+
               <div class="flex justify-between py-2">
                 <div class="flex items-center justify-between text-base">
                   <span class="text-sm text-body"
-                    ><span class="text-sm font-bold text-heading">1</span
                     ><span class="mx-2">Total a payer</span>
-                    <span>4pc(s)</span></span
-                  >
+                  </span>
                 </div>
-                <span class="text-lg text-red-500 text-body">{{total}} FCFA</span>
-              </div>
-            </div>
-            <div class="mt-4 space-y-2">
-              <div class="flex justify-between">
-                <p class="text-lg text-body text-yellow-500">Nombre d'article</p>
-                <span class="text-sm text-body bg-black text-white rounded-full p-2">{{count}}</span>
-              </div>
-              <div class="flex justify-between">
-                <p class="text-sm text-body">Tax</p>
-                <span class="text-sm text-body">Calculated at checkout</span>
-              </div>
-              <div class="flex justify-between">
-                <p class="text-sm text-body">Estimated Shipping</p>
-                <span class="text-sm text-body">Calculated at checkout</span>
+                <span class="text-lg text-red-500 text-body">{{ total }} FCFA</span>
               </div>
             </div>
             <button
@@ -260,18 +358,34 @@ const Diminuer = (car) => {
       </div>
     </div>
   </div>
+  <Commentaire v-if="commentaire"  :comment="true"  @close="CloseComment()"/>
+  <DateCommande v-if="date" :dater="date"   @close="DefinirDate()"/>
 </template>
 <script>
+import Commentaire from "./Commentaire.vue";
+import DateCommande from "./DateCommande.vue";
+
 export default {
   data() {
     return {
       open: false,
+      commentaire:false,
+      comment:false,
+      date:false
     };
   },
+   components: { Commentaire, DateCommande },
   methods: {
     toggleMenu() {
       this.open = !this.open;
     },
+    CloseComment(){
+        this.commentaire = !this.commentaire
+        this.comment = true
+    },
+    DefinirDate(){
+        this.date = !this.date
+    }
   },
 };
 </script>

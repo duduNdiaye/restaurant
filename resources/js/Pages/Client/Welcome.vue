@@ -671,7 +671,7 @@ const Diminuer = (car) => {
           ? 'modal duration-700 z-50 transform-gpu ease-in-out translate-y-4 opacity-100 fixed top-[-1rem] left-0  w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-40 bg-gray-700'
           : 'translate-y-0 w-0 h-0 z-50 duration-700 ease-in-out opacity-0',
       ]"
-      class="fixed top-32 left-[-3rem]"
+      class="fixed top-32 "
     >
       <div class="modal-dialog mx-auto w-11/12 md:w-2/3 lg:w-1/2 my-12 md:my-24 lg:my-28">
         <div
