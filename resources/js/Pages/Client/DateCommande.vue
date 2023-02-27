@@ -1,9 +1,9 @@
 <template>
-  <div
+  <div   @click.self="closeModal()"
     class="z-50 transform-gpu fixed top-0 left-0 w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-80 bg-black"
   >
-    <div
-      @click.self="closeModal"
+    <div  @click.self="closeModal()"
+
       class="modal fixed top-0 duration-700 ease-in-out w-full"
     >
       <div class="modal-dialog mx-auto w-11/12 md:w-2/3 lg:w-1/3 my-12 md:my-24 lg:my-28">
@@ -106,17 +106,24 @@
               </button>
             </div>
           </div>
-          <div class="modal-body h-10 bg-gray-100 px-4" :class="{ 'h-[24rem]': plustard }">
+          <div class="modal-body h-10 bg-gray-100 px-4" :class="{ 'h-[22rem]': plustard }">
             <!-- <select class="w-full rounded-lg border-gray-200 focus:ring-black focus:border-none">
                 <option value="1" class="text-center">A emporter</option>
                 <option value="2" class="text-center ">Livraison</option>
                 <option value="3" class="text-center">Sur place</option>
               </select> -->
-            <div v-if="plustard" class="flex items-center justify-center mt-2">
-              <DatePicker v-model="date" />
+            <div v-if="plustard" class="flex flex-col items-center justify-center mt-2">
+              <DatePicker v-model="ladate" />
+                <input required
+                v-model="heure1"
+              :class="{'mt-3 w-56 ':plustard}"
+              type="time"
+              class="h-10 border-2 border-gray-200 w-full rounded-lg focus:ring-vert focus:border-none focus:outline-none"
+            />
             </div>
-            <div class="flex items-center justify-center">
+            <div class="flex items-center justify-center" v-if="aujourdhui">
                 <input
+                v-model="heure"
               :class="{'mt-3 w-56 ':plustard}"
               type="time"
               class="h-10 border-2 border-gray-200 w-full rounded-lg focus:ring-vert focus:border-none focus:outline-none"
@@ -124,11 +131,11 @@
             </div>
           </div>
           <div
-            class="modal-footer bg-gray-100 flex-shrink-0 flex-wrap items-center justify-end px-4 py-3 border-t border-gray-200 rounded-b-md"
+            class="modal-footer bg-gray-100 flex  items-center justify-center px-4 py-3 border-t border-gray-200 rounded-b-md"
           >
-            <button
+            <button @click="Valider(),closeModal()"
               type="button"
-              class="px-6 ml-36 flex items-center justify-center py-2.5 bg-vert text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+              class="px-6 w-56 flex items-center justify-center py-2.5 bg-vert text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
             >
               Valider
             </button>
@@ -139,12 +146,16 @@
   </div>
 </template>
 <script>
+import 'v-calendar/dist/style.css';
 export default {
   data() {
     return {
       plustard: false,
       aujourdhui: true,
-      date: new Date(),
+      ladate:null,
+      heure:'',
+      heure1:null,
+      memejour:"aujourd'hui"
     };
   },
   props: {
@@ -153,12 +164,18 @@ export default {
       required: true,
     },
   },
+  mounted() {
+    // Affecter la date et l'heure actuelles aux variables
+    const now = new Date();
+    // let nomJour = { weekday: 'long'};
+    // this.ladate = now.toLocaleDateString('fr-FR', nomJour);
+    this.heure = now.toLocaleTimeString();
+  },
   components: {},
 
   methods: {
     closeModal() {
       this.$emit("close");
-      console.log(this.comment);
     },
     PlusTard() {
       this.plustard = !this.plustard;
@@ -168,6 +185,16 @@ export default {
       this.plustard = !this.plustard;
       this.aujourdhui = !this.aujourdhui;
     },
+    Valider(){
+        if(this.heure1 != null)
+        {
+            this.$emit('DateHeure',this.ladate,this.heure1);
+            console.log("here")
+        }
+        else{
+            this.$emit('DateHeure',this.memejour,this.heure);
+        }
+    }
   },
 };
 </script>

@@ -252,20 +252,20 @@ const Diminuer = (car) => {
             <a
               v-if="$page.props.user"
               :href="route('dashboard')"
-              class="px-3 py-2 bg-vert font-bold text-white rounded hover:bg-green-200 mt-3 md:mt-0"
+              class="px-3 py-2 bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
               >Button 1</a
             >
 
             <template v-else>
               <a
                 :href="route('login')"
-                class="px-3 py-2 lg:ml-4 md:ml-4 text-center bg-vert font-bold text-white rounded hover:bg-green-200 mt-3 md:mt-0"
+                class="px-3 py-2 lg:ml-4 md:ml-4 text-center bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
                 >Login
               </a>
               <a
                 v-if="canRegister"
                 :href="route('register')"
-                class="px-3 py-2 lg:ml-4 md:ml-4 font-bold text-center bg-vert text-white rounded hover:bg-green-200 mt-3 md:mt-0"
+                class="px-3 py-2 lg:ml-4 md:ml-4 font-bold text-center bg-vert text-white rounded hover:bg-haver mt-3 md:mt-0"
                 >Register
               </a>
             </template>

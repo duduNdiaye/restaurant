@@ -14,7 +14,8 @@ defineProps({
 const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
-
+const ladate = ref("aujoudh'ui");
+const heures = ref();
 onMounted(() => {
   if (localStorage.getItem("cart")) {
     cart.value = JSON.parse(localStorage.getItem("cart"));
@@ -23,6 +24,10 @@ onMounted(() => {
   if (count.value != 0) {
     count1.value = true;
   }
+
+  const now = new Date();
+  heures.value = now.toLocaleTimeString();
+  console.log(heures.value);
 });
 
 const total = computed(() => {
@@ -87,6 +92,16 @@ const Diminuer = (car) => {
     localStorage.setItem("cart", JSON.stringify(cart.value));
   }
 };
+
+const CommandeDate = (memejour, heure) => {
+  ladate.value = memejour;
+  if (ladate.value != "aujourd'hui") {
+    const now = ladate.value;
+    let nomJour = { weekday: "long" };
+    ladate.value = now.toLocaleDateString("fr-FR", nomJour);
+  }
+  heures.value = heure;
+};
 </script>
 <template>
   <div class="flex min-h-screen flex-col bg-gray-100 transition-colors duration-150">
@@ -102,7 +117,7 @@ const Diminuer = (car) => {
             EatEasy
           </h1>
           <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
-          <p class="font-bold text-xl ml-8 lg:hidden md:hidden" v-if="texte">
+          <p class="font-bold text-xl ml-8 lg:hidden md:hidden">
             Que desirez-vous manger?
           </p>
         </div>
@@ -125,20 +140,20 @@ const Diminuer = (car) => {
             <a
               v-if="$page.props.user"
               :href="route('dashboard')"
-              class="px-3 py-2 bg-vert font-bold text-white rounded hover:bg-green-200 mt-3 md:mt-0"
+              class="px-3 py-2 bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
               >Button 1</a
             >
 
             <template v-else>
               <a
                 :href="route('login')"
-                class="px-3 py-2 lg:ml-4 bg md:ml-4 text-center bg-vert font-bold text-white rounded hover:bg-green-200 mt-3 md:mt-0"
+                class="px-3 py-2 lg:ml-4 bg md:ml-4 text-center bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
                 >Login
               </a>
               <a
                 v-if="canRegister"
                 :href="route('register')"
-                class="px-3 py-2 lg:ml-4 md:ml-4 font-bold text-center bg-vert text-white rounded hover:bg-green-200 mt-3 md:mt-0"
+                class="px-3 py-2 lg:ml-4 md:ml-4 font-bold text-center bg-vert text-white rounded hover:bg-haver mt-3 md:mt-0"
                 >Register
               </a>
             </template>
@@ -164,7 +179,7 @@ const Diminuer = (car) => {
             </div>
           </div>
           <div
-            class="p-5 bg-white shadow-700 md:p-8 lg:h-68 lg:w-full border-b border-gray-300"
+            class="p-5 bg-white shadow-700 md:p-8 lg:h-68 lg:w-full border-b border-gray-200"
             v-for="car in cart"
             :key="car.id"
           >
@@ -266,19 +281,16 @@ const Diminuer = (car) => {
         </div>
         <div class="w-full mb-10 sm:mb-12 lg:mb-0 md:w-[20rem] lg:w-[30rem]">
           <div class="w-full bg-white p-2">
-            <div class="mb-4 flex flex-col items-center space-x-4 rtl:space-x-reverse">
-              <span class="text-lg font-bold text-heading">Resume de votre commande</span>
+            <div class="mb-4 flex flex-col space-x-4 rtl:space-x-reverse">
+              <span class="text-xl flex items-center justify-center font-bold font-serif">Resume de votre commande</span>
             </div>
             <div class="mt-4">
               <div class="flex justify-between items-center">
-                <p class="text-lg text-body text-yellow-400 px-3">Nombre d'article</p>
-                <span
-                  class="text-sm text-body bg-black text-white rounded-full px-2 flex items-center"
-                  >{{ count }}</span
-                >
+
               </div>
 
-              <button @click="DefinirDate()"
+              <button
+                @click="DefinirDate()"
                 class="border-t px-2 hover:shadow border-gray-200 border-b h-10 flex justify-center text-center items-center text-gray-500 w-full"
               >
                 <svg
@@ -304,15 +316,16 @@ const Diminuer = (car) => {
                 </svg>
                 <span class="mr-2 uppercase font-bold">Pour</span>
                 <span class="mr-auto font-bold uppercase text-red-500"
-                  >Aujourd'hui a 12h</span
+                  >{{ ladate }} a {{ heures }}</span
                 >
               </button>
-              <button @click="CloseComment()"
-                class="px-3 hover:shadow border-gray-200 border-b h-10 flex justify-center text-center items-center text-gray-500 w-full"
+              <button
+                @click="CloseComment()"
+                class="px-3 hover:shadow border-gray-200 border-b h-24 flex  text-gray-500 w-full"
               >
                 <svg
                   fill="#000000"
-                  class="h-6 w-6 mr-3"
+                  class="h-4 w-4 mr-3 mt-1"
                   viewBox="0 0 1920 1920"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -332,9 +345,11 @@ const Diminuer = (car) => {
                 <span class="mr-auto">Ajouter un commentaire</span>
               </button>
 
-              <select class="w-80 rounded-full mt-4 border-gray-200 focus:ring-black focus:border-none">
+              <select
+                class="w-80 rounded-full mt-4 border-gray-200 focus:ring-black focus:border-none"
+              >
                 <option value="1" class="text-center">A emporter</option>
-                <option value="2" class="text-center ">Livraison</option>
+                <option value="2" class="text-center">Livraison</option>
                 <option value="3" class="text-center">Sur place</option>
               </select>
 
@@ -344,7 +359,7 @@ const Diminuer = (car) => {
                     ><span class="mx-2">Total a payer</span>
                   </span>
                 </div>
-                <span class="text-lg text-red-500 text-body">{{ total }} FCFA</span>
+                <span class="text-lg font-bold text-red-500 text-body">{{ total }} FCFA</span>
               </div>
             </div>
             <button
@@ -358,8 +373,13 @@ const Diminuer = (car) => {
       </div>
     </div>
   </div>
-  <Commentaire v-if="commentaire"  :comment="true"  @close="CloseComment()"/>
-  <DateCommande v-if="date" :dater="date"   @close="DefinirDate()"/>
+  <Commentaire v-if="commentaire"  @close="CloseComment()" />
+  <DateCommande
+    v-if="date"
+    @DateHeure="CommandeDate"
+    :dater="date"
+    @close="DefinirDate()"
+  />
 </template>
 <script>
 import Commentaire from "./Commentaire.vue";
@@ -369,23 +389,31 @@ export default {
   data() {
     return {
       open: false,
-      commentaire:false,
-      comment:false,
-      date:false
+      commentaire: false,
+      comment: false,
+      date: false,
+      ladate: "aujourd'hui",
+      heure: "",
     };
   },
-   components: { Commentaire, DateCommande },
+  mounted() {
+    // Affecter la date et l'heure actuelles aux variables
+    // const now = new Date();
+    // let nomJour = { weekday: 'long'};
+    // this.ladate = now.toLocaleDateString('fr-FR', nomJour);
+    // this.heure = now.toLocaleTimeString();
+  },
+  components: { Commentaire, DateCommande },
   methods: {
     toggleMenu() {
       this.open = !this.open;
     },
-    CloseComment(){
-        this.commentaire = !this.commentaire
-        this.comment = true
+    CloseComment() {
+      this.commentaire = !this.commentaire;
     },
-    DefinirDate(){
-        this.date = !this.date
-    }
+    DefinirDate() {
+      this.date = !this.date;
+    },
   },
 };
 </script>

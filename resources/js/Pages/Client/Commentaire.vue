@@ -1,7 +1,7 @@
 <template>
-    <div class="z-50 transform-gpu  fixed top-0 left-0  w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-80 bg-black">
-         <div  @click.self="closeModal"
-      class="modal fixed top-32 duration-700 ease-in-out w-full "
+    <div  @click.self="closeModal()" class="z-50 transform-gpu  fixed top-0 left-0  w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-80 bg-black">
+         <div  @click.self="closeModal()"
+      class="modal fixed top-0 duration-700 ease-in-out w-full "
     >
       <div class="modal-dialog  mx-auto w-11/12 md:w-2/3 lg:w-1/3 my-12 md:my-24 lg:my-28">
         <div
@@ -28,11 +28,11 @@
             />
           </div>
           <div
-            class="modal-footer bg-gray-100 flex-shrink-0 flex-wrap items-center justify-end px-4 py-3 border-t border-gray-200 rounded-b-md"
+            class="modal-footer bg-gray-100 flex items-center justify-center px-4 py-3 border-t border-gray-200 rounded-b-md"
           >
             <button
               type="button"
-              class="px-6 ml-36 flex items-center justify-center py-2.5 bg-vert text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out "
+              class="px-6 flex w-56 items-center justify-center py-2.5 bg-vert text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out "
             >
               Valider
             </button>
@@ -54,7 +54,6 @@ export default {
   methods: {
     closeModal() {
       this.$emit("close");
-      console.log(this.comment)
     },
   },
 };
