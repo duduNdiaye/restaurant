@@ -40,7 +40,7 @@ Route::middleware([
     Route::get('/dashboard', function () {
         switch (Auth::user()->role) {
             case 'restaurant':
-                $articles = Article::where('user_id', Auth::id())->get();
+                $articles = Article::where('user_id', Auth::id())->paginate(3);
                 $commandes=Commande::all();
                 return Inertia::render(
                     'Restaurant/Dashboard',
