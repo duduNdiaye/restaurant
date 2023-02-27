@@ -26,7 +26,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200" >
 
-              <tr v-for="article in articlesAll" :key="article.id">
+              <tr v-for="article in articlesAll.data" :key="article.id">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ article.nom }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ article.prix }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ article.categorie }}</td>
@@ -53,6 +53,7 @@
               </tr>
             </tbody>
           </table>
+          <Pagination class="mt-6" :links="articlesAll.links"/>
         </div>
       </div>
     </div>
@@ -81,11 +82,12 @@ v-if="activedelete"
 import ArticleCreateModal from './Article/ArticleCreateModal.vue';
 import ArticleEditModal from './Article/ArticleEditModal .vue';
 import ArticleDeleteModal from './Article/ArticleDeleteModal.vue';
+import Pagination from '../../Components/Pagination.vue';
 
   export default  {
     name: "tablearticles",
     props: {
-        articlesAll: Array,
+        articlesAll: Object,
     },
     data(){
         return {
@@ -115,7 +117,7 @@ import ArticleDeleteModal from './Article/ArticleDeleteModal.vue';
     computed:{
 
     },
-    components: { ArticleCreateModal, ArticleEditModal, ArticleDeleteModal }
+    components: { ArticleCreateModal, ArticleEditModal, ArticleDeleteModal,Pagination }
 };
 
 

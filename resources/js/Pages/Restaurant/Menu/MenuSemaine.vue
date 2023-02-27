@@ -75,7 +75,5 @@
 </script>
 
 <style scoped >
-  .resources-js-pages-restaurant-menu-menu-semaine {
 
-  }
 </style>
