@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\CommandeController;
+use App\Models\Commande;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 /*
@@ -39,10 +41,12 @@ Route::middleware([
         switch (Auth::user()->role) {
             case 'restaurant':
                 $articles = Article::where('user_id', Auth::id())->get();
+                $commandes=Commande::all();
                 return Inertia::render(
                     'Restaurant/Dashboard',
                     [
                         'articles' => $articles,
+                        'commandes'=>$commandes
                     ]
                 );
                 break;
