@@ -8,7 +8,8 @@ export default {
             showSide: true,
             user: "",
             ShowArticles: false,
-            ShowCards: true
+            ShowCards: true,
+            showMenu:false
         };
     },
     props: ["user"],
@@ -30,32 +31,46 @@ export default {
         ShowAllArticles() {
             this.ShowArticles = true;
             this.ShowCards = false;
+            this.showMenu=false;
         },
         ShowAllCards() {
             this.ShowArticles = false;
             this.ShowCards = true;
+            this.showMenu=false;
         },
+        ShowWeekMenu(){
+            this.showMenu=true;
+            this.ShowArticles = false;
+            this.ShowCards = false;
+        }
     },
-    components: { DashboardOther }
-};
+    components: { DashboardOther, MenuSemaine },
 
+
+}
 </script>
 <script setup>
 
+import { router } from '@inertiajs/core';
 import { watch } from 'vue';
 import DashboardCard from './DashboardCard.vue';
 import DashboardOther from './DashboardOther.vue';
+import MenuSemaine from './Menu/MenuSemaine.vue';
 import TableArticles from './Tablearticles.vue';
  const props = defineProps({
    articles: {},
+   commandes: {}
  });
+ const logout = () => {
+    router.post(route('logout'));
+};
 
 
 </script>
 <template>
     <div class="w-screen h-screen flex "  >
     <!-- Side bar -->
-    <div class="w-[400px] h-full bg-gray-300 text-white" v-show="showSide">
+    <div class="w-[400px] h-full bg-gray-300 text-white" v-show="showSide" ref="snbar">
       <div class="h-[50px] bg-gray-900 flex justify-start  items-center ">
         <div class="px-[20px]">
           <h3 class="font-bold text-xl">EasyEAT Dashboard</h3>
@@ -72,11 +87,11 @@ import TableArticles from './Tablearticles.vue';
 
               Articles
             </router-link>
-            <router-link to="/message" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
+            <router-link to="/message" @click="ShowWeekMenu" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
 
               Menus
             </router-link>
-            <router-link to="/download" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
+            <router-link to="/download"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
 
               Commandes
             </router-link>
@@ -129,9 +144,7 @@ import TableArticles from './Tablearticles.vue';
               <div class="py-1 text-left" role="none">
                 <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
                 <a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Account settings</a>
-                <a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-1">Support</a>
-                <a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-2">License</a>
-                <form method="POST" action="#" role="none">
+                <form method="POST" @submit.prevent="logout">
                   <button type="submit" class="text-gray-700 block w-full px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
                 </form>
               </div>
@@ -139,12 +152,13 @@ import TableArticles from './Tablearticles.vue';
           </div>
         </div>
       </div>
-      <div class="h-[calc(100vh-50px)] bg-gray-100 p-[20px]">
+      <div class="h-[calc(120vh-50px)] bg-gray-100 p-[20px] w-full "  >
         <div class=" bg-gray-100 rounded-md p-[20px] h-full">
           <router-view>
             <DashboardCard v-show="ShowCards"/>
             <TableArticles v-if="ShowArticles"  :articles-all="articles" />
-            <DashboardOther/>
+            <DashboardOther v-if="ShowCards" :commandes="commandes"/>
+            <MenuSemaine v-if="showMenu"/>
           </router-view>
         </div>
       </div>
