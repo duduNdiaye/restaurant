@@ -19,7 +19,8 @@ module.exports = {
                 'vert': '#289e8c',
                 'rose': '#e893c7',
                 'jaune': '#ffb76c',
-                'haver': '#a9d8d1'
+                'haver': '#a9d8d1',
+                'bleue': '#172d4f'
             },
 
         },
