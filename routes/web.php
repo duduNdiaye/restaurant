@@ -47,6 +47,7 @@ Route::middleware([
                     [
                         'articles' => $articles,
                         'commandes'=>$commandes
+
                     ]
                 );
                 break;
