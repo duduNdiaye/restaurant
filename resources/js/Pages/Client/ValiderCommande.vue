@@ -372,12 +372,12 @@ const MonCommentaire = (commentaire) => {
               </div>
             </div>
             <button
-              @click="DefinirPaiement()"
+              @click="StartAnimation()"
               data-variant="normal"
               :class="{ 'btn-clicked bg-gray-600': isLoading }"
-              class="inline-flex items-center justify-center shrink-0 font-bold text-2xl leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-accent-700 bg-black text-white border border-transparent hover:bg-gray-600 px-5 py-0 h-12 mt-5 w-full"
+              class="inline-flex items-center justify-center shrink-0 font-bold text-2xl leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-black bg-black text-white border border-transparent hover:bg-gray-600 px-5 py-0 h-12 mt-5 w-full"
             >
-              <span class="mr-2">Passer a la caisse</span>
+              <span class="mr-2">Continuer...</span>
               <svg
                 v-if="isLoading"
                 :class="{ 'animate-spin ': isLoading }"
@@ -405,7 +405,7 @@ const MonCommentaire = (commentaire) => {
               </svg>
             </button>
           </div>
-          <div class="mb-4 uppercase flex flex-col rtl:space-x-reverse">
+          <div class="mb-4 uppercase flex flex-col rtl:space-x-reverse" v-if="resume">
             <span class="text-xl flex font-bold font-serif">Nous acceptons</span>
             <div class="flex">
               <!-- <div class="flex py-3 relative mr-3">
@@ -426,36 +426,47 @@ const MonCommentaire = (commentaire) => {
               />
             </div>
           </div>
-          <div
-            class="mb-4 p-3 bg-white flex flex-col rtl:space-x-reverse transform -translate-y-1/6 opacity-100 transition-all duration-500 ease-out"
-            v-if="info"
-          >
-            <span class="text-xl flex font-bold font-serif border-b border-gray-200"
-              >Informations</span
-            >
-            <div class="flex flex-col space-y-2">
-              <input
-                type="text"
-                placeholder="Nom*"
-                class="rounded hover:border-black focus:ring-black focus:outline-none focus:border-none text-gray-300 border-gray-200 lg:w-full"
-              />
-              <input
-                type="text"
-                placeholder="Numero de telephone*"
-                class="hover:border-black focus:ring-black focus:outline-none focus:border-none rounded border-gray-200 lg:w-full"
-              />
-              <input
-                type="text"
-                placeholder="Adresse*"
-                class="hover:border-black focus:ring-black focus:outline-none focus:border-none rounded border-gray-200 lg:w-full"
-              />
-              <button
-                class="text-white text-xl font-bold bg-black w-full p-3 hover:bg-gray-600"
-              >
-                Valider
-              </button>
+          <transition name="panier">
+            <div v-if="methode" class="mb-4 p-3 bg-white flex flex-col rtl:space-x-reverse">
+              <span class="text-xl mb-10 flex font-bold">Methode de paiement</span>
+              <div class="flex flex-col space-y-2">
+                <div class="flex space-x-2">
+                  <button @click="Paypal()"
+                    class="bg-white focus:border-2 focus:border-vert active:border-vert  border border-gray-300 rounded-md w-24 h-16 p-2"
+                  >
+                    <img
+                      src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282733431754785346.webp"
+                      class="h-12 mr-3"
+                    />
+                  </button>
+                  <button @click="Card()"
+                    class="bg-white border focus:border-2 focus:border-vert active:border-vert border-gray-300 rounded-md w-24 h-16 p-2"
+                  >
+                    <img
+                      src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282732803587566708.webp"
+                      class="h-12 mr-3"
+                    />
+                  </button>
+                  <button @click="Paytech()"
+                    class="bg-white focus:border-2 focus:border-vert active:border-vert border border-gray-300 rounded-md w-24 h-16 p-2"
+                  >
+                    <img
+                      src="../../../../storage/app/public/paytech.jpg"
+                      class="h-12 w-28 lg:w-full"
+                    />
+                  </button>
+                </div>
+
+                <div>
+                  <button @click="DefinirPaiement()"
+                    class="text-white mt-10 text-xl font-bold bg-black w-full p-3 hover:bg-gray-600"
+                  >
+                    Valider
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          </transition>
         </div>
       </div>
     </div>
@@ -465,8 +476,11 @@ const MonCommentaire = (commentaire) => {
     @LeCommentaire="MonCommentaire"
     @close="CloseComment()"
   />
-  <ModePaiement
-    v-if="paiement"
+  <Paiement
+    :show="paiement"
+    :paytech="paytech"
+    :paypal="paypal"
+    :card="card"
     @Animation="StartAnimation()"
     @close="DefinirPaiement()"
   />
@@ -476,11 +490,14 @@ const MonCommentaire = (commentaire) => {
     :dater="date"
     @close="DefinirDate()"
   />
+  <div @click="DefinirPaiement()" v-if="paiement" class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center">
+
+  </div>
 </template>
 <script>
 import Commentaire from "./Commentaire.vue";
 import DateCommande from "./DateCommande.vue";
-import ModePaiement from "./ModePaiement.vue";
+import Paiement from "./Paiement.vue";
 export default {
   data() {
     return {
@@ -489,14 +506,17 @@ export default {
       paiement: false,
       date: false,
       resume: true,
-      info: false,
+      methode: false,
       ladate: "aujourd'hui",
       heure: "",
       isLoading: false,
+      paypal:false,
+      paytech:false,
+      card:false
     };
   },
 
-  components: { Commentaire, DateCommande, ModePaiement },
+  components: { Commentaire, DateCommande, Paiement },
   methods: {
     toggleMenu() {
       this.open = !this.open;
@@ -515,20 +535,47 @@ export default {
       setTimeout(() => {
         this.isLoading = false;
         this.resume = false;
-        this.info = true;
-      }, 4000);
+        this.methode = true;
+      }, 1000);
     },
+    Paypal(){
+        this.paypal = true;
+        this.paytech = false;
+        this.card = false
+    },
+     Paytech(){
+        this.paytech = true;
+        this.paypal = false
+        this.card = false
+    },
+     Card(){
+        this.card = true;
+        this.paypal = false
+        this.paytech = false
+    }
   },
 };
 </script>
-<style>
+<style scoped>
 .btn-clicked svg path {
   stroke: #fff;
 }
-.transform {
-  transition-property: transform;
+.panier-enter-active,
+.panier-leave-active {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: translateY(90%);
+  opacity: 0;
 }
-.opacity {
-  transition-property: opacity;
+
+.panier-enter,
+.panier-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.panier-leave,
+.panier-enter-to {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

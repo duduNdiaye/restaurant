@@ -20,7 +20,8 @@ module.exports = {
                 'rose': '#e893c7',
                 'jaune': '#ffb76c',
                 'haver': '#a9d8d1',
-                'bleue': '#172d4f'
+                'bleue': '#172d4f',
+                'ever': '#fcfff5'
             },
 
         },

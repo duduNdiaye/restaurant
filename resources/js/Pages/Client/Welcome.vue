@@ -3325,7 +3325,8 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
+
 .bg-grocery {
   background-image: url(../grocery.png);
   background-size: cover;
