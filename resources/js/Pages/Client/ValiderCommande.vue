@@ -15,6 +15,7 @@ const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
 const ladate = ref("aujoudh'ui");
+const commentaires = ref("Ajouter un commentaire");
 const heures = ref();
 onMounted(() => {
   if (localStorage.getItem("cart")) {
@@ -102,6 +103,10 @@ const CommandeDate = (memejour, heure) => {
   }
   heures.value = heure;
 };
+
+const MonCommentaire = (commentaire) => {
+  commentaires.value = commentaire;
+};
 </script>
 <template>
   <div class="flex min-h-screen flex-col bg-gray-100 transition-colors duration-150">
@@ -179,7 +184,7 @@ const CommandeDate = (memejour, heure) => {
             </div>
           </div>
           <div
-            class="p-5 bg-white shadow-700 md:p-8 lg:h-68 lg:w-full border-b border-gray-200"
+            class="p-5 bg-white shadow-700 hover:scale-95 md:p-8 lg:h-68 lg:w-full border-b border-gray-200"
             v-for="car in cart"
             :key="car.id"
           >
@@ -279,15 +284,17 @@ const CommandeDate = (memejour, heure) => {
             </div>
           </div>
         </div>
-        <div class="w-full mb-10 sm:mb-12 lg:mb-0 md:w-[20rem] lg:w-[30rem]">
-          <div class="w-full bg-white p-2">
+        <div
+          class="w-full mt-4 flex flex-col mb-10 sm:mb-12 lg:mb-0 md:w-[20rem] lg:w-[30rem]"
+        >
+          <div class="w-full bg-white p-2" v-if="resume">
             <div class="mb-4 flex flex-col space-x-4 rtl:space-x-reverse">
-              <span class="text-xl flex items-center justify-center font-bold font-serif">Resume de votre commande</span>
+              <span class="text-xl flex items-center justify-center font-bold font-serif"
+                >Resume de votre commande</span
+              >
             </div>
             <div class="mt-4">
-              <div class="flex justify-between items-center">
-
-              </div>
+              <div class="flex justify-between items-center"></div>
 
               <button
                 @click="DefinirDate()"
@@ -321,7 +328,7 @@ const CommandeDate = (memejour, heure) => {
               </button>
               <button
                 @click="CloseComment()"
-                class="px-3 hover:shadow border-gray-200 border-b h-24 flex  text-gray-500 w-full"
+                class="px-3 hover:shadow border-gray-200 border-b h-16 flex text-gray-500 w-full"
               >
                 <svg
                   fill="#000000"
@@ -342,11 +349,11 @@ const CommandeDate = (memejour, heure) => {
                     ></path>
                   </g>
                 </svg>
-                <span class="mr-auto">Ajouter un commentaire</span>
+                <span class="mr-auto">{{ commentaires }}</span>
               </button>
 
               <select
-                class="w-80 rounded-full mt-4 border-gray-200 focus:ring-black focus:border-none"
+                class="lg:w-80 md:w-full w-full flex md:justify-center rounded-full mt-4 border-gray-200 focus:ring-black focus:border-none"
               >
                 <option value="1" class="text-center">A emporter</option>
                 <option value="2" class="text-center">Livraison</option>
@@ -359,51 +366,157 @@ const CommandeDate = (memejour, heure) => {
                     ><span class="mx-2">Total a payer</span>
                   </span>
                 </div>
-                <span class="text-lg font-bold text-red-500 text-body">{{ total }} FCFA</span>
+                <span class="text-lg font-bold text-red-500 text-body"
+                  >{{ total }} FCFA</span
+                >
               </div>
             </div>
             <button
+              @click="StartAnimation()"
               data-variant="normal"
-              class="inline-flex items-center justify-center shrink-0 font-bold text-2xl leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-accent-700 bg-black text-white border border-transparent hover:bg-gray-600 px-5 py-0 h-12 mt-5 w-full"
+              :class="{ 'btn-clicked bg-gray-600': isLoading }"
+              class="inline-flex items-center justify-center shrink-0 font-bold text-2xl leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-black bg-black text-white border border-transparent hover:bg-gray-600 px-5 py-0 h-12 mt-5 w-full"
             >
-              Passer a la caisse
+              <span class="mr-2">Continuer...</span>
+              <svg
+                v-if="isLoading"
+                :class="{ 'animate-spin ': isLoading }"
+                id="spinner"
+                class="w-6 h-6 icon text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                stroke="#ffffff"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    d="M20.0001 12C20.0001 13.3811 19.6425 14.7386 18.9623 15.9405C18.282 17.1424 17.3022 18.1477 16.1182 18.8587C14.9341 19.5696 13.5862 19.9619 12.2056 19.9974C10.825 20.0328 9.45873 19.7103 8.23975 19.0612"
+                    stroke="#000000"
+                    stroke-width="3.55556"
+                    stroke-linecap="round"
+                  ></path>
+                </g>
+              </svg>
             </button>
           </div>
+          <div class="mb-4 uppercase flex flex-col rtl:space-x-reverse" v-if="resume">
+            <span class="text-xl flex font-bold font-serif">Nous acceptons</span>
+            <div class="flex">
+              <!-- <div class="flex py-3 relative mr-3">
+                    <span class="bg-vert font-bold text-white w-11 px-2 py-1 absolute z-10 rounded-full">PAY</span>
+                    <span class="bg-green-600 font-bold w-24 px-2 flex items-center  justify-end rounded-full text-white">TECH</span>
+                </div> -->
+              <img
+                src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282733431754785346.webp"
+                class="h-12 mr-3"
+              />
+              <img
+                src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282732803587566708.webp"
+                class="h-12 mr-3"
+              />
+              <img
+                src="../../../../storage/app/public/paytech.jpg"
+                class="h-12 w-28 lg:w-full"
+              />
+            </div>
+          </div>
+          <transition name="panier">
+            <div v-if="methode" class="mb-4 p-3 bg-white flex flex-col rtl:space-x-reverse">
+              <span class="text-xl mb-10 flex font-bold">Methode de paiement</span>
+              <div class="flex flex-col space-y-2">
+                <div class="flex space-x-2">
+                  <button @click="Paypal()"
+                    class="bg-white focus:border-2 focus:border-vert active:border-vert  border border-gray-300 rounded-md w-24 h-16 p-2"
+                  >
+                    <img
+                      src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282733431754785346.webp"
+                      class="h-12 mr-3"
+                    />
+                  </button>
+                  <button @click="Card()"
+                    class="bg-white border focus:border-2 focus:border-vert active:border-vert border-gray-300 rounded-md w-24 h-16 p-2"
+                  >
+                    <img
+                      src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282732803587566708.webp"
+                      class="h-12 mr-3"
+                    />
+                  </button>
+                  <button @click="Paytech()"
+                    class="bg-white focus:border-2 focus:border-vert active:border-vert border border-gray-300 rounded-md w-24 h-16 p-2"
+                  >
+                    <img
+                      src="../../../../storage/app/public/paytech.jpg"
+                      class="h-12 w-28 lg:w-full"
+                    />
+                  </button>
+                </div>
+
+                <div>
+                  <button @click="DefinirPaiement()"
+                    class="text-white mt-10 text-xl font-bold bg-black w-full p-3 hover:bg-gray-600"
+                  >
+                    Valider
+                  </button>
+                </div>
+              </div>
+            </div>
+          </transition>
         </div>
       </div>
     </div>
   </div>
-  <Commentaire v-if="commentaire"  @close="CloseComment()" />
+  <Commentaire
+    v-if="commentaire"
+    @LeCommentaire="MonCommentaire"
+    @close="CloseComment()"
+  />
+  <Paiement
+    :show="paiement"
+    :paytech="paytech"
+    :paypal="paypal"
+    :card="card"
+    @Animation="StartAnimation()"
+    @close="DefinirPaiement()"
+  />
   <DateCommande
     v-if="date"
     @DateHeure="CommandeDate"
     :dater="date"
     @close="DefinirDate()"
   />
+  <div @click="DefinirPaiement()" v-if="paiement" class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center">
+
+  </div>
 </template>
 <script>
 import Commentaire from "./Commentaire.vue";
 import DateCommande from "./DateCommande.vue";
-
+import Paiement from "./Paiement.vue";
 export default {
   data() {
     return {
       open: false,
       commentaire: false,
-      comment: false,
+      paiement: false,
       date: false,
+      resume: true,
+      methode: false,
       ladate: "aujourd'hui",
       heure: "",
+      isLoading: false,
+      paypal:false,
+      paytech:false,
+      card:false
     };
   },
-  mounted() {
-    // Affecter la date et l'heure actuelles aux variables
-    // const now = new Date();
-    // let nomJour = { weekday: 'long'};
-    // this.ladate = now.toLocaleDateString('fr-FR', nomJour);
-    // this.heure = now.toLocaleTimeString();
-  },
-  components: { Commentaire, DateCommande },
+
+  components: { Commentaire, DateCommande, Paiement },
   methods: {
     toggleMenu() {
       this.open = !this.open;
@@ -414,6 +527,55 @@ export default {
     DefinirDate() {
       this.date = !this.date;
     },
+    DefinirPaiement() {
+      this.paiement = !this.paiement;
+    },
+    StartAnimation() {
+      this.isLoading = true;
+      setTimeout(() => {
+        this.isLoading = false;
+        this.resume = false;
+        this.methode = true;
+      }, 1000);
+    },
+    Paypal(){
+        this.paypal = true;
+        this.paytech = false;
+        this.card = false
+    },
+     Paytech(){
+        this.paytech = true;
+        this.paypal = false
+        this.card = false
+    },
+     Card(){
+        this.card = true;
+        this.paypal = false
+        this.paytech = false
+    }
   },
 };
 </script>
+<style scoped>
+.btn-clicked svg path {
+  stroke: #fff;
+}
+.panier-enter-active,
+.panier-leave-active {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: translateY(90%);
+  opacity: 0;
+}
+
+.panier-enter,
+.panier-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.panier-leave,
+.panier-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>

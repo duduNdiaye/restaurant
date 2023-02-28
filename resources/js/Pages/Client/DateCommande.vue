@@ -24,7 +24,7 @@
                 class="flex items-center justify-center px-5 mr-3 h-8 w-56"
                 :class="[
                   aujourdhui
-                    ? 'bg-vert text-white duration-300 translate-x-0'
+                    ? 'bg-vert text-white duration-300'
                     : 'bg-white text-black duration-300',
                 ]"
               >
@@ -135,7 +135,7 @@
           >
             <button @click="Valider(),closeModal()"
               type="button"
-              class="px-6 w-56 flex items-center justify-center py-2.5 bg-vert text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+              class="px-6 w-56 flex items-center justify-center py-2.5 bg-vert text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-haver active:shadow-lg transition duration-150 ease-in-out"
             >
               Valider
             </button>

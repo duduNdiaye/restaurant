@@ -668,10 +668,10 @@ const Diminuer = (car) => {
     <div
       :class="[
         showModal
-          ? 'modal duration-700 z-50 transform-gpu ease-in-out translate-y-4 opacity-100 fixed top-[-1rem] left-0  w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-40 bg-gray-700'
+          ? 'modal duration-200 z-50 transform-gpu translate-y-4 fixed top-[-1rem]  w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-40 bg-gray-700'
           : 'translate-y-0 w-0 h-0 z-50 duration-700 ease-in-out opacity-0',
       ]"
-      class="fixed top-32 "
+      class="fixed top-32" v-if="showModal"
     >
       <div class="modal-dialog mx-auto w-11/12 md:w-2/3 lg:w-1/2 my-12 md:my-24 lg:my-28">
         <div
@@ -3325,7 +3325,8 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
+
 .bg-grocery {
   background-image: url(../grocery.png);
   background-size: cover;
