@@ -59,7 +59,8 @@ import MenuSemaine from './Menu/MenuSemaine.vue';
 import TableArticles from './Tablearticles.vue';
  const props = defineProps({
    articles: {},
-   commandes: {}
+   commandes: {},
+
  });
  const logout = () => {
     router.post(route('logout'));
@@ -79,23 +80,23 @@ import TableArticles from './Tablearticles.vue';
       <div class="h-[calc(120vh-50px)] bg-gray-800 py-[20px]">
         <div class="flex flex-col justify-between h-full px-[20px] space-y-[10px]">
           <div class=" flex flex-col justify-between space-y-[10px]">
-            <router-link to="/home" @click="ShowAllCards" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-200 hover:text-gray-800  transition duration-400 ease-in-out">
+            <router-link to="/"  @click="ShowAllCards"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-200 hover:text-gray-800  transition duration-400 ease-in-out">
 
               Dashboard
             </router-link>
-            <router-link to="/profile" @click="ShowAllArticles" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
+            <router-link to="/articles"  @click="ShowAllArticles"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
 
               Articles
             </router-link>
-            <router-link to="/message" @click="ShowWeekMenu" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
+            <router-link to="/menus" @click="ShowWeekMenu"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
 
               Menus
             </router-link>
-            <router-link to="/download"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
+            <router-link to="/commandes"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
 
               Commandes
             </router-link>
-            <router-link to="/download" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
+            <router-link to="#" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
 
               Download
             </router-link>
@@ -155,7 +156,7 @@ import TableArticles from './Tablearticles.vue';
       <div class="h-[calc(120vh-50px)] bg-gray-100 p-[20px] w-full "  >
         <div class=" bg-gray-100 rounded-md p-[20px] h-full">
           <router-view>
-            <DashboardCard v-show="ShowCards"/>
+            <DashboardCard v-show="ShowCards" />
             <TableArticles v-if="ShowArticles"  :articles-all="articles" />
             <DashboardOther v-if="ShowCards" :commandes="commandes"/>
             <MenuSemaine v-if="showMenu"/>
