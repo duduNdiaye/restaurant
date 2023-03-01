@@ -155,7 +155,8 @@ export default {
       ladate:null,
       heure:'',
       heure1:null,
-      memejour:"aujourd'hui"
+      memejour:"aujourd'hui",
+      fait:false
     };
   },
   props: {
@@ -186,13 +187,14 @@ export default {
       this.aujourdhui = !this.aujourdhui;
     },
     Valider(){
+        this.fait = true
         if(this.heure1 != null)
         {
-            this.$emit('DateHeure',this.ladate,this.heure1);
+            this.$emit('DateHeure',this.ladate,this.heure1,this.fait);
             console.log("here")
         }
         else{
-            this.$emit('DateHeure',this.memejour,this.heure);
+            this.$emit('DateHeure',this.memejour,this.heure,this.fait);
         }
     }
   },

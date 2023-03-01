@@ -16,10 +16,8 @@ const props = defineProps({
 const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
-
-
+const articlerecherche = ref("");
 const cartAnimation = ref(false);
-
 const data = () => ({
   loading: true,
 });
@@ -51,7 +49,7 @@ const total = computed(() => {
 const panier = ref(false);
 
 const addItemToCart = (article) => {
-    console.log(article.photo)
+  console.log(article.photo);
   //Vérifie si l'article est déjà dans le panier
   let index = cart.value.findIndex((item) => item.nom === article.nom);
   if (index === -1) {
@@ -77,23 +75,10 @@ const addItemToCart = (article) => {
     cartAnimation.value = false;
   }, 1000);
 
-  // if (index === -1) {
-  //   // L'article n'est pas dans le panier, on l'ajoute
-  //   cart.value.push({
-  //     id: article.id,
-  //     name: article.name,
-  //     price: article.price,
-  //     quantity: 1,
-  //   });
-  // } else {
-  //   // L'article est déjà dans le panier, on augmente la quantité
-  //   cart.value[index].quantity++;
-  // }
-
   panier.value = true; // affiche le modal de validation
   console.log(panier.value);
   setTimeout(() => {
-      console.log("here");
+    console.log("here");
     panier.value = false;
   }, 2000);
   console.log(panier.value);
@@ -120,26 +105,30 @@ const removeItemFromCart = (car) => {
 };
 
 const Augmenter = (car) => {
-    let index = cart.value.findIndex((item) => item.nom === car.nom);
-     if (index === -1) {
+  let index = cart.value.findIndex((item) => item.nom === car.nom);
+  if (index === -1) {
     return;
   } else {
     cart.value[index].quantite++;
-    cart.value[index].total += parseFloat(car.prix);}
+    cart.value[index].total += parseFloat(car.prix);
+  }
 };
 const Diminuer = (car) => {
   let index = cart.value.findIndex((item) => item.nom === car.nom);
   if (index === -1) {
     return;
   } else {
-    if (cart.value[index].quantite > 1) { // vérifie si la quantité est supérieure à 1
+    if (cart.value[index].quantite > 1) {
+      // vérifie si la quantité est supérieure à 1
       cart.value[index].quantite--;
       cart.value[index].total -= parseFloat(car.prix);
     }
-    if (cart.value[index].quantite === 1) { // vérifie si la quantité est égale à 1
+    if (cart.value[index].quantite === 1) {
+      // vérifie si la quantité est égale à 1
       // ne fait rien
     }
-    if (cart.value[index].quantite === 0) { // vérifie si la quantité est égale à 0
+    if (cart.value[index].quantite === 0) {
+      // vérifie si la quantité est égale à 0
       cart.value.splice(index, 1);
       count.value -= 1;
     }
@@ -149,6 +138,24 @@ const Diminuer = (car) => {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart.value));
+  }
+};
+
+const recherche = computed(() => {
+  if (articlerecherche.value) {
+    return props.articles.filter((article) =>
+      article.nom.toLowerCase().includes(articlerecherche.value.toLocaleLowerCase())
+    );
+  } else {
+    return props.articles;
+  }
+});
+
+const scrollToResults = () => {
+  // Vérifie si la référence vers la section des résultats est définie
+  const results = document.getElementById("results");
+  if (results) {
+    results.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
   }
 };
 </script>
@@ -177,12 +184,14 @@ const Diminuer = (car) => {
             v-if="showSearchBar"
           >
             <input
+              v-model="articlerecherche"
+              @keydown.enter="scrollToResults"
               class="border-none bg-gray-200 focus:ring-vert focus:border-none lg:ml-16 lg:w-96 h-[3rem] px-5 pr-16 rounded-lg text-sm focus:outline-none"
               type="search"
               name="search"
               placeholder="Search"
             />
-            <button type="submit" class="absolute right-0 top-0 mt-5 mr-4">
+            <button class="absolute right-0 top-0 mt-5 mr-4">
               <svg
                 class="text-gray-600 h-4 w-4 fill-current"
                 xmlns="http://www.w3.org/2000/svg"
@@ -301,6 +310,8 @@ const Diminuer = (car) => {
             <div class="flex w-full justify-center items-end">
               <div class="mr-4 lg:w-full xl:w-1/2 w-2/4 md:w-full text-left">
                 <input
+                  v-model="articlerecherche"
+                  @keydown.enter="scrollToResults"
                   placeholder="Rechercher..."
                   type="text"
                   id="hero-field"
@@ -311,7 +322,7 @@ const Diminuer = (car) => {
               <button
                 class="inline-flex rounded-r-full text-white bg-yellow-500 border-0 py-2 px-6 focus:outline-none hover:bg-yellow-300 rounded text-lg"
               >
-                Button
+                Rechercher
               </button>
             </div>
             <p class="text-sm mt-2 text-gray-500 mb-8 w-full">
@@ -671,7 +682,8 @@ const Diminuer = (car) => {
           ? 'modal duration-200 z-50 transform-gpu translate-y-4 fixed top-[-1rem]  w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-40 bg-gray-700'
           : 'translate-y-0 w-0 h-0 z-50 duration-700 ease-in-out opacity-0',
       ]"
-      class="fixed top-32" v-if="showModal"
+      class="fixed top-32"
+      v-if="showModal"
     >
       <div class="modal-dialog mx-auto w-11/12 md:w-2/3 lg:w-1/2 my-12 md:my-24 lg:my-28">
         <div
@@ -720,7 +732,9 @@ const Diminuer = (car) => {
 
     <div
       @mouseleave="showComponent = false"
-      :class="[showComponent ? 'right-0' : 'right-[-100%] shadow-xl lg:block md:block hidden']"
+      :class="[
+        showComponent ? 'right-0' : 'right-[-100%] shadow-xl lg:block md:block hidden',
+      ]"
       class="border-l-2 border-gray-100 z-50 transform-gpu duration-400 ease-in-out fixed right-0 top-[4.3rem] lg:h-[35rem] lg:w-[27rem] md:w-[24rem] w-[21rem] h-[29rem] bg-white text-white p-3"
     >
       <div class="flex justify-between border-b-2 border-gray-100 py-1">
@@ -776,8 +790,9 @@ const Diminuer = (car) => {
             <div
               class="flex overflow-hidden flex-col-reverse items-center w-8 h-24 bg-gray-100 text-black rounded-full"
             >
-              <button @click="Diminuer(car)"
-                class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert  focus:outline-none "
+              <button
+                @click="Diminuer(car)"
+                class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert focus:outline-none"
               >
                 <span class="sr-only">minus</span
                 ><svg
@@ -796,9 +811,10 @@ const Diminuer = (car) => {
               <div
                 class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
               >
-                {{car.quantite}}
+                {{ car.quantite }}
               </div>
-              <button @click="Augmenter(car)"
+              <button
+                @click="Augmenter(car)"
                 class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
                 title=""
               >
@@ -822,7 +838,7 @@ const Diminuer = (car) => {
             class="relative mx-4 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-gray-100 sm:h-16 sm:w-16"
           >
             <span
-            class="h-full"
+              class="h-full"
               style="
                 box-sizing: border-box;
                 display: block;
@@ -864,20 +880,47 @@ const Diminuer = (car) => {
 
           <div>
             <h3 class="font-black text-sm text-black">{{ car.nom }}</h3>
-            <p class=" text-sm font-bold text-vert">{{ car.prix }}</p>
+            <p class="text-sm font-bold text-vert">{{ car.prix }}</p>
             <span class="text-sm text-gray-500">nombre: {{ car.quantite }}</span>
           </div>
 
           <div class="ml-auto flex flex-col">
-
             <button
               @click="removeItemFromCart(car)"
               class="flex ml-16 mb-2 bg-gray-200 h-7 w-7 right-0 items-center justify-center rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-red-600 focus:bg-gray-100 focus:text-red-600 focus:outline-none ltr:ml-3 ltr:-mr-2 rtl:mr-3 rtl:-ml-2"
             >
               <span class="sr-only">close</span
-              ><svg width="81px" height="81px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.15" d="M18 18V6H6V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18Z" fill="#000000"></path> <path d="M10 10V16M14 10V16M18 6V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V6M4 6H20M15 6V5C15 3.89543 14.1046 3 13 3H11C9.89543 3 9 3.89543 9 5V6" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+              ><svg
+                width="81px"
+                height="81px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    opacity="0.15"
+                    d="M18 18V6H6V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18Z"
+                    fill="#000000"
+                  ></path>
+                  <path
+                    d="M10 10V16M14 10V16M18 6V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V6M4 6H20M15 6V5C15 3.89543 14.1046 3 13 3H11C9.89543 3 9 3.89543 9 5V6"
+                    stroke="#000000"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </g>
+              </svg>
             </button>
-              <span class="font-semibold ml-4 mt-1 mr-2 text-gray-500 ltr:ml-auto rtl:mr-auto"
+            <span
+              class="font-semibold ml-4 mt-1 mr-2 text-gray-500 ltr:ml-auto rtl:mr-auto"
               >{{ car.total }}FCFA</span
             >
           </div>
@@ -1017,17 +1060,19 @@ const Diminuer = (car) => {
       </div>
       <div>
         <div class="flex justify-end mt-2 mr-6 text-gray-600 font-black text-xl">
-            Total:
-            <span class="text-orange-500">{{total}}FCFA</span>
+          Total:
+          <span class="text-orange-500">{{ total }}FCFA</span>
         </div>
         <a
-        :href="route('client.commande')"
-        class="fixed border-t-2 border-gray-300 right-8 lg:w-[23rem] hover:bg-haver md:w-[21rem] w-[17rem] h-12 bg-vert bottom-5"
-      >
-        <div class="flex item-center justify-center">
-          <div class="font-black text-white lg:text-2xl text-xl mb-8 py-1 px-6">Voir mon panier({{count}})</div>
-        </div>
-      </a>
+          :href="route('client.commande')"
+          class="fixed border-t-2 border-gray-300 right-8 lg:w-[23rem] hover:bg-haver md:w-[21rem] w-[17rem] h-12 bg-vert bottom-5"
+        >
+          <div class="flex item-center justify-center">
+            <div class="font-black text-white lg:text-2xl text-xl mb-8 py-1 px-6">
+              Voir mon panier({{ count }})
+            </div>
+          </div>
+        </a>
       </div>
     </div>
 
@@ -3177,10 +3222,11 @@ const Diminuer = (car) => {
       </aside>
       <div class="w-full h-fit px-4 pb-8 lg:p-8">
         <div
+          id="results"
           class="grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
         >
           <article
-            v-for="article in articles"
+            v-for="article in recherche"
             :key="article.id"
             class="product-card cart-type-neon overflow-hidden rounded border border-border-200 bg-white shadow-sm duration-50 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
           >
@@ -3243,14 +3289,34 @@ const Diminuer = (car) => {
           :article="selectedArticle"
         />
         <transition name="panier">
-            <div v-if="panier"
-              class="bg-vert font-bold flex h-14 text-white rounded-md p-4 fixed top-[39rem] right-4 ">
-              <div class="flex mb-3">
-                <span class="text-2xl font-bold">Article ajoute!</span>
-                <svg class="w-8 h-8 icon ml-4" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill="#000000" d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z"></path></g></svg>
-              </div>
+          <div
+            v-if="panier"
+            class="bg-vert font-bold flex h-14 text-white rounded-md p-4 fixed top-[39rem] right-4"
+          >
+            <div class="flex mb-3">
+              <span class="text-2xl font-bold">Article ajoute!</span>
+              <svg
+                class="w-8 h-8 icon ml-4"
+                viewBox="0 0 1024 1024"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="#000000"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    fill="#000000"
+                    d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z"
+                  ></path>
+                </g>
+              </svg>
             </div>
-          </transition>
+          </div>
+        </transition>
       </div>
 
       <!-- Ajouter d'autres articles ici -->
@@ -3326,7 +3392,6 @@ export default {
 };
 </script>
 <style scoped>
-
 .bg-grocery {
   background-image: url(../grocery.png);
   background-size: cover;
@@ -3370,18 +3435,21 @@ export default {
     transform: translateX(0);
   }
 }
-.panier-enter-active, .panier-leave-active {
+.panier-enter-active,
+.panier-leave-active {
   transition: transform 0.5s ease, opacity 0.5s ease;
   transform: translateX(100%);
-   opacity: 0;
+  opacity: 0;
 }
 
-.panier-enter, .panier-leave-to {
+.panier-enter,
+.panier-leave-to {
   opacity: 0;
   transform: translateX(100%);
 }
 
-.panier-leave, .panier-enter-to {
+.panier-leave,
+.panier-enter-to {
   opacity: 1;
   transform: translateX(0);
 }

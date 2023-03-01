@@ -17,6 +17,11 @@ const count1 = ref(false);
 const ladate = ref("aujoudh'ui");
 const commentaires = ref("Ajouter un commentaire");
 const heures = ref();
+const heureCommande = ref(false);
+const Commentaires = ref(false);
+const modeReception = ref(false);
+const reception = ref("");
+
 onMounted(() => {
   if (localStorage.getItem("cart")) {
     cart.value = JSON.parse(localStorage.getItem("cart"));
@@ -29,6 +34,10 @@ onMounted(() => {
   const now = new Date();
   heures.value = now.toLocaleTimeString();
   console.log(heures.value);
+});
+
+const allCompleted = computed(() => {
+  return heureCommande.value && modeReception.value;
 });
 
 const total = computed(() => {
@@ -94,7 +103,7 @@ const Diminuer = (car) => {
   }
 };
 
-const CommandeDate = (memejour, heure) => {
+const CommandeDate = (memejour, heure, fait) => {
   ladate.value = memejour;
   if (ladate.value != "aujourd'hui") {
     const now = ladate.value;
@@ -102,10 +111,19 @@ const CommandeDate = (memejour, heure) => {
     ladate.value = now.toLocaleDateString("fr-FR", nomJour);
   }
   heures.value = heure;
+  heureCommande.value = fait;
 };
 
-const MonCommentaire = (commentaire) => {
+const MonCommentaire = (commentaire, fait) => {
   commentaires.value = commentaire;
+  Commentaires.value = fait;
+};
+
+const shake = () => {
+  isShaking.value = true;
+  setTimeout(() => {
+    isShaking.value = false;
+  }, 1000);
 };
 </script>
 <template>
@@ -353,6 +371,8 @@ const MonCommentaire = (commentaire) => {
               </button>
 
               <select
+                v-model="reception"
+                @click="modeReception = true"
                 class="lg:w-80 md:w-full w-full flex md:justify-center rounded-full mt-4 border-gray-200 focus:ring-black focus:border-none"
               >
                 <option value="1" class="text-center">A emporter</option>
@@ -372,10 +392,11 @@ const MonCommentaire = (commentaire) => {
               </div>
             </div>
             <button
+              :disabled="!allCompleted"
               @click="StartAnimation()"
               data-variant="normal"
               :class="{ 'btn-clicked bg-gray-600': isLoading }"
-              class="inline-flex items-center justify-center shrink-0 font-bold text-2xl leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-black bg-black text-white border border-transparent hover:bg-gray-600 px-5 py-0 h-12 mt-5 w-full"
+              class="my-button inline-flex items-center justify-center shrink-0 font-bold text-2xl leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-black bg-black text-white border border-transparent hover:bg-gray-600 px-5 py-0 h-12 mt-5 w-full"
             >
               <span class="mr-2">Continuer...</span>
               <svg
@@ -427,19 +448,32 @@ const MonCommentaire = (commentaire) => {
             </div>
           </div>
           <transition name="panier">
-            <div v-if="methode" class="mb-4 p-3 bg-white flex flex-col rtl:space-x-reverse">
+            <div
+              v-if="methode"
+              class="mb-4 p-3 bg-white flex flex-col rtl:space-x-reverse"
+            >
               <span class="text-xl mb-10 flex font-bold">Methode de paiement</span>
+              <span
+                class="text-sm text-red-500 mb-4"
+                v-if="warning"
+                :class="`shake ${click ? 'animate-shake ' : ''}`"
+                >Veuiller choisir la methode</span
+              >
               <div class="flex flex-col space-y-2">
                 <div class="flex space-x-2">
-                  <button @click="Paypal()"
-                    class="bg-white focus:border-2 focus:border-vert active:border-vert  border border-gray-300 rounded-md w-24 h-16 p-2"
+                  <button
+                    :class="`shake ${click ? 'animate-shake ' : ''}`"
+                    @click="Paypal()"
+                    class="bg-white focus:border-2 focus:border-vert active:border-vert border border-gray-300 rounded-md w-24 h-16 p-2"
                   >
                     <img
                       src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282733431754785346.webp"
                       class="h-12 mr-3"
                     />
                   </button>
-                  <button @click="Card()"
+                  <button
+                    :class="`shake ${click ? 'animate-shake' : ''}`"
+                    @click="Card()"
                     class="bg-white border focus:border-2 focus:border-vert active:border-vert border-gray-300 rounded-md w-24 h-16 p-2"
                   >
                     <img
@@ -447,7 +481,9 @@ const MonCommentaire = (commentaire) => {
                       class="h-12 mr-3"
                     />
                   </button>
-                  <button @click="Paytech()"
+                  <button
+                    :class="`shake ${click ? 'animate-shake' : ''}`"
+                    @click="Paytech()"
                     class="bg-white focus:border-2 focus:border-vert active:border-vert border border-gray-300 rounded-md w-24 h-16 p-2"
                   >
                     <img
@@ -458,7 +494,8 @@ const MonCommentaire = (commentaire) => {
                 </div>
 
                 <div>
-                  <button @click="DefinirPaiement()"
+                  <button
+                    @click="DefinirPaiement()"
                     class="text-white mt-10 text-xl font-bold bg-black w-full p-3 hover:bg-gray-600"
                   >
                     Valider
@@ -482,7 +519,7 @@ const MonCommentaire = (commentaire) => {
     :paypal="paypal"
     :card="card"
     @Animation="StartAnimation()"
-    @close="DefinirPaiement()"
+    @close="ClosePaiment()"
   />
   <DateCommande
     v-if="date"
@@ -490,9 +527,11 @@ const MonCommentaire = (commentaire) => {
     :dater="date"
     @close="DefinirDate()"
   />
-  <div @click="DefinirPaiement()" v-if="paiement" class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center">
-
-  </div>
+  <div
+    @click="ClosePaiment()"
+    v-if="paiement"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
+  ></div>
 </template>
 <script>
 import Commentaire from "./Commentaire.vue";
@@ -510,9 +549,11 @@ export default {
       ladate: "aujourd'hui",
       heure: "",
       isLoading: false,
-      paypal:false,
-      paytech:false,
-      card:false
+      paypal: false,
+      paytech: false,
+      card: false,
+      click: false,
+      warning: false,
     };
   },
 
@@ -528,7 +569,22 @@ export default {
       this.date = !this.date;
     },
     DefinirPaiement() {
-      this.paiement = !this.paiement;
+      if (this.paypal == false && this.paytech == false && this.card == false) {
+        this.click = true;
+        this.warning = true;
+        setTimeout(() => {
+          this.click = false;
+        }, 1000);
+      } else {
+        this.paiement = true;
+        this.warning = false;
+      }
+    },
+    ClosePaiment() {
+      this.paiement = false;
+      this.paypal = false;
+      this.paytech = false;
+      this.card = false;
     },
     StartAnimation() {
       this.isLoading = true;
@@ -538,21 +594,24 @@ export default {
         this.methode = true;
       }, 1000);
     },
-    Paypal(){
-        this.paypal = true;
-        this.paytech = false;
-        this.card = false
+    Paypal() {
+      this.paypal = true;
+      this.paytech = false;
+      this.card = false;
+      this.warning = false;
     },
-     Paytech(){
-        this.paytech = true;
-        this.paypal = false
-        this.card = false
+    Paytech() {
+      this.paytech = true;
+      this.paypal = false;
+      this.card = false;
+      this.warning = false;
     },
-     Card(){
-        this.card = true;
-        this.paypal = false
-        this.paytech = false
-    }
+    Card() {
+      this.card = true;
+      this.paypal = false;
+      this.paytech = false;
+      this.warning = false;
+    },
   },
 };
 </script>
@@ -577,5 +636,40 @@ export default {
 .panier-enter-to {
   opacity: 1;
   transform: translateY(0);
+}
+.my-button:disabled {
+  cursor: not-allowed;
+}
+
+.shake {
+  display: inline-block;
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-shake {
+  animation-name: shake;
 }
 </style>

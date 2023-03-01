@@ -1,6 +1,6 @@
 <template>
     <transition name="panierr">
-      <div v-if="show" class="w-full fixed top-4 z-[51] left-80 max-w-2xl rounded-xl h-[32rem] bg-white p-6 md:p-12 mt-16">
+      <div v-if="show" class="w-full fixed top-4 z-[51] lg:left-80 md:left-36 max-w-2xl rounded-xl h-[32rem] bg-white p-6 md:p-12 mt-16">
         <div class="flex items-center justify-center sm:mb-10">
           <span class="lg:text-xl font-bold sm:text-xl"> Paiement </span>
         </div>
