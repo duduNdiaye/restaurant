@@ -1,14 +1,15 @@
 <?php
 
-use App\Http\Controllers\ArticleController;
+use Carbon\Carbon;
+use App\Models\User;
+use Inertia\Inertia;
 use App\Models\Article;
+use App\Models\Commande;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommandeController;
-use App\Models\Commande;
-use Carbon\Carbon;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,14 +24,16 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     $articles = Article::all();
+    $users = User::where('role', 'restaurant')->get();
     return Inertia::render('Client/Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
-        'articles' => $articles
+        'articles' => $articles,
+        'users' => $users
     ]);
-});
+})->name('acceuil');
 
 Route::middleware([
     'auth:sanctum',
@@ -65,6 +68,7 @@ Route::middleware([
 
 Route::controller(CommandeController::class)->group(function () {
     Route::get('/commandes', 'client_commande')->name('client.commande');
+    Route::put('/validation', 'create_commande')->name('validation');
 });
 Route::post('/article/new',[ArticleController::class,'store'])->name('store.article');
 Route::put('article/edit/{article}',[ArticleController::class,'update'])->name('update.article');

@@ -2,6 +2,7 @@
 import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import { ref, onMounted, computed } from "vue";
+import axios from "axios";
 
 defineProps({
   canLogin: Boolean,
@@ -15,12 +16,19 @@ const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
 const ladate = ref("aujoudh'ui");
+const ladate1 = ref(null);
 const commentaires = ref("Ajouter un commentaire");
 const heures = ref();
 const heureCommande = ref(false);
 const Commentaires = ref(false);
 const modeReception = ref(false);
 const reception = ref("");
+const Nom = ref("");
+const Telephone = ref("");
+const Adresse = ref("");
+const panier = ref(false);
+const panier1 = ref(false);
+const yesNon = ref(false);
 
 onMounted(() => {
   if (localStorage.getItem("cart")) {
@@ -105,10 +113,14 @@ const Diminuer = (car) => {
 
 const CommandeDate = (memejour, heure, fait) => {
   ladate.value = memejour;
+
   if (ladate.value != "aujourd'hui") {
+    ladate1.value = memejour;
     const now = ladate.value;
     let nomJour = { weekday: "long" };
     ladate.value = now.toLocaleDateString("fr-FR", nomJour);
+  } else {
+    ladate1.value = new Date();
   }
   heures.value = heure;
   heureCommande.value = fait;
@@ -119,11 +131,97 @@ const MonCommentaire = (commentaire, fait) => {
   Commentaires.value = fait;
 };
 
+const Terminal = (nom, telephone, adresse) => {
+  Nom.value = nom;
+  Telephone.value = telephone;
+  Adresse.value = adresse;
+  yesNon.value = true;
+};
+
 const shake = () => {
   isShaking.value = true;
   setTimeout(() => {
     isShaking.value = false;
   }, 1000);
+};
+
+const sendOrderData = (
+  orderId,
+  cart,
+  total,
+  commentaires,
+  reception,
+  ladate1,
+  heures,
+  Nom,
+  Telephone,
+  Adresse
+) => {
+  // Envoie les données de la commande vers le serveur
+  const formData = new FormData();
+  formData.append("order_id", orderId);
+  formData.append("total", total.value);
+  formData.append("commentaires", commentaires.value);
+  formData.append("reception", reception.value);
+  formData.append("ladate", ladate1.value);
+  formData.append("heures", heures.value);
+  formData.append("nom", Nom.value);
+  formData.append("telephone", Telephone.value);
+  formData.append("adresse", Adresse.value);
+  formData.append("cart_data", cart.value);
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ": " + pair[1]);
+  }
+  // Utilisez ici l'API de votre choix pour envoyer les données vers le serveur
+  axios
+    .put("validation", formData)
+
+    .then((response) => {
+      console.log(response.data);
+      panier.value = true; // affiche le modal de validation
+      console.log(panier.value);
+      setTimeout(() => {
+        console.log("here");
+        panier.value = false;
+      }, 2000);
+    })
+    .catch((error) => {
+      console.error(error);
+      panier1.value = true; // affiche le modal de validation
+      console.log(panier1.value);
+      setTimeout(() => {
+        console.log("here");
+        panier1.value = false;
+      }, 2000);
+    });
+};
+
+const createOrder = () => {
+  // Génère un ID de commande unique
+  const orderId = Math.random().toString(36).substr(2, 9);
+
+  // Envoie les données de la commande vers le serveur
+  sendOrderData(
+    orderId,
+    cart,
+    total,
+    commentaires,
+    reception,
+    ladate1,
+    heures,
+    Nom,
+    Telephone,
+    Adresse
+  );
+
+  // Réinitialise le panier
+  cart.value = [];
+  count.value = 0;
+
+  // enregistrer les données du panier dans le localStorage
+  localStorage.removeItem("cart");
+
+  console.log("Order created with ID:", orderId);
 };
 </script>
 <template>
@@ -134,11 +232,12 @@ const shake = () => {
         class="fixed md:flex border-b-2 z-40 transform-cpu border-gray-200 text-center items-center justify-between bg-white px-4 py-6 w-full"
       >
         <div class="flex items-center">
-          <h1
+          <a
+            :href="route('acceuil')"
             class="text-3xl lg:block md:block hidden lg:ml-0 text-center bg-black text-white px-2 md:ml-0 font-title font-extrabold"
           >
             EatEasy
-          </h1>
+          </a>
           <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
           <p class="font-bold text-xl ml-8 lg:hidden md:hidden">
             Que desirez-vous manger?
@@ -375,9 +474,9 @@ const shake = () => {
                 @click="modeReception = true"
                 class="lg:w-80 md:w-full w-full flex md:justify-center rounded-full mt-4 border-gray-200 focus:ring-black focus:border-none"
               >
-                <option value="1" class="text-center">A emporter</option>
-                <option value="2" class="text-center">Livraison</option>
-                <option value="3" class="text-center">Sur place</option>
+                <option value="A emporter" class="text-center">A emporter</option>
+                <option value="A emporter" class="text-center">Livraison</option>
+                <option value="Sur place" class="text-center">Sur place</option>
               </select>
 
               <div class="flex justify-between py-2">
@@ -518,7 +617,7 @@ const shake = () => {
     :paytech="paytech"
     :paypal="paypal"
     :card="card"
-    @Animation="StartAnimation()"
+    @Transaction="Terminal()"
     @close="ClosePaiment()"
   />
   <DateCommande
@@ -532,6 +631,105 @@ const shake = () => {
     v-if="paiement"
     class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
   ></div>
+  <div
+    @click.self="yesNon = false"
+    v-if="yesNon"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
+  ></div>
+  <transition name="panierrr">
+    <div v-if="yesNon"   @click.self="yesNon = false" class="modal z-[52] fixed top-36 duration-700 ease-in-out w-full">
+      <div class="modal-dialog mx-auto w-11/12 md:w-2/3 lg:w-1/3 my-12 md:my-24 lg:my-28">
+        <div
+          class="modal-content relative flex flex-col h-full bg-white shadow-lg rounded-md text-current"
+        >
+          <div
+            class="modal-header h-12 bg-gray-100 flex-shrink-0 items-center justify-between px-4 py-3 border-b border-gray-200 rounded-t-md"
+          >
+            <h5
+              class="text-xl font-bold flex items-center justify-center leading-normal text-gray-800"
+            >
+                Je confirme le paiement
+            </h5>
+          </div>
+
+          <div
+            class="modal-footer bg-white space-x-4 flex items-center justify-center px-4 py-3 border-t border-gray-200 rounded-b-md"
+          >
+            <button @click="createOrder(),yesNon = false"
+              type="button"
+              class="px-6 flex w-56 items-center justify-center py-2.5 bg-vert text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-haver active:shadow-lg transition duration-150 ease-in-out"
+            >
+              Oui
+            </button>
+             <button @click="yesNon = false"
+              type="button"
+              class="px-6 flex w-56 items-center justify-center py-2.5 bg-red-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-haver active:shadow-lg transition duration-150 ease-in-out"
+            >
+              Non
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+  <transition name="panier">
+    <div
+      v-if="panier"
+      class="bg-vert font-bold flex h-14 text-white rounded-md p-4 fixed top-[39rem] right-4"
+    >
+      <div class="flex mb-3">
+        <span class="text-2xl font-bold">Commande reussie!</span>
+        <svg
+          class="w-8 h-8 icon ml-4"
+          viewBox="0 0 1024 1024"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="#000000"
+        >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              fill="#000000"
+              d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z"
+            ></path>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </transition>
+  <transition name="panier">
+    <div
+      v-if="panier1"
+      class="bg-red-500 font-bold flex h-14 text-white rounded-md p-4 fixed top-[39rem] right-4"
+    >
+      <div class="flex mb-3">
+        <span class="text-2xl font-bold">Commande echouee!</span>
+        <svg
+          class="w-8 h-8 icon ml-4"
+          viewBox="0 0 1024 1024"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="#000000"
+        >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              fill="#000000"
+              d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z"
+            ></path>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </transition>
 </template>
 <script>
 import Commentaire from "./Commentaire.vue";
@@ -671,5 +869,24 @@ export default {
 
 .animate-shake {
   animation-name: shake;
+}
+
+.panierrr-enter-active,
+.panierrr-leave-active {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: translateY(10%);
+  opacity: 0;
+}
+
+.panierrr-enter,
+.panierrr-leave-to {
+  opacity: 0;
+  transform: translateY(10%);
+}
+
+.panierrr-leave,
+.panierrr-enter-to {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

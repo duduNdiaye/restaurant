@@ -3,7 +3,6 @@ import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
-// import { v4 as uuidv4 } from 'uuid';
 
 const props = defineProps({
   canLogin: Boolean,
@@ -11,6 +10,7 @@ const props = defineProps({
   laravelVersion: String,
   phpVersion: String,
   articles: {},
+  users: {}
 });
 
 const cart = ref([]);
@@ -39,6 +39,17 @@ onMounted(() => {
   }
   if (count.value != 0) {
     count1.value = true;
+  }
+  for(let i = 0; i < props.articles.length; i++)
+  {
+    for(let u = 0; u < props.users.length; u++)
+    {
+        if(props.articles[i].user_id == props.users[u].id)
+        {
+            props.articles[i].nomResto = props.users[u].name
+
+        }
+    }
   }
 });
 
@@ -149,6 +160,7 @@ const recherche = computed(() => {
   } else {
     return props.articles;
   }
+
 });
 
 const scrollToResults = () => {

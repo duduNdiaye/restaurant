@@ -157,7 +157,7 @@
                     ><button
                       class="text-sm ml-12 tracking-wider text-vert underline transition hover:text-accent-hover hover:no-underline"
                     >
-                      {{ article.user_id }}
+                      {{ article.nomResto }}
                     </button>
                   </div>
                 </div>
