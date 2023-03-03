@@ -1,7 +1,9 @@
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import { ref, onMounted, computed } from "vue";
+import axios from "axios";
+import moment from "moment";
+import { Head, Link, useForm } from "@inertiajs/vue3";
 
 defineProps({
   canLogin: Boolean,
@@ -15,8 +17,21 @@ const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
 const ladate = ref("aujoudh'ui");
+const ladate1 = ref("aujoudh'ui");
 const commentaires = ref("Ajouter un commentaire");
 const heures = ref();
+const heureCommande = ref(false);
+const Commentaires = ref(false);
+const modeReception = ref(false);
+const reception = ref("");
+const Nom = ref(null);
+const Telephone = ref(null);
+const final = ref(false)
+const Adresse = ref(null);
+const panier = ref(false);
+const panier1 = ref(false);
+const yesNon = ref(false);
+
 onMounted(() => {
   if (localStorage.getItem("cart")) {
     cart.value = JSON.parse(localStorage.getItem("cart"));
@@ -29,6 +44,10 @@ onMounted(() => {
   const now = new Date();
   heures.value = now.toLocaleTimeString();
   console.log(heures.value);
+});
+
+const allCompleted = computed(() => {
+  return heureCommande.value && modeReception.value;
 });
 
 const total = computed(() => {
@@ -94,18 +113,80 @@ const Diminuer = (car) => {
   }
 };
 
-const CommandeDate = (memejour, heure) => {
+const CommandeDate = (memejour, heure, fait) => {
   ladate.value = memejour;
+
   if (ladate.value != "aujourd'hui") {
+    ladate1.value = moment(memejour).startOf("day").format("YYYY-MM-DD");
     const now = ladate.value;
     let nomJour = { weekday: "long" };
     ladate.value = now.toLocaleDateString("fr-FR", nomJour);
+  } else {
+    const newa = new Date();
+    ladate1.value = moment(newa).startOf("day").format("YYYY-MM-DD");
   }
   heures.value = heure;
+  heureCommande.value = fait;
 };
 
-const MonCommentaire = (commentaire) => {
+const MonCommentaire = (commentaire, fait) => {
   commentaires.value = commentaire;
+  Commentaires.value = fait;
+};
+
+const Terminal = (nomClient, telephoneClient, adresseClient) => {
+  Nom.value = nomClient;
+  Telephone.value = telephoneClient;
+  Adresse.value = adresseClient;
+  yesNon.value = true;
+  console.log(adresseClient);
+};
+
+const shake = () => {
+  isShaking.value = true;
+  setTimeout(() => {
+    isShaking.value = false;
+  }, 1000);
+};
+
+const orderId = Math.random().toString(36).substr(2, 9)
+
+const sendOrderData = () => {
+  const form = useForm({
+    orderId: orderId,
+    Total: total.value,
+    MonCommentaire: commentaires.value,
+    TypeReception: reception.value,
+    laDate: ladate1.value,
+    Lheure: heures.value,
+    NomClient: Nom,
+    TelClient: Telephone.value,
+    AdresseClient: Adresse,
+    panierr: JSON.stringify(cart.value),
+  });
+
+  // Utilisez ici l'API de votre choix pour envoyer les données vers le serveur
+  form.post(route("validation.commande"), {
+    onSuccess: () => {
+     final.value = true
+    },
+    onError: () => {
+      panier.value = true; // affiche le modal de validation
+      console.log(panier1.value);
+      setTimeout(() => {
+        console.log("here");
+        panier1.value = false;
+      }, 2000);
+    },
+  });
+
+  cart.value = [];
+  count.value = 0;
+
+  // enregistrer les données du panier dans le localStorage
+  localStorage.removeItem("cart");
+  console.log("form:", form);
+  console.log(typeof total.value);
 };
 </script>
 <template>
@@ -116,13 +197,14 @@ const MonCommentaire = (commentaire) => {
         class="fixed md:flex border-b-2 z-40 transform-cpu border-gray-200 text-center items-center justify-between bg-white px-4 py-6 w-full"
       >
         <div class="flex items-center">
-          <h1
+          <a
+            :href="route('acceuil')"
             class="text-3xl lg:block md:block hidden lg:ml-0 text-center bg-black text-white px-2 md:ml-0 font-title font-extrabold"
           >
             EatEasy
-          </h1>
+          </a>
           <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
-          <p class="font-bold text-xl ml-8 lg:hidden md:hidden">
+          <p class="font-bold lg:text-xl text-lg ml-8 lg:hidden md:hidden">
             Que desirez-vous manger?
           </p>
         </div>
@@ -183,105 +265,122 @@ const MonCommentaire = (commentaire) => {
               <span class="flex text-lg text-center">Resume du panier({{ count }})</span>
             </div>
           </div>
-          <div
-            class="p-5 bg-white shadow-700 hover:scale-95 md:p-8 lg:h-68 lg:w-full border-b border-gray-200"
-            v-for="car in cart"
-            :key="car.id"
-          >
+
+          <div v-if="count">
             <div
-              class="flex flex-col md:flex-row md:space-x-4 space-y-4 lg:flex-row md:items-start items-center lg:items-start"
+              class="p-5 bg-white shadow-700 hover:scale-95 md:p-8 lg:h-68 lg:w-full border-b border-gray-200"
+              v-for="car in cart"
+              :key="car.id"
             >
-              <div class="flex-shrink-0 w-32 lg:w-48">
-                <img
-                  :src="car.photo"
-                  alt="Nom de l'article"
-                  class="w-full h-auto md:w-56"
-                />
-              </div>
-              <div class="flex flex-col justify-between lg:ml-4 mt-2 lg:mt-0">
-                <div class="font-medium text-lg lg:text-xl lg:text-start text-center">
-                  {{ car.nom }}
+              <div
+                class="flex flex-col md:flex-row md:space-x-4 space-y-4 lg:flex-row md:items-start items-center lg:items-start"
+              >
+                <div class="flex-shrink-0 w-32 lg:w-48">
+                  <img
+                    :src="car.photo"
+                    alt="Nom de l'article"
+                    class="w-full h-auto md:w-56"
+                  />
                 </div>
-                <div class="flex justify-between items-center">
-                  <div
-                    class="flex flex-col md:flex-row md:space-x-6 lg:flex-row lg:items-center lg:space-x-10 space-y-6"
-                  >
-                    <div class="flex lg:space-x-10 md:space-x-2 space-x-16 mt-1">
-                      <div
-                        class="text-sm text-white shrink-0 md:text-xs bg-black md:py-3 md:mt-3 py-1 lg:mt-3 px-4 rounded-full w-fit"
-                      >
-                        Quantité :{{ car.quantite }}
-                      </div>
-                      <div class="text-gray-500 font-bold lg:mt-4 md:mt-4">
-                        {{ car.prix }}F
-                      </div>
-                    </div>
-                    <div class="flex lg:space-x-[-4rem] md:space-x-[-3rem] space-x-8">
-                      <div class="flex-shrink-0 lg:mr-6">
+                <div class="flex flex-col justify-between lg:ml-4 mt-2 lg:mt-0">
+                  <div class="font-medium text-lg lg:text-xl lg:text-start text-center">
+                    {{ car.nom }}
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <div
+                      class="flex flex-col md:flex-row md:space-x-6 lg:flex-row lg:items-center lg:space-x-10 space-y-6"
+                    >
+                      <div class="flex lg:space-x-10 md:space-x-2 space-x-16 mt-1">
                         <div
-                          class="lg:mr-16 md:mr-16 overflow-hidden flex items-center w-24 h-8 bg-gray-100 text-black rounded-full"
+                          class="text-sm text-white shrink-0 md:text-xs bg-black md:py-3 md:mt-3 py-1 lg:mt-3 px-4 rounded-full w-fit"
                         >
-                          <button
-                            @click="Diminuer(car)"
-                            class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert focus:outline-none"
-                          >
-                            <span class="sr-only">minus</span
-                            ><svg
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              class="h-3 w-3 stroke-2.5"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M20 12H4"
-                              ></path>
-                            </svg>
-                          </button>
-                          <div
-                            class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
-                          >
-                            1
-                          </div>
-                          <button
-                            @click="Augmenter(car)"
-                            class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
-                            title=""
-                          >
-                            <span class="sr-only">plus</span
-                            ><svg
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                              ></path>
-                            </svg>
-                          </button>
+                          Quantité :{{ car.quantite }}
+                        </div>
+                        <div class="text-gray-500 font-bold lg:mt-4 md:mt-4">
+                          {{ car.prix }}F
                         </div>
                       </div>
-                      <div class="ml-auto text-red-500 font-bold mr-0">
-                        Total:{{ car.total }}F
+                      <div class="flex lg:space-x-[-4rem] md:space-x-[-3rem] space-x-8">
+                        <div class="flex-shrink-0 lg:mr-6">
+                          <div
+                            class="lg:mr-16 md:mr-16 overflow-hidden flex items-center w-24 h-8 bg-gray-100 text-black rounded-full"
+                          >
+                            <button
+                              @click="Diminuer(car)"
+                              class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert focus:outline-none"
+                            >
+                              <span class="sr-only">minus</span
+                              ><svg
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                class="h-3 w-3 stroke-2.5"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="M20 12H4"
+                                ></path>
+                              </svg>
+                            </button>
+                            <div
+                              class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
+                            >
+                              1
+                            </div>
+                            <button
+                              @click="Augmenter(car)"
+                              class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
+                              title=""
+                            >
+                              <span class="sr-only">plus</span
+                              ><svg
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                ></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="ml-auto text-red-500 font-bold mr-0">
+                          Total:{{ car.total }}F
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="flex items-center space-x-6 mt-6">
-                  <button class="text-gray-600 text-sm mr-2">Ajouter aux favoris</button>
-                  <button
-                    @click="removeItemFromCart(car)"
-                    class="text-lg hover:font-black"
-                  >
-                    effacer
-                  </button>
+                  <div class="flex items-center space-x-6 mt-6">
+                    <button class="text-gray-600 text-sm mr-2">
+                      Ajouter aux favoris
+                    </button>
+                    <button
+                      @click="removeItemFromCart(car)"
+                      class="text-lg hover:font-black"
+                    >
+                      effacer
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+          <div v-else class="flex flex-col space-y-3 justify-center items-center">
+            <img
+              src="//sheinsz.ltwebstatic.com/she_dist/images/shoppingcart-empty-50eb82fb72.png"
+              class="empty-img"
+            />
+            <span class="text-black font bold lg:text-2xl">Votre panier est vide</span>
+            <a
+              class="bg-black p-2 text-white font-bold hover:bg-gray-600"
+              :href="route('acceuil')"
+              >Commander maintenant</a
+            >
           </div>
         </div>
         <div
@@ -322,8 +421,8 @@ const MonCommentaire = (commentaire) => {
                   </g>
                 </svg>
                 <span class="mr-2 uppercase font-bold">Pour</span>
-                <span class="mr-auto font-bold uppercase text-red-500"
-                  >{{ ladate }} a {{ heures }}</span
+                <span class="mr-auto text-sm lg:text-md font-bold uppercase text-red-500"
+                  >{{ ladate1 }} a {{ heures }}</span
                 >
               </button>
               <button
@@ -353,11 +452,13 @@ const MonCommentaire = (commentaire) => {
               </button>
 
               <select
+                v-model="reception"
+                @click="modeReception = true"
                 class="lg:w-80 md:w-full w-full flex md:justify-center rounded-full mt-4 border-gray-200 focus:ring-black focus:border-none"
               >
-                <option value="1" class="text-center">A emporter</option>
-                <option value="2" class="text-center">Livraison</option>
-                <option value="3" class="text-center">Sur place</option>
+                <option value="A emporter" class="text-center">A emporter</option>
+                <option value="A emporter" class="text-center">Livraison</option>
+                <option value="Sur place" class="text-center">Sur place</option>
               </select>
 
               <div class="flex justify-between py-2">
@@ -372,10 +473,11 @@ const MonCommentaire = (commentaire) => {
               </div>
             </div>
             <button
+              :disabled="!allCompleted"
               @click="StartAnimation()"
               data-variant="normal"
               :class="{ 'btn-clicked bg-gray-600': isLoading }"
-              class="inline-flex items-center justify-center shrink-0 font-bold text-2xl leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-black bg-black text-white border border-transparent hover:bg-gray-600 px-5 py-0 h-12 mt-5 w-full"
+              class="my-button inline-flex items-center justify-center shrink-0 font-bold text-2xl leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-black bg-black text-white border border-transparent hover:bg-gray-600 px-5 py-0 h-12 mt-5 w-full"
             >
               <span class="mr-2">Continuer...</span>
               <svg
@@ -427,19 +529,32 @@ const MonCommentaire = (commentaire) => {
             </div>
           </div>
           <transition name="panier">
-            <div v-if="methode" class="mb-4 p-3 bg-white flex flex-col rtl:space-x-reverse">
+            <div
+              v-if="methode"
+              class="mb-4 p-3 bg-white flex flex-col rtl:space-x-reverse"
+            >
               <span class="text-xl mb-10 flex font-bold">Methode de paiement</span>
+              <span
+                class="text-sm text-red-500 mb-4"
+                v-if="warning"
+                :class="`shake ${click ? 'animate-shake ' : ''}`"
+                >Veuiller choisir la methode</span
+              >
               <div class="flex flex-col space-y-2">
                 <div class="flex space-x-2">
-                  <button @click="Paypal()"
-                    class="bg-white focus:border-2 focus:border-vert active:border-vert  border border-gray-300 rounded-md w-24 h-16 p-2"
+                  <button
+                    :class="`shake ${click ? 'animate-shake ' : ''}`"
+                    @click="Paypal()"
+                    class="bg-white focus:border-2 focus:border-vert active:border-vert border border-gray-300 rounded-md w-24 h-16 p-2"
                   >
                     <img
                       src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282733431754785346.webp"
                       class="h-12 mr-3"
                     />
                   </button>
-                  <button @click="Card()"
+                  <button
+                    :class="`shake ${click ? 'animate-shake' : ''}`"
+                    @click="Card()"
                     class="bg-white border focus:border-2 focus:border-vert active:border-vert border-gray-300 rounded-md w-24 h-16 p-2"
                   >
                     <img
@@ -447,7 +562,9 @@ const MonCommentaire = (commentaire) => {
                       class="h-12 mr-3"
                     />
                   </button>
-                  <button @click="Paytech()"
+                  <button
+                    :class="`shake ${click ? 'animate-shake' : ''}`"
+                    @click="Paytech()"
                     class="bg-white focus:border-2 focus:border-vert active:border-vert border border-gray-300 rounded-md w-24 h-16 p-2"
                   >
                     <img
@@ -458,7 +575,8 @@ const MonCommentaire = (commentaire) => {
                 </div>
 
                 <div>
-                  <button @click="DefinirPaiement()"
+                  <button
+                    @click="DefinirPaiement()"
                     class="text-white mt-10 text-xl font-bold bg-black w-full p-3 hover:bg-gray-600"
                   >
                     Valider
@@ -481,8 +599,8 @@ const MonCommentaire = (commentaire) => {
     :paytech="paytech"
     :paypal="paypal"
     :card="card"
-    @Animation="StartAnimation()"
-    @close="DefinirPaiement()"
+    @PhaseFinale="Terminal"
+    @close="ClosePaiment()"
   />
   <DateCommande
     v-if="date"
@@ -490,9 +608,161 @@ const MonCommentaire = (commentaire) => {
     :dater="date"
     @close="DefinirDate()"
   />
-  <div @click="DefinirPaiement()" v-if="paiement" class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center">
+  <div
+    @click="ClosePaiment()"
+    v-if="paiement"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
+  ></div>
+  <div
+    @click.self="yesNon = false"
+    v-if="yesNon"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
+  ></div>
+  <transition name="panierrr">
+    <div
+      v-if="yesNon"
+      @click.self="yesNon = false"
+      class="modal z-[52] fixed top-36 duration-700 ease-in-out w-full"
+    >
+      <div class="modal-dialog mx-auto w-11/12 md:w-2/3 lg:w-1/3 my-12 md:my-24 lg:my-28">
+        <div
+          class="modal-content relative flex flex-col h-full bg-white shadow-lg rounded-md text-current"
+        >
+          <div
+            class="modal-header h-12 bg-gray-100 flex-shrink-0 items-center justify-between px-4 py-3 border-b border-gray-200 rounded-t-md"
+          >
+            <h5
+              class="text-xl font-bold flex items-center justify-center leading-normal text-gray-800"
+            >
+              Je confirme le paiement
+            </h5>
+          </div>
 
-  </div>
+          <div
+            class="modal-footer bg-white space-x-4 flex items-center justify-center px-4 py-3 border-t border-gray-200 rounded-b-md"
+          >
+            <button
+              @click="sendOrderData(), (yesNon = false)"
+              type="button"
+              class="px-6 flex w-56 items-center justify-center py-2.5 bg-vert text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-haver active:shadow-lg transition duration-150 ease-in-out"
+            >
+              Oui
+            </button>
+            <button
+              @click="yesNon = false"
+              type="button"
+              class="px-6 flex w-56 items-center justify-center py-2.5 bg-red-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-haver active:shadow-lg transition duration-150 ease-in-out"
+            >
+              Non
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+  <div
+    @click.self="final = false"
+    v-if="final"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
+  ></div>
+  <transition name="panierrr">
+    <div v-if="final"   @click.self="final = false" class="modal z-[52] fixed top-0 duration-700 ease-in-out w-full">
+      <div class="modal-dialog mx-auto w-11/12 md:w-2/3 lg:w-1/3 my-12 md:my-24 lg:my-28">
+        <div
+          class="modal-content px-3 relative flex flex-col h-full bg-white shadow-lg rounded-md text-current"
+        >
+          <div
+            class="modal-footer space-y-1 bg-white flex flex-col items-center justify-center py-3 border-t border-gray-200 rounded-md"
+          >
+            <div class="flex flex-col space-y-1">
+              <div class="flex flex-col items-center justify-center">
+                <span class="text-3xl font-bold text-red-500">Merci !</span>
+                <span class="text-black text-2xl">Votre commande a bien ete cree.</span>
+                <span class="text-gray-600 text-sm"
+                  >Un e-mail de confirmation vous a ete envoye</span
+                >
+              </div>
+              <div class="flex flex-col items-center justify-center space-y-2">
+                <img
+                  src="//sheinsz.ltwebstatic.com/she_dist/images/shoppingcart-empty-50eb82fb72.png"
+                  class="empty-img"
+                />
+                <span class="text-gray-500 text-sm">Votre commande est en cours de preparation est sera prete</span>
+                <div class="flex space-x-2">
+                    <span class="text-red-500 uppercase font-bold">{{ladate}}</span>
+                    <span class="text-red-500 ">a</span>
+                    <span class="text-red-500 font-bold">{{heures}}</span>
+                </div>
+              </div>
+              <div class="flex flex-col space-y-4 items-center justify-center">
+                <span class="text-gray-500">Votre Numero de commande est: </span>
+                <span class="text-gray-500 text-6xl">{{orderId}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+
+  <transition name="panier">
+    <div
+      v-if="panier"
+      class="bg-vert font-bold flex h-14 text-white rounded-md p-4 fixed top-[39rem] right-4"
+    >
+      <div class="flex mb-3">
+        <span class="text-2xl font-bold">Commande reussie!</span>
+        <svg
+          class="w-8 h-8 icon ml-4"
+          viewBox="0 0 1024 1024"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="#000000"
+        >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              fill="#000000"
+              d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z"
+            ></path>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </transition>
+  <transition name="panier">
+    <div
+      v-if="panier1"
+      class="bg-red-500 font-bold flex h-14 text-white rounded-md p-4 fixed top-[39rem] right-4"
+    >
+      <div class="flex mb-3">
+        <span class="text-2xl font-bold">Commande echouee!</span>
+        <svg
+          class="w-8 h-8 icon ml-4"
+          viewBox="0 0 1024 1024"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="#000000"
+        >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              fill="#000000"
+              d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z"
+            ></path>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </transition>
 </template>
 <script>
 import Commentaire from "./Commentaire.vue";
@@ -510,9 +780,11 @@ export default {
       ladate: "aujourd'hui",
       heure: "",
       isLoading: false,
-      paypal:false,
-      paytech:false,
-      card:false
+      paypal: false,
+      paytech: false,
+      card: false,
+      click: false,
+      warning: false,
     };
   },
 
@@ -528,7 +800,22 @@ export default {
       this.date = !this.date;
     },
     DefinirPaiement() {
-      this.paiement = !this.paiement;
+      if (this.paypal == false && this.paytech == false && this.card == false) {
+        this.click = true;
+        this.warning = true;
+        setTimeout(() => {
+          this.click = false;
+        }, 1000);
+      } else {
+        this.paiement = true;
+        this.warning = false;
+      }
+    },
+    ClosePaiment() {
+      this.paiement = false;
+      this.paypal = false;
+      this.paytech = false;
+      this.card = false;
     },
     StartAnimation() {
       this.isLoading = true;
@@ -538,21 +825,24 @@ export default {
         this.methode = true;
       }, 1000);
     },
-    Paypal(){
-        this.paypal = true;
-        this.paytech = false;
-        this.card = false
+    Paypal() {
+      this.paypal = true;
+      this.paytech = false;
+      this.card = false;
+      this.warning = false;
     },
-     Paytech(){
-        this.paytech = true;
-        this.paypal = false
-        this.card = false
+    Paytech() {
+      this.paytech = true;
+      this.paypal = false;
+      this.card = false;
+      this.warning = false;
     },
-     Card(){
-        this.card = true;
-        this.paypal = false
-        this.paytech = false
-    }
+    Card() {
+      this.card = true;
+      this.paypal = false;
+      this.paytech = false;
+      this.warning = false;
+    },
   },
 };
 </script>
@@ -575,6 +865,60 @@ export default {
 
 .panier-leave,
 .panier-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+.my-button:disabled {
+  cursor: not-allowed;
+}
+
+.shake {
+  display: inline-block;
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-shake {
+  animation-name: shake;
+}
+
+.panierrr-enter-active,
+.panierrr-leave-active {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: translateY(10%);
+  opacity: 0;
+}
+
+.panierrr-enter,
+.panierrr-leave-to {
+  opacity: 0;
+  transform: translateY(10%);
+}
+
+.panierrr-leave,
+.panierrr-enter-to {
   opacity: 1;
   transform: translateY(0);
 }

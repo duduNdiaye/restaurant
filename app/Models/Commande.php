@@ -14,11 +14,14 @@ class Commande extends Model
     protected $fillable = [
         'nomClient',
         'numeroClient',
+        'coutTotal',
         'commentaire',
-        'dateHeure',
-        'dateHeure',
+        'date',
+        'heure',
+        'adresse',
         'modeReception',
         'panier',
+        'numeroCommande'
     ];
     public function articles(): BelongsToMany
     {

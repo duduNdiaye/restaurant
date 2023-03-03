@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('nomClient');
             $table->string('numeroClient');
-            $table->unsignedInteger('coutTotal');
+            $table->unsignedInteger('coutTotal')->default(0);
             $table->string('commentaire')->nullable();
             $table->dateTime('dateHeure');
             $table->string('modeReception');

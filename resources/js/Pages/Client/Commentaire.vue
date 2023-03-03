@@ -26,7 +26,7 @@
           <div
             class="modal-footer bg-gray-100 flex items-center justify-center px-4 py-3 border-t border-gray-200 rounded-b-md"
           >
-            <button @click="Commenter(),closeModal()"
+            <button @click="Commenter(),closeModal(),fait= true"
               type="button"
               class="px-6 flex w-56 items-center justify-center py-2.5 bg-vert text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-haver active:shadow-lg transition duration-150 ease-in-out "
             >
@@ -42,15 +42,10 @@
 export default {
     data(){
         return{
-            message:null
+            message:null,
+            fait:false
         }
     },
-  props: {
-     comment: {
-      type: Boolean,
-      required: true
-    }
-  },
 
   methods: {
     closeModal() {
@@ -58,7 +53,8 @@ export default {
     },
     Commenter()
     {
-        this.$emit('LeCommentaire',this.message);
+        this.fait = true
+        this.$emit('LeCommentaire',this.message,this.fait);
     }
   },
 };

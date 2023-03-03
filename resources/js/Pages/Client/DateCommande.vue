@@ -102,16 +102,11 @@
                     </g>
                   </g>
                 </svg>
-                <span>Plus tard</span>
+                <span class="text-sm lg:text-xl">Plus tard</span>
               </button>
             </div>
           </div>
           <div class="modal-body h-10 bg-gray-100 px-4" :class="{ 'h-[22rem]': plustard }">
-            <!-- <select class="w-full rounded-lg border-gray-200 focus:ring-black focus:border-none">
-                <option value="1" class="text-center">A emporter</option>
-                <option value="2" class="text-center ">Livraison</option>
-                <option value="3" class="text-center">Sur place</option>
-              </select> -->
             <div v-if="plustard" class="flex flex-col items-center justify-center mt-2">
               <DatePicker v-model="ladate" />
                 <input required
@@ -155,7 +150,8 @@ export default {
       ladate:null,
       heure:'',
       heure1:null,
-      memejour:"aujourd'hui"
+      memejour:"aujourd'hui",
+      fait:false
     };
   },
   props: {
@@ -186,13 +182,14 @@ export default {
       this.aujourdhui = !this.aujourdhui;
     },
     Valider(){
+        this.fait = true
         if(this.heure1 != null)
         {
-            this.$emit('DateHeure',this.ladate,this.heure1);
+            this.$emit('DateHeure',this.ladate,this.heure1,this.fait);
             console.log("here")
         }
         else{
-            this.$emit('DateHeure',this.memejour,this.heure);
+            this.$emit('DateHeure',this.memejour,this.heure,this.fait);
         }
     }
   },
