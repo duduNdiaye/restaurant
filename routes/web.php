@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommandeController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,10 +67,24 @@ Route::middleware([
     })->name('dashboard');
 });
 
-Route::controller(CommandeController::class)->group(function () {
-    Route::get('/commandes', 'client_commande')->name('client.commande');
-    Route::put('/validation', 'create_commande')->name('validation');
+Route::group(['prefix' => 'commandes'], function () {
+    Route::get('/', [CommandeController::class, 'client_commande'])->name('client.commande');
+    Route::post('/validation', function (Request $request) {
+        Commande::create([
+            'nomClient' => $request->NomClient,
+            'numeroClient' => $request->TelClient,
+            'coutTotal' => $request->Total,
+            'commentaire' => $request->MonCommentaire,
+            'modeReception' => $request->TypeReception,
+            'panier' => json_encode($request->panier),
+            'numeroCommande' => $request->orderId,
+            'date' => $request->laDate,
+            'heure' => $request->Lheure,
+            'adresse' => $request->AdresseClient
+        ]);
+    })->name('validation.commande');
 });
+
 Route::post('/article/new',[ArticleController::class,'store'])->name('store.article');
 Route::put('article/edit/{article}',[ArticleController::class,'update'])->name('update.article');
 Route::delete('article/delete/{article}', [ArticleController::class,'destroy'])->name('delete.article');

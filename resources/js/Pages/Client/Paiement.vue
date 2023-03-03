@@ -98,7 +98,7 @@ export default {
      PayerCommande() {
       console.log("here",this.nom)
       this.fini = true
-      this.$emit("Transaction",this.nom,this.telephone,this.adresse);
+      this.$emit("PhaseFinale",this.nom,this.telephone,this.adresse);
     },
   },
 };

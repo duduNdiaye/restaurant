@@ -46,12 +46,6 @@ export default {
             fait:false
         }
     },
-  props: {
-     comment: {
-      type: Boolean,
-      required: true
-    }
-  },
 
   methods: {
     closeModal() {

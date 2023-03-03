@@ -530,7 +530,7 @@ const scrollToResults = () => {
     </section>
 
     <footer
-      class="fixed bottom-0 border-t-2 border-gray-200 shadow-2xl bg-white w-full px-6 py-3 lg:hidden md:hidden"
+      class="fixed bottom-0 border-t-2 z-[55] border-gray-200 shadow-2xl bg-white w-full px-6 py-3 lg:hidden md:hidden"
     >
       <div class="flex justify-between items-center">
         <div>
@@ -3303,7 +3303,7 @@ const scrollToResults = () => {
         <transition name="panier">
           <div
             v-if="panier"
-            class="bg-vert font-bold flex h-14 text-white rounded-md p-4 fixed top-[39rem] right-4"
+            class="bg-vert font-bold flex h-14 z-[55] text-white rounded-md p-4 fixed top-[39rem] right-4"
           >
             <div class="flex mb-3">
               <span class="text-2xl font-bold">Article ajoute!</span>

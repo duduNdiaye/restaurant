@@ -3,6 +3,8 @@ import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
+import moment from "moment";
+import { useForm } from "@inertiajs/inertia-vue3";
 
 defineProps({
   canLogin: Boolean,
@@ -23,9 +25,9 @@ const heureCommande = ref(false);
 const Commentaires = ref(false);
 const modeReception = ref(false);
 const reception = ref("");
-const Nom = ref("");
-const Telephone = ref("");
-const Adresse = ref("");
+const Nom = ref(null);
+const Telephone = ref(null);
+const Adresse = ref(null);
 const panier = ref(false);
 const panier1 = ref(false);
 const yesNon = ref(false);
@@ -115,12 +117,13 @@ const CommandeDate = (memejour, heure, fait) => {
   ladate.value = memejour;
 
   if (ladate.value != "aujourd'hui") {
-    ladate1.value = memejour;
+    ladate1.value = moment(newa).startOf('day').format("YYYY-MM-DD");
     const now = ladate.value;
     let nomJour = { weekday: "long" };
     ladate.value = now.toLocaleDateString("fr-FR", nomJour);
   } else {
-    ladate1.value = new Date();
+    const newa = new Date();
+    ladate1.value = moment(newa).startOf('day').format("YYYY-MM-DD");
   }
   heures.value = heure;
   heureCommande.value = fait;
@@ -131,11 +134,12 @@ const MonCommentaire = (commentaire, fait) => {
   Commentaires.value = fait;
 };
 
-const Terminal = (nom, telephone, adresse) => {
-  Nom.value = nom;
-  Telephone.value = telephone;
-  Adresse.value = adresse;
+const Terminal = (nomClient, telephoneClient, adresseClient) => {
+  Nom.value = nomClient;
+  Telephone.value = telephoneClient;
+  Adresse.value = adresseClient;
   yesNon.value = true;
+  console.log(adresseClient);
 };
 
 const shake = () => {
@@ -145,83 +149,48 @@ const shake = () => {
   }, 1000);
 };
 
-const sendOrderData = (
-  orderId,
-  cart,
-  total,
-  commentaires,
-  reception,
-  ladate1,
-  heures,
-  Nom,
-  Telephone,
-  Adresse
-) => {
-  // Envoie les données de la commande vers le serveur
-  const formData = new FormData();
-  formData.append("order_id", orderId);
-  formData.append("total", total.value);
-  formData.append("commentaires", commentaires.value);
-  formData.append("reception", reception.value);
-  formData.append("ladate", ladate1.value);
-  formData.append("heures", heures.value);
-  formData.append("nom", Nom.value);
-  formData.append("telephone", Telephone.value);
-  formData.append("adresse", Adresse.value);
-  formData.append("cart_data", cart.value);
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ": " + pair[1]);
-  }
+const sendOrderData = () => {
+  const form = useForm({
+    orderId: Math.random().toString(36).substr(2, 9),
+    Total: total.value,
+    MonCommentaire: commentaires.value,
+    TypeReception: reception.value,
+    laDate: ladate1.value,
+    Lheure: heures.value,
+    NomClient: Nom,
+    TelClient: Telephone.value,
+    AdresseClient: Adresse,
+    panier: JSON.stringify(cart.value),
+  });
+
   // Utilisez ici l'API de votre choix pour envoyer les données vers le serveur
-  axios
-    .put("validation", formData)
+  form.post(route("validation.commande"), {
 
-    .then((response) => {
-      console.log(response.data);
-      panier.value = true; // affiche le modal de validation
-      console.log(panier.value);
+    onSuccess: () => {
+      panier.value = true // affiche le modal de validation
+      console.log(panier.value)
       setTimeout(() => {
-        console.log("here");
-        panier.value = false;
+        console.log("here")
+        panier.value = false
       }, 2000);
-    })
-    .catch((error) => {
-      console.error(error);
-      panier1.value = true; // affiche le modal de validation
-      console.log(panier1.value);
+    },
+    onError: () => {
+      panier1.value = true // affiche le modal de validation
+      console.log(panier1.value)
       setTimeout(() => {
-        console.log("here");
-        panier1.value = false;
+        console.log("here")
+        panier1.value = false
       }, 2000);
-    });
-};
+    }
+  })
 
-const createOrder = () => {
-  // Génère un ID de commande unique
-  const orderId = Math.random().toString(36).substr(2, 9);
-
-  // Envoie les données de la commande vers le serveur
-  sendOrderData(
-    orderId,
-    cart,
-    total,
-    commentaires,
-    reception,
-    ladate1,
-    heures,
-    Nom,
-    Telephone,
-    Adresse
-  );
-
-  // Réinitialise le panier
   cart.value = [];
   count.value = 0;
 
   // enregistrer les données du panier dans le localStorage
   localStorage.removeItem("cart");
-
-  console.log("Order created with ID:", orderId);
+  console.log("form:", form);
+  console.log(typeof total.value);
 };
 </script>
 <template>
@@ -617,7 +586,7 @@ const createOrder = () => {
     :paytech="paytech"
     :paypal="paypal"
     :card="card"
-    @Transaction="Terminal()"
+    @PhaseFinale="Terminal"
     @close="ClosePaiment()"
   />
   <DateCommande
@@ -637,7 +606,11 @@ const createOrder = () => {
     class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
   ></div>
   <transition name="panierrr">
-    <div v-if="yesNon"   @click.self="yesNon = false" class="modal z-[52] fixed top-36 duration-700 ease-in-out w-full">
+    <div
+      v-if="yesNon"
+      @click.self="yesNon = false"
+      class="modal z-[52] fixed top-36 duration-700 ease-in-out w-full"
+    >
       <div class="modal-dialog mx-auto w-11/12 md:w-2/3 lg:w-1/3 my-12 md:my-24 lg:my-28">
         <div
           class="modal-content relative flex flex-col h-full bg-white shadow-lg rounded-md text-current"
@@ -648,20 +621,22 @@ const createOrder = () => {
             <h5
               class="text-xl font-bold flex items-center justify-center leading-normal text-gray-800"
             >
-                Je confirme le paiement
+              Je confirme le paiement
             </h5>
           </div>
 
           <div
             class="modal-footer bg-white space-x-4 flex items-center justify-center px-4 py-3 border-t border-gray-200 rounded-b-md"
           >
-            <button @click="createOrder(),yesNon = false"
+            <button
+              @click="sendOrderData(), (yesNon = false)"
               type="button"
               class="px-6 flex w-56 items-center justify-center py-2.5 bg-vert text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-haver active:shadow-lg transition duration-150 ease-in-out"
             >
               Oui
             </button>
-             <button @click="yesNon = false"
+            <button
+              @click="yesNon = false"
               type="button"
               class="px-6 flex w-56 items-center justify-center py-2.5 bg-red-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-haver hover:shadow-lg focus:bg-haver focus:shadow-lg focus:outline-none focus:ring-0 active:bg-haver active:shadow-lg transition duration-150 ease-in-out"
             >
