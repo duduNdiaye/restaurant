@@ -102,7 +102,7 @@
                     </g>
                   </g>
                 </svg>
-                <span>Plus tard</span>
+                <span class="text-sm lg:text-xl">Plus tard</span>
               </button>
             </div>
           </div>

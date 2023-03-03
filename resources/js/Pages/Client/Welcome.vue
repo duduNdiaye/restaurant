@@ -10,7 +10,7 @@ const props = defineProps({
   laravelVersion: String,
   phpVersion: String,
   articles: {},
-  users: {}
+  users: {},
 });
 
 const cart = ref([]);
@@ -40,15 +40,11 @@ onMounted(() => {
   if (count.value != 0) {
     count1.value = true;
   }
-  for(let i = 0; i < props.articles.length; i++)
-  {
-    for(let u = 0; u < props.users.length; u++)
-    {
-        if(props.articles[i].user_id == props.users[u].id)
-        {
-            props.articles[i].nomResto = props.users[u].name
-
-        }
+  for (let i = 0; i < props.articles.length; i++) {
+    for (let u = 0; u < props.users.length; u++) {
+      if (props.articles[i].user_id == props.users[u].id) {
+        props.articles[i].nomResto = props.users[u].name;
+      }
     }
   }
 });
@@ -160,7 +156,6 @@ const recherche = computed(() => {
   } else {
     return props.articles;
   }
-
 });
 
 const scrollToResults = () => {
@@ -3237,7 +3232,7 @@ const scrollToResults = () => {
           id="results"
           class="grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
         >
-          <article
+          <article @mouseover="resto = article.id"  @mouseleave="resto = false"
             v-for="article in recherche"
             :key="article.id"
             class="product-card cart-type-neon overflow-hidden rounded border border-border-200 bg-white shadow-sm duration-50 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
@@ -3257,14 +3252,21 @@ const scrollToResults = () => {
               </button>
               <header class="p-1 md:p-6">
                 <div class="py-2 flex flex-col">
-                  <span class="text-sm font-bold text-heading md:text-base">
-                    {{ article.prix }} FCFA</span
-                  >
-                  <h3
-                    class="mb-4 cursor-pointer truncate text-xs text-gray-500 md:text-sm"
-                  >
-                    {{ article.nom }}
-                  </h3>
+                  <div class="flex">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-bold text-heading md:text-base">
+                        {{ article.prix }} FCFA</span
+                      >
+                      <h3
+                        class="mb-4 cursor-pointer truncate text-xs text-gray-500 md:text-sm"
+                      >
+                        {{ article.nom }}
+                      </h3>
+                    </div>
+                    <div class="ml-auto" v-if="resto == article.id">
+                        <span  class="bg-red-200 p-2 text-white">{{article.nomResto}}</span>
+                    </div>
+                  </div>
                   <button
                     @click="addItemToCart(article)"
                     class="group flex h-7 w-full items-center justify-between rounded bg-gray-100 text-xs text-body-dark transition-colors hover:border-accent hover:bg-vert hover:text-light focus:border-vert focus:bg-vert focus:text-light focus:outline-none md:h-9 md:text-sm"
@@ -3334,6 +3336,7 @@ const scrollToResults = () => {
       <!-- Ajouter d'autres articles ici -->
     </div>
   </div>
+
 </template>
 
 <script>
@@ -3353,6 +3356,7 @@ export default {
       isAsideSticky: false,
       navbarHeight: 0,
       showTitre: false,
+      resto:'',
       show: false,
       selectedArticle: null,
     };

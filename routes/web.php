@@ -76,12 +76,13 @@ Route::group(['prefix' => 'commandes'], function () {
             'coutTotal' => $request->Total,
             'commentaire' => $request->MonCommentaire,
             'modeReception' => $request->TypeReception,
-            'panier' => json_encode($request->panier),
+            'panier' => json_encode($request->panierr),
             'numeroCommande' => $request->orderId,
             'date' => $request->laDate,
             'heure' => $request->Lheure,
             'adresse' => $request->AdresseClient
         ]);
+
     })->name('validation.commande');
 });
 

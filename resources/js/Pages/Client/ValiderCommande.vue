@@ -1,10 +1,9 @@
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import moment from "moment";
-import { useForm } from "@inertiajs/inertia-vue3";
+import { Head, Link, useForm } from "@inertiajs/vue3";
 
 defineProps({
   canLogin: Boolean,
@@ -117,13 +116,13 @@ const CommandeDate = (memejour, heure, fait) => {
   ladate.value = memejour;
 
   if (ladate.value != "aujourd'hui") {
-    ladate1.value = moment(newa).startOf('day').format("YYYY-MM-DD");
+    ladate1.value = moment(newa).startOf("day").format("YYYY-MM-DD");
     const now = ladate.value;
     let nomJour = { weekday: "long" };
     ladate.value = now.toLocaleDateString("fr-FR", nomJour);
   } else {
     const newa = new Date();
-    ladate1.value = moment(newa).startOf('day').format("YYYY-MM-DD");
+    ladate1.value = moment(newa).startOf("day").format("YYYY-MM-DD");
   }
   heures.value = heure;
   heureCommande.value = fait;
@@ -160,29 +159,28 @@ const sendOrderData = () => {
     NomClient: Nom,
     TelClient: Telephone.value,
     AdresseClient: Adresse,
-    panier: JSON.stringify(cart.value),
+    panierr: JSON.stringify(cart.value),
   });
 
   // Utilisez ici l'API de votre choix pour envoyer les données vers le serveur
   form.post(route("validation.commande"), {
-
     onSuccess: () => {
-      panier.value = true // affiche le modal de validation
-      console.log(panier.value)
+      panier.value = true; // affiche le modal de validation
+      console.log(panier.value);
       setTimeout(() => {
-        console.log("here")
-        panier.value = false
+        console.log("here");
+        panier.value = false;
       }, 2000);
     },
     onError: () => {
-      panier1.value = true // affiche le modal de validation
-      console.log(panier1.value)
+      panier.value = true; // affiche le modal de validation
+      console.log(panier1.value);
       setTimeout(() => {
-        console.log("here")
-        panier1.value = false
+        console.log("here");
+        panier1.value = false;
       }, 2000);
-    }
-  })
+    },
+  });
 
   cart.value = [];
   count.value = 0;
@@ -208,7 +206,7 @@ const sendOrderData = () => {
             EatEasy
           </a>
           <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
-          <p class="font-bold text-xl ml-8 lg:hidden md:hidden">
+          <p class="font-bold lg:text-xl text-lg ml-8 lg:hidden md:hidden">
             Que desirez-vous manger?
           </p>
         </div>
@@ -269,105 +267,115 @@ const sendOrderData = () => {
               <span class="flex text-lg text-center">Resume du panier({{ count }})</span>
             </div>
           </div>
-          <div
-            class="p-5 bg-white shadow-700 hover:scale-95 md:p-8 lg:h-68 lg:w-full border-b border-gray-200"
-            v-for="car in cart"
-            :key="car.id"
-          >
+
+          <div v-if="count">
             <div
-              class="flex flex-col md:flex-row md:space-x-4 space-y-4 lg:flex-row md:items-start items-center lg:items-start"
+              class="p-5 bg-white shadow-700 hover:scale-95 md:p-8 lg:h-68 lg:w-full border-b border-gray-200"
+              v-for="car in cart"
+              :key="car.id"
             >
-              <div class="flex-shrink-0 w-32 lg:w-48">
-                <img
-                  :src="car.photo"
-                  alt="Nom de l'article"
-                  class="w-full h-auto md:w-56"
-                />
-              </div>
-              <div class="flex flex-col justify-between lg:ml-4 mt-2 lg:mt-0">
-                <div class="font-medium text-lg lg:text-xl lg:text-start text-center">
-                  {{ car.nom }}
+              <div
+                class="flex flex-col md:flex-row md:space-x-4 space-y-4 lg:flex-row md:items-start items-center lg:items-start"
+              >
+                <div class="flex-shrink-0 w-32 lg:w-48">
+                  <img
+                    :src="car.photo"
+                    alt="Nom de l'article"
+                    class="w-full h-auto md:w-56"
+                  />
                 </div>
-                <div class="flex justify-between items-center">
-                  <div
-                    class="flex flex-col md:flex-row md:space-x-6 lg:flex-row lg:items-center lg:space-x-10 space-y-6"
-                  >
-                    <div class="flex lg:space-x-10 md:space-x-2 space-x-16 mt-1">
-                      <div
-                        class="text-sm text-white shrink-0 md:text-xs bg-black md:py-3 md:mt-3 py-1 lg:mt-3 px-4 rounded-full w-fit"
-                      >
-                        Quantité :{{ car.quantite }}
-                      </div>
-                      <div class="text-gray-500 font-bold lg:mt-4 md:mt-4">
-                        {{ car.prix }}F
-                      </div>
-                    </div>
-                    <div class="flex lg:space-x-[-4rem] md:space-x-[-3rem] space-x-8">
-                      <div class="flex-shrink-0 lg:mr-6">
+                <div class="flex flex-col justify-between lg:ml-4 mt-2 lg:mt-0">
+                  <div class="font-medium text-lg lg:text-xl lg:text-start text-center">
+                    {{ car.nom }}
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <div
+                      class="flex flex-col md:flex-row md:space-x-6 lg:flex-row lg:items-center lg:space-x-10 space-y-6"
+                    >
+                      <div class="flex lg:space-x-10 md:space-x-2 space-x-16 mt-1">
                         <div
-                          class="lg:mr-16 md:mr-16 overflow-hidden flex items-center w-24 h-8 bg-gray-100 text-black rounded-full"
+                          class="text-sm text-white shrink-0 md:text-xs bg-black md:py-3 md:mt-3 py-1 lg:mt-3 px-4 rounded-full w-fit"
                         >
-                          <button
-                            @click="Diminuer(car)"
-                            class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert focus:outline-none"
-                          >
-                            <span class="sr-only">minus</span
-                            ><svg
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              class="h-3 w-3 stroke-2.5"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M20 12H4"
-                              ></path>
-                            </svg>
-                          </button>
-                          <div
-                            class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
-                          >
-                            1
-                          </div>
-                          <button
-                            @click="Augmenter(car)"
-                            class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
-                            title=""
-                          >
-                            <span class="sr-only">plus</span
-                            ><svg
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                              ></path>
-                            </svg>
-                          </button>
+                          Quantité :{{ car.quantite }}
+                        </div>
+                        <div class="text-gray-500 font-bold lg:mt-4 md:mt-4">
+                          {{ car.prix }}F
                         </div>
                       </div>
-                      <div class="ml-auto text-red-500 font-bold mr-0">
-                        Total:{{ car.total }}F
+                      <div class="flex lg:space-x-[-4rem] md:space-x-[-3rem] space-x-8">
+                        <div class="flex-shrink-0 lg:mr-6">
+                          <div
+                            class="lg:mr-16 md:mr-16 overflow-hidden flex items-center w-24 h-8 bg-gray-100 text-black rounded-full"
+                          >
+                            <button
+                              @click="Diminuer(car)"
+                              class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert focus:outline-none"
+                            >
+                              <span class="sr-only">minus</span
+                              ><svg
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                class="h-3 w-3 stroke-2.5"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="M20 12H4"
+                                ></path>
+                              </svg>
+                            </button>
+                            <div
+                              class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
+                            >
+                              1
+                            </div>
+                            <button
+                              @click="Augmenter(car)"
+                              class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
+                              title=""
+                            >
+                              <span class="sr-only">plus</span
+                              ><svg
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                ></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="ml-auto text-red-500 font-bold mr-0">
+                          Total:{{ car.total }}F
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="flex items-center space-x-6 mt-6">
-                  <button class="text-gray-600 text-sm mr-2">Ajouter aux favoris</button>
-                  <button
-                    @click="removeItemFromCart(car)"
-                    class="text-lg hover:font-black"
-                  >
-                    effacer
-                  </button>
+                  <div class="flex items-center space-x-6 mt-6">
+                    <button class="text-gray-600 text-sm mr-2">
+                      Ajouter aux favoris
+                    </button>
+                    <button
+                      @click="removeItemFromCart(car)"
+                      class="text-lg hover:font-black"
+                    >
+                      effacer
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+          <div v-else class="flex flex-col space-y-3 justify-center items-center">
+           <img src="//sheinsz.ltwebstatic.com/she_dist/images/shoppingcart-empty-50eb82fb72.png" class="empty-img">
+            <span class="text-black font bold lg:text-2xl">Votre panier est vide</span>
+            <a class="bg-black p-2 text-white font-bold hover:bg-gray-600" :href="route('acceuil')">Commander maintenant</a>
           </div>
         </div>
         <div
@@ -408,7 +416,7 @@ const sendOrderData = () => {
                   </g>
                 </svg>
                 <span class="mr-2 uppercase font-bold">Pour</span>
-                <span class="mr-auto font-bold uppercase text-red-500"
+                <span class="mr-auto text-sm lg:text-md font-bold uppercase text-red-500"
                   >{{ ladate }} a {{ heures }}</span
                 >
               </button>
