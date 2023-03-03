@@ -2,6 +2,7 @@
 <script >
 
 export default {
+
     data() {
         return {
             showDropDown: false,
@@ -32,17 +33,30 @@ export default {
             this.ShowArticles = true;
             this.ShowCards = false;
             this.showMenu=false;
+
+
+
+
         },
         ShowAllCards() {
             this.ShowArticles = false;
             this.ShowCards = true;
             this.showMenu=false;
+
         },
         ShowWeekMenu(){
             this.showMenu=true;
             this.ShowArticles = false;
             this.ShowCards = false;
+
+
         }
+    },
+    created() {
+},
+
+    computed: {
+
     },
     components: { DashboardOther, MenuSemaine },
 
@@ -74,7 +88,7 @@ import TableArticles from './Tablearticles.vue';
     <div class="w-[400px] h-full bg-gray-300 text-white" v-show="showSide" ref="snbar">
       <div class="h-[50px] bg-gray-900 flex justify-start  items-center ">
         <div class="px-[20px]">
-          <h3 class="font-bold text-xl">EasyEAT Dashboard</h3>
+          <h3 class="font-bold text-xl"><a href="/dashboard">EasyEAT Dashboard</a></h3>
         </div>
       </div>
       <div class="h-[calc(120vh-50px)] bg-gray-800 py-[20px]">
@@ -144,9 +158,9 @@ import TableArticles from './Tablearticles.vue';
             <div v-show="showDropDown" class="absolute right-[10px] z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
               <div class="py-1 text-left" role="none">
                 <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                <a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Account settings</a>
+                <a href="#" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Account settings</a>
                 <form method="POST" @submit.prevent="logout">
-                  <button type="submit" class="text-gray-700 block w-full px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
+                  <button type="submit" class="text-gray-700 block w-full  hover:bg-slate-900 hover:text-white px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
                 </form>
               </div>
             </div>

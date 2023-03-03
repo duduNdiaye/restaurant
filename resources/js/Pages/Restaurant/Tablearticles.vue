@@ -7,7 +7,13 @@
       @click="showmodal">
       Créer un nouvel article
     </button>
-    <h1 class="text-3xl font-semibold mb-6">Liste des articles </h1>
+    <div class="flex flex-row justify-between">
+        <h1 class="text-3xl font-semibold mb-6">Liste des articles </h1>
+        <div class="flex items-center mb-4">
+          <label for="search" class="mr-2 text-md font-semibold ">Rechercher:</label>
+          <input type="text" id="search"  name="search" v-model="search" class="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" >
+        </div>
+    </div>
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
         <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -26,7 +32,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200" >
 
-              <tr v-for="article in articlesAll.data" :key="article.id">
+              <tr v-for="article in filteredARticles" :key="article.id">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ article.nom }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ article.prix }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ article.categorie }}</td>
@@ -87,7 +93,7 @@ import Pagination from '../../Components/Pagination.vue';
   export default  {
     name: "tablearticles",
     props: {
-        articlesAll: Object,
+        articlesAll: Array,
     },
     data(){
         return {
@@ -95,7 +101,11 @@ import Pagination from '../../Components/Pagination.vue';
             activedit:false,
             articledites:null,
             activedelete:false,
-            articleAsupprimer:null
+            articleAsupprimer:null,
+            search:''
+
+
+
         };
     },
     methods: {
@@ -111,13 +121,29 @@ import Pagination from '../../Components/Pagination.vue';
             this.activedelete=!this.activedelete
             this.articleAsupprimer=article
             console.log(this.activedelete)
-        }
+        },
+        // search(){
+        //     // this.$inertia.get("/dashboard",{search:this.searchTerm})
+        // }
+
 
     },
     computed:{
+        filteredARticles(){
+            return this.articlesAll.data.filter((article =>{
+                return (
+                    article.nom.toLowerCase().includes(this.search.toLocaleLowerCase())
+                    || article.categorie.toLowerCase().includes(this.search.toLocaleLowerCase())
+
+                )
+            })
+            )
+        }
 
     },
-    components: { ArticleCreateModal, ArticleEditModal, ArticleDeleteModal,Pagination }
+
+    components: { ArticleCreateModal, ArticleEditModal, ArticleDeleteModal,Pagination },
+
 };
 
 
