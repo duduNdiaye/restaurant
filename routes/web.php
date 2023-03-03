@@ -10,10 +10,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommandeController;
-use App\Models\Commande;
-use Carbon\Carbon;
+
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
