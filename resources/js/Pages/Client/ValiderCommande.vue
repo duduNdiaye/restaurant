@@ -17,7 +17,7 @@ const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
 const ladate = ref("aujoudh'ui");
-const ladate1 = ref(null);
+const ladate1 = ref("aujoudh'ui");
 const commentaires = ref("Ajouter un commentaire");
 const heures = ref();
 const heureCommande = ref(false);
@@ -26,6 +26,7 @@ const modeReception = ref(false);
 const reception = ref("");
 const Nom = ref(null);
 const Telephone = ref(null);
+const final = ref(false)
 const Adresse = ref(null);
 const panier = ref(false);
 const panier1 = ref(false);
@@ -116,7 +117,7 @@ const CommandeDate = (memejour, heure, fait) => {
   ladate.value = memejour;
 
   if (ladate.value != "aujourd'hui") {
-    ladate1.value = moment(newa).startOf("day").format("YYYY-MM-DD");
+    ladate1.value = moment(memejour).startOf("day").format("YYYY-MM-DD");
     const now = ladate.value;
     let nomJour = { weekday: "long" };
     ladate.value = now.toLocaleDateString("fr-FR", nomJour);
@@ -148,9 +149,11 @@ const shake = () => {
   }, 1000);
 };
 
+const orderId = Math.random().toString(36).substr(2, 9)
+
 const sendOrderData = () => {
   const form = useForm({
-    orderId: Math.random().toString(36).substr(2, 9),
+    orderId: orderId,
     Total: total.value,
     MonCommentaire: commentaires.value,
     TypeReception: reception.value,
@@ -165,12 +168,7 @@ const sendOrderData = () => {
   // Utilisez ici l'API de votre choix pour envoyer les données vers le serveur
   form.post(route("validation.commande"), {
     onSuccess: () => {
-      panier.value = true; // affiche le modal de validation
-      console.log(panier.value);
-      setTimeout(() => {
-        console.log("here");
-        panier.value = false;
-      }, 2000);
+     final.value = true
     },
     onError: () => {
       panier.value = true; // affiche le modal de validation
@@ -373,9 +371,16 @@ const sendOrderData = () => {
             </div>
           </div>
           <div v-else class="flex flex-col space-y-3 justify-center items-center">
-           <img src="//sheinsz.ltwebstatic.com/she_dist/images/shoppingcart-empty-50eb82fb72.png" class="empty-img">
+            <img
+              src="//sheinsz.ltwebstatic.com/she_dist/images/shoppingcart-empty-50eb82fb72.png"
+              class="empty-img"
+            />
             <span class="text-black font bold lg:text-2xl">Votre panier est vide</span>
-            <a class="bg-black p-2 text-white font-bold hover:bg-gray-600" :href="route('acceuil')">Commander maintenant</a>
+            <a
+              class="bg-black p-2 text-white font-bold hover:bg-gray-600"
+              :href="route('acceuil')"
+              >Commander maintenant</a
+            >
           </div>
         </div>
         <div
@@ -417,7 +422,7 @@ const sendOrderData = () => {
                 </svg>
                 <span class="mr-2 uppercase font-bold">Pour</span>
                 <span class="mr-auto text-sm lg:text-md font-bold uppercase text-red-500"
-                  >{{ ladate }} a {{ heures }}</span
+                  >{{ ladate1 }} a {{ heures }}</span
                 >
               </button>
               <button
@@ -655,6 +660,51 @@ const sendOrderData = () => {
       </div>
     </div>
   </transition>
+  <div
+    @click.self="final = false"
+    v-if="final"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
+  ></div>
+  <transition name="panierrr">
+    <div v-if="final"   @click.self="final = false" class="modal z-[52] fixed top-0 duration-700 ease-in-out w-full">
+      <div class="modal-dialog mx-auto w-11/12 md:w-2/3 lg:w-1/3 my-12 md:my-24 lg:my-28">
+        <div
+          class="modal-content px-3 relative flex flex-col h-full bg-white shadow-lg rounded-md text-current"
+        >
+          <div
+            class="modal-footer space-y-1 bg-white flex flex-col items-center justify-center py-3 border-t border-gray-200 rounded-md"
+          >
+            <div class="flex flex-col space-y-1">
+              <div class="flex flex-col items-center justify-center">
+                <span class="text-3xl font-bold text-red-500">Merci !</span>
+                <span class="text-black text-2xl">Votre commande a bien ete cree.</span>
+                <span class="text-gray-600 text-sm"
+                  >Un e-mail de confirmation vous a ete envoye</span
+                >
+              </div>
+              <div class="flex flex-col items-center justify-center space-y-2">
+                <img
+                  src="//sheinsz.ltwebstatic.com/she_dist/images/shoppingcart-empty-50eb82fb72.png"
+                  class="empty-img"
+                />
+                <span class="text-gray-500 text-sm">Votre commande est en cours de preparation est sera prete</span>
+                <div class="flex space-x-2">
+                    <span class="text-red-500 uppercase font-bold">{{ladate}}</span>
+                    <span class="text-red-500 ">a</span>
+                    <span class="text-red-500 font-bold">{{heures}}</span>
+                </div>
+              </div>
+              <div class="flex flex-col space-y-4 items-center justify-center">
+                <span class="text-gray-500">Votre Numero de commande est: </span>
+                <span class="text-gray-500 text-6xl">{{orderId}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+
   <transition name="panier">
     <div
       v-if="panier"

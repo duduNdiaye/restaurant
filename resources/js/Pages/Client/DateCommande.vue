@@ -107,11 +107,6 @@
             </div>
           </div>
           <div class="modal-body h-10 bg-gray-100 px-4" :class="{ 'h-[22rem]': plustard }">
-            <!-- <select class="w-full rounded-lg border-gray-200 focus:ring-black focus:border-none">
-                <option value="1" class="text-center">A emporter</option>
-                <option value="2" class="text-center ">Livraison</option>
-                <option value="3" class="text-center">Sur place</option>
-              </select> -->
             <div v-if="plustard" class="flex flex-col items-center justify-center mt-2">
               <DatePicker v-model="ladate" />
                 <input required
