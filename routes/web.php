@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommandeController;
+
 use Illuminate\Http\Request;
 
 /*
@@ -41,10 +42,14 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
+    Route::get('/dashboard', function (Request $request) {
         switch (Auth::user()->role) {
             case 'restaurant':
-                $articles = Article::where('user_id', Auth::id())->paginate(3);
+                // $articles = Article::when($request->search,function($query,$searchTerm){
+                //     $query->where('nom','like','%'.$searchTerm.'%')
+                //     ->OrWhere('categorie','like','%'.$searchTerm.'%');
+                // })->where('user_id', Auth::id())->paginate(5)->withQueryString();
+                $articles = Article::where('user_id', Auth::id())->paginate(5);
                 $commandes=Commande::all();
                 return Inertia::render(
                     'Restaurant/Dashboard',

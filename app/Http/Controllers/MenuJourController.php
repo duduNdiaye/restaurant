@@ -25,6 +25,7 @@ class MenuJourController extends Controller
     public function create()
     {
         //
+
     }
 
     /**
@@ -36,6 +37,9 @@ class MenuJourController extends Controller
     public function store(Request $request)
     {
         //
+        $monMenu=new MenuJour($request->all());
+        $monMenu->saveOrFail();
+
     }
 
     /**
@@ -70,6 +74,8 @@ class MenuJourController extends Controller
     public function update(Request $request, MenuJour $menuJour)
     {
         //
+        $menuJour->updateOrFail($request->all());
+
     }
 
     /**
@@ -81,5 +87,6 @@ class MenuJourController extends Controller
     public function destroy(MenuJour $menuJour)
     {
         //
+        $menuJour->deleteOrFail();
     }
 }
