@@ -56,7 +56,7 @@ const total = computed(() => {
 const panier = ref(false);
 
 const addItemToCart = (article) => {
-  console.log(article.photo);
+  console.log(article.nomResto);
   //Vérifie si l'article est déjà dans le panier
   let index = cart.value.findIndex((item) => item.nom === article.nom);
   if (index === -1) {
@@ -66,6 +66,7 @@ const addItemToCart = (article) => {
       prix: parseFloat(article.prix),
       quantite: 1,
       total: parseFloat(article.prix),
+      restau: article.nomResto ?? "Nom du restaurant non spécifié",
     });
     count1.value = true;
   } else {
@@ -149,6 +150,12 @@ const Diminuer = (car) => {
 };
 
 const recherche = computed(() => {
+  if (count.value) {
+    return props.articles.filter((article) =>
+     article.nomResto == cart.value[0].restau
+    );
+  }
+
   if (articlerecherche.value) {
     return props.articles.filter((article) =>
       article.nom.toLowerCase().includes(articlerecherche.value.toLocaleLowerCase())
@@ -3232,7 +3239,9 @@ const scrollToResults = () => {
           id="results"
           class="grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
         >
-          <article @mouseover="resto = article.id"  @mouseleave="resto = false"
+          <article
+            @mouseover="resto = article.id"
+            @mouseleave="resto = false"
             v-for="article in recherche"
             :key="article.id"
             class="product-card cart-type-neon overflow-hidden rounded border border-border-200 bg-white shadow-sm duration-50 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
@@ -3264,7 +3273,9 @@ const scrollToResults = () => {
                       </h3>
                     </div>
                     <div class="ml-auto" v-if="resto == article.id">
-                        <span  class="bg-red-200 p-2 text-white">{{article.nomResto}}</span>
+                      <span class="bg-red-200 p-2 text-white">{{
+                        article.nomResto
+                      }}</span>
                     </div>
                   </div>
                   <button
@@ -3336,7 +3347,6 @@ const scrollToResults = () => {
       <!-- Ajouter d'autres articles ici -->
     </div>
   </div>
-
 </template>
 
 <script>
@@ -3356,7 +3366,7 @@ export default {
       isAsideSticky: false,
       navbarHeight: 0,
       showTitre: false,
-      resto:'',
+      resto: "",
       show: false,
       selectedArticle: null,
     };
