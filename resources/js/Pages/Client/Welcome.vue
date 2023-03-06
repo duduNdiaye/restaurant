@@ -16,6 +16,9 @@ const props = defineProps({
 const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
+const contenu = ref("Articles");
+const contenu1 = ref(true);
+const contenu2 = ref(false);
 const articlerecherche = ref("");
 const cartAnimation = ref(false);
 const data = () => ({
@@ -30,6 +33,17 @@ const created = () => {
       this.articles = articles;
       this.loading = false;
     });
+};
+
+const Contenu = () => {
+  console.log("moma");
+  if (contenu.value == "Restaurants") {
+    contenu1.value = false;
+    contenu2.value = true;
+  } else {
+    contenu1.value = true;
+    contenu2.value = false;
+  }
 };
 
 onMounted(() => {
@@ -151,9 +165,7 @@ const Diminuer = (car) => {
 
 const recherche = computed(() => {
   if (count.value) {
-    return props.articles.filter((article) =>
-     article.nomResto == cart.value[0].restau
-    );
+    return props.articles.filter((article) => article.nomResto == cart.value[0].restau);
   }
 
   if (articlerecherche.value) {
@@ -180,8 +192,9 @@ const scrollToResults = () => {
   <div class="bg-gray-100">
     <header>
       <nav
+        :class="[contenu1 ? 'bg-white border-gray-100 border-b-2' : '']"
         id="navbar"
-        class="fixed md:flex border-b-2 z-40 transform-cpu border-gray-200 text-center items-center justify-between bg-white px-4 py-3 w-full"
+        class="fixed md:flex z-40 transform-cpu text-center items-center justify-between px-4 py-3 w-full"
       >
         <div class="flex items-center">
           <h1
@@ -229,13 +242,13 @@ const scrollToResults = () => {
         </div>
 
         <div
-          class="md:flex lg:border-none md:border-none border-t-2 border-b-2 border-gray-200 bg-white md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
+          class="md:flex lg:border-none md:border-none lg:bg-opacity-0 bg-white border-t-2 border-b-2 border-gray-200  md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
           :class="[open ? 'left-0' : 'left-[-100%]']"
         >
           <div class="md:mx-4 md:my-0 my-6 flex">
             <button
               @click="(showModal = !showModal), (showModal1 = !showModal1)"
-              class="px-3 py-2 text-black font-bold hover:text-indigo-600"
+              :class="[contenu1 ? 'text-black':'text-white']" class="px-3 py-2  font-bold hover:text-indigo-600"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -257,17 +270,24 @@ const scrollToResults = () => {
                 />
               </svg>
             </button>
-            <span class="font-bold text-vert mt-2 w-[6rem] h-5 rounded-full"
+            <span :class="[contenu1 ? 'text-black':'text-white']" class="font-bold   mt-2 w-[6rem] h-5 rounded-full"
               >Ma position</span
             >
           </div>
           <div class="md:mx-4 md:my-0 my-6">
-            <a href="#" class="px-3 py-2 font-bold text-black hover:text-indigo-600"
-              >Articles</a
+            <select
+              v-model="contenu"
+              @click="Contenu()"
+              :class="[contenu1 ? 'text-black bg-white':'bg-black bg-opacity-20 text-white']"
+              class="rounded border border-gray-300 focus:ring-gray-300 lg:mt-0 focus:border-none font-bold w-36 px-4 py-2  border border-gray-200"
             >
+              <option value="Restaurants">Restaurants</option>
+              <option value="Articles">Articles</option>
+            </select>
+
           </div>
           <div class="md:mx-4 md:my-0 my-6">
-            <a href="#" class="px-3 py-2 font-bold text-black hover:text-indigo-600"
+            <a href="#" :class="[contenu1 ? 'text-black':'text-white']" class="px-3 py-2 font-bold text-black hover:text-indigo-600"
               >Contact</a
             >
           </div>
@@ -307,20 +327,33 @@ const scrollToResults = () => {
       </nav>
     </header>
 
-    <div class="bg-grocery h-screen lg:block md:block hidden">
+    <div
+      :class="[contenu1 ? 'bg-grocery' : 'bg-resto']"
+      class="h-screen lg:block md:block hidden"
+    >
       <section class="text-gray-600 body-font">
         <div
           class="container mx-auto flex flex-col px-5 lg:py-56 md:py-48 py-16 justify-center items-center"
         >
           <div class="w-full md:w-2/3 flex flex-col mb-16 items-center text-center">
-            <h1 class="title-font sm:text-6xl text-3xl mb-4 font-black text-gray-900">
+            <h1
+              v-if="contenu1"
+              class="title-font sm:text-6xl text-3xl mb-4 font-black text-gray-900"
+            >
               Plus besoin de faire la queue!
             </h1>
-            <p class="lg:block hidden mb-8 leading-relaxed">
+            <span
+              v-else
+              class="title-font sm:text-5xl text-2xl text-white mb-4 font-black text-gray-900"
+            >
+              Les meilleurs restaurants à portée de clic.
+            </span>
+            <p v-if="contenu1" class="lg:block hidden mb-8 leading-relaxed">
               Découvrez le moyen le plus rapide et le plus facile de déguster vos plats
               préférés chez votre restaurant préféré sans quitter votre maison grâce à
               notre application de commande en ligne.
             </p>
+
             <div class="flex w-full justify-center items-end">
               <div class="mr-4 lg:w-full xl:w-1/2 w-2/4 md:w-full text-left">
                 <input
@@ -339,7 +372,10 @@ const scrollToResults = () => {
                 Rechercher
               </button>
             </div>
-            <p class="text-sm mt-2 text-gray-500 mb-8 w-full">
+            <p v-if="contenu1" class="text-sm mt-2 text-gray-500 mb-8 w-full">
+              Que voulez vous manger? Ou le voulez-vous?
+            </p>
+            <p v-else class="text-lg mt-2 text-gray-500 mb-8 text-white w-full">
               Que voulez vous manger? Ou le voulez-vous?
             </p>
           </div>
@@ -2192,7 +2228,9 @@ const scrollToResults = () => {
       </div>
     </div>
 
-    <div class="flex border-t border-solid border-border-200 border-opacity-100">
+    <Restaurant :users="users" v-if="contenu2"/>
+
+    <div v-if="contenu1" class="flex border-t border-solid border-border-200 border-opacity-100">
       <aside
         :class="{ 'lg:sticky lg:top-16 relative': isAsideSticky }"
         ref="aside"
@@ -3250,16 +3288,16 @@ const scrollToResults = () => {
               <span class="text-lg font-bold">{{ article.categorie }}</span>
             </div>
             <span
-              class="box-border block overflow-hidden w-auto h-auto bg-transparent opacity-100 border-0 m-0 p-0 inset-0"
+              class="box-border block overflow-hidden w-auto h-96 bg-transparent opacity-100 border-0 m-0 p-0 inset-0"
             >
-              <button @click="showModals(article)">
+              <button @click="showModals(article)" class="mx-3 rounded-md">
                 <img
                   :src="article.photo"
                   alt="Product image"
-                  class="w-full h-56 mb-6 product-image"
+                  class="w-full h-56 mb-6 product-image rounded-md"
                 />
               </button>
-              <header class="p-1 md:p-6">
+              <header class="p-1 md:p-6 lg:mt-[-2rem] px-4">
                 <div class="py-2 flex flex-col">
                   <div class="flex">
                     <div class="flex flex-col">
@@ -3280,9 +3318,9 @@ const scrollToResults = () => {
                   </div>
                   <button
                     @click="addItemToCart(article)"
-                    class="group flex h-7 w-full items-center justify-between rounded bg-gray-100 text-xs text-body-dark transition-colors hover:border-accent hover:bg-vert hover:text-light focus:border-vert focus:bg-vert focus:text-light focus:outline-none md:h-9 md:text-sm"
+                    class="group flex h-7 w-full items-center justify-between rounded bg-gray-100 duration-200 text-xs text-body-dark transition-colors hover:border-accent hover:bg-vert hover:text-white focus:border-vert focus:bg-vert focus:text-light focus:outline-none md:h-9 md:text-sm"
                   >
-                    <span class="flex-1 font-bold">AJOUTER</span>
+                    <span class="flex-1 font-bold hover:text-white">AJOUTER</span>
                     <span
                       class="grid h-7 w-7 place-items-center bg-gray-200 transition-colors duration-200 group-hover:bg-vert group-focus:bg-vert ltr:rounded-tr ltr:rounded-br rtl:rounded-tl rtl:rounded-bl md:h-9 md:w-9"
                     >
@@ -3352,12 +3390,15 @@ const scrollToResults = () => {
 <script>
 import { ref } from "vue";
 import DetailsArticle from "./DetailsArticle.vue";
+import Restaurant from "./Restaurant.vue";
+
 export default {
   data() {
     return {
       open: false,
       showSearchBar: false,
       texte: true,
+      color: false,
       scrollY: 0,
       fixed: false,
       showComponent: false,
@@ -3371,7 +3412,7 @@ export default {
       selectedArticle: null,
     };
   },
-  components: { DetailsArticle },
+  components: { DetailsArticle, Restaurant },
 
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
@@ -3395,9 +3436,11 @@ export default {
       this.scrollY = window.scrollY;
 
       if (this.scrollY > 0) {
+        this.color = true
         this.showSearchBar = true;
         this.texte = false;
       } else {
+        this.color = false
         this.showSearchBar = false;
         this.texte = true;
       }
@@ -3423,6 +3466,14 @@ export default {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.bg-resto {
+  background-image: url(../../../../storage/app/public/fondresto.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 .fixedd {
