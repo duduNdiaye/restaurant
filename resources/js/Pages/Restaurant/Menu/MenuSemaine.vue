@@ -26,8 +26,7 @@
   </ul>
   <div class="flex justify-center flex-col">
     <button
-      class="bg-green-500  hover:bg-green-700 text-white font-bold py-2 px-4 rounded my-4"
-      >
+      class="bg-green-500  hover:bg-green-700 text-white font-bold py-2 px-4 rounded my-4" @click="showCreate">
       Ajouter un menu
     </button>
   </div>
@@ -61,16 +60,20 @@
         </table>
       </div>
     </div>
-
+    <MenuCreate   v-if="showCreateModal"/>
+    <!-- <ArticleCreateModal/> -->
     <!-- Répéter le même modèle pour les autres jours de la semaine -->
   </div>
 </div>
+
 </DashLayout>
 
 </template>
 
 <script>
+import ArticleCreateModal from '../Article/ArticleCreateModal.vue';
 import DashLayout from '../DashLayout.vue';
+import MenuCreate from './MenuCreate.vue';
 
 
   export default  {
@@ -85,6 +88,7 @@ import DashLayout from '../DashLayout.vue';
     data() {
         return {
             dayOfWeek: "",
+            showCreateModal:false
         };
     },
     methods: {
@@ -108,10 +112,15 @@ import DashLayout from '../DashLayout.vue';
         },
         changeDimanche() {
             this.dayOfWeek = "Dimanche";
+        },
+        showCreate(){
+            console.log(this.showCreateModal)
+            this.showCreateModal=!this.showCreateModal;
+            console.log(this.showCreateModal)
         }
     },
     computed: {},
-    components: { DashLayout }
+    components: { DashLayout, MenuCreate, ArticleCreateModal }
 }
 
 
