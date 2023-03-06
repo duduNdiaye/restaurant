@@ -192,7 +192,7 @@ const scrollToResults = () => {
   <div class="bg-gray-100">
     <header>
       <nav
-        :class="[contenu1 ? 'bg-white border-gray-100 border-b-2' : '']"
+        :class="[contenu1 ? 'bg-white border-gray-100 border-b-2' : '',color ? 'bg-white':'']"
         id="navbar"
         class="fixed md:flex z-40 transform-cpu text-center items-center justify-between px-4 py-3 w-full"
       >
@@ -383,7 +383,7 @@ const scrollToResults = () => {
       </section>
     </div>
 
-    <section class="text-gray-600 body-font bg-white mt-1">
+    <section class="text-gray-600 body-font bg-white mt-1" v-if="contenu1">
       <div class="container px-2 py-4 mx-auto flex flex-wrap lg:block md:block hidden">
         <div class="flex flex-wrap -m-4">
           <div
