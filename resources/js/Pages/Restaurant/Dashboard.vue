@@ -70,7 +70,8 @@ import { watch } from 'vue';
 import DashboardCard from './DashboardCard.vue';
 import DashboardOther from './DashboardOther.vue';
 import MenuSemaine from './Menu/MenuSemaine.vue';
-import TableArticles from './Tablearticles.vue';
+import DashLayout from './DashLayout.vue';
+import Tablearticles from './Tablearticles.vue';
  const props = defineProps({
    articles: {},
    commandes: {},
@@ -83,105 +84,12 @@ import TableArticles from './Tablearticles.vue';
 
 </script>
 <template>
-    <div class="w-screen h-screen flex "  >
-    <!-- Side bar -->
-    <div class="w-[400px] h-full bg-gray-300 text-white" v-show="showSide" ref="snbar">
-      <div class="h-[50px] bg-gray-900 flex justify-start  items-center ">
-        <div class="px-[20px]">
-          <h3 class="font-bold text-xl"><a href="/dashboard">EasyEAT Dashboard</a></h3>
-        </div>
-      </div>
-      <div class="h-[calc(120vh-50px)] bg-gray-800 py-[20px]">
-        <div class="flex flex-col justify-between h-full px-[20px] space-y-[10px]">
-          <div class=" flex flex-col justify-between space-y-[10px]">
-            <router-link to="/"  @click="ShowAllCards"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-200 hover:text-gray-800  transition duration-400 ease-in-out">
-
-              Dashboard
-            </router-link>
-            <router-link to="/articles"  @click="ShowAllArticles"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
-
-              Articles
-            </router-link>
-            <router-link to="/menus" @click="ShowWeekMenu"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
-
-              Menus
-            </router-link>
-            <router-link to="/commandes"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
-
-              Commandes
-            </router-link>
-            <router-link to="#" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
-
-              Download
-            </router-link>
-
-          </div>
-          <div class="h-[50px]">
-            <div>
-              <router-link to="/setting" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300 hover:text-gray-800  transition duration-400 ease-in-out">
-                <svg aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path>
-                </svg>
-                Setting
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="w-full h-full bg-gray-400">
-      <div class="h-[50px] bg-gray-100 flex items-center shadow-sm px-[20px] w-full py-[10px] z-10 border-b ">
-        <!-- Hambuger menu -->
-        <div class="cursor-pointer w-[30px]" @click="toggleSideBar">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class=" w-[25px] h-[25px]">
-            <!--! Font Awesome Pro 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
-            <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
-          </svg>
-        </div>
-        <!-- Search bar -->
-
-        <div class="w-[calc(100%-30px)] flex">
-          <div class="w-[calc(100%-200px)] flex justify-center ">
-            <!-- Search bar -->
-
-          </div>
-          <!-- User login -->
-          <div class="w-[200px] ">
-            <div class="flex items-center justify-start space-x-4" @click="toggleDrop">
-              <img class="w-10 h-10 rounded-full border-2 border-gray-50" src="" alt="">
-              <div class="font-semibold dark:text-white text-left">
-                <div>{{  $page.props.user.name  }}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">{{  $page.props.user.role  }}</div>
-              </div>
-            </div>
-            <!-- Drop down -->
-            <div v-show="showDropDown" class="absolute right-[10px] z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-              <div class="py-1 text-left" role="none">
-                <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                <a href="#" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Account settings</a>
-                <form method="POST" @submit.prevent="logout">
-                  <button type="submit" class="text-gray-700 block w-full  hover:bg-slate-900 hover:text-white px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="h-[calc(120vh-50px)] bg-gray-100 p-[20px] w-full "  >
-        <div class=" bg-gray-100 rounded-md p-[20px] h-full">
-          <router-view>
+   <DashLayout>
             <DashboardCard v-show="ShowCards" />
             <TableArticles v-if="ShowArticles"  :articles-all="articles" />
             <DashboardOther v-if="ShowCards" :commandes="commandes"/>
             <MenuSemaine v-if="showMenu"/>
-          </router-view>
-        </div>
-      </div>
-    </div>
-    <!-- Main  -->
-
-
-  </div>
+   </DashLayout>
 
 </template>
 <style scoped>

@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+// import ziggyPlugin from 'ziggy-rollup-plugin';
+
+
 
 export default defineConfig({
     resolve: {
@@ -22,5 +25,8 @@ export default defineConfig({
                 },
             },
         }),
+        // ziggyPlugin({
+        //     // options de configuration de Ziggy ici
+        //   }),
     ],
 });

@@ -1,18 +1,20 @@
 
 <template>
-
+<DashLayout>
 <div class="flex flex-col">
     <button
-      class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded my-4"
+      class="bg-vert hover:bg-haver text-white font-bold py-2 px-4 rounded my-4"
       @click="showmodal">
       Créer un nouvel article
     </button>
     <div class="flex flex-row justify-between">
         <h1 class="text-3xl font-semibold mb-6">Liste des articles </h1>
+        <!--ICI LA SEARCH BAR-->
         <div class="flex items-center mb-4">
           <label for="search" class="mr-2 text-md font-semibold ">Rechercher:</label>
-          <input type="text" id="search"  name="search" v-model="search" class="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" >
+          <input type="text" id="search"  name="search" v-model="search" @keyup="searching" class="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" >
         </div>
+        <!--FIN DE LA SEARCH BAR-->
     </div>
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -30,9 +32,21 @@
                 <th></th>
               </tr>
             </thead>
+            <div v-if="message && message=='article modifié'"  class="relative top-0 left-0 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded " >
+                <strong class="font-bold">{{ message }}</strong>
+                <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                    <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title></title><path d="M14.348 14.849l.707-.707L10 9.192l-5.656 5.657.707.707L10 10.606l4.646 4.243z"/></svg>
+                </span>
+             </div>
+                <div v-if="message && message=='article article ajouté'"  class=" relative top-0 left-0 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded " >
+                    <strong class="font-bold">{{ message }}</strong>
+                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3" >
+                    <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849l.707-.707L10 9.192l-5.656 5.657.707.707L10 10.606l4.646 4.243z"/></svg>
+                    </span>
+                </div>
             <tbody class="bg-white divide-y divide-gray-200" >
 
-              <tr v-for="article in filteredARticles" :key="article.id">
+              <tr v-for="article in articles.data" :key="article.id">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ article.nom }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ article.prix }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ article.categorie }}</td>
@@ -42,36 +56,37 @@
                   <img :src=" article.photo" alt="Article" class="w-10 h-10 rounded-full" />
                 </td>
                 <td class="border py-2 px-4">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded mr-2"
+            <button type="submit" class=" text-white font-bold py-1 px-1 rounded mr-2"
              @click="">
-             <svg width="20px" height="20px" viewBox="-2.4 -2.4 28.80 28.80" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <circle cx="12" cy="12" r="4" fill="#33363F"></circle> <path d="M21 12C21 12 20 4 12 4C4 4 3 12 3 12" stroke="#33363F" stroke-width="2"></path> </g></svg>
+             <svg width="25px" height="25px" viewBox="-2.4 -2.4 28.80 28.80" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#1a5fb4"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <circle cx="12" cy="12" r="4" fill="#33363F"></circle> <path d="M21 12C21 12 20 4 12 4C4 4 3 12 3 12" stroke="#33363F" stroke-width="2"></path> </g></svg>
             </button>
             <button type="submit"
-              class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-1 rounded mr-2"
+              class=" text-white font-bold py-1 px-1 rounded mr-2"
               @click="editArtcile(article)">
-              <svg fill="#ffffff" width="20px" height="20px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>edit</title> <path d="M10.681 18.207l-2.209 5.67 5.572-2.307-3.363-3.363zM26.855 6.097l-0.707-0.707c-0.78-0.781-2.047-0.781-2.828 0l-1.414 1.414 3.535 3.536 1.414-1.414c0.782-0.781 0.782-2.048 0-2.829zM10.793 17.918l0.506-0.506 3.535 3.535 9.9-9.9-3.535-3.535 0.707-0.708-11.113 11.114zM23.004 26.004l-17.026 0.006 0.003-17.026 11.921-0.004 1.868-1.98h-14.805c-0.552 0-1 0.447-1 1v19c0 0.553 0.448 1 1 1h19c0.553 0 1-0.447 1-1v-14.058l-2.015 1.977 0.054 11.085z"></path> </g></svg>
+              <svg width="25px" height="25px" viewBox="0 0 24 24"  style="hover {color: #e5a50a;}" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 21C12 20.4477 12.4477 20 13 20H21C21.5523 20 22 20.4477 22 21C22 21.5523 21.5523 22 21 22H13C12.4477 22 12 21.5523 12 21Z" fill="#f8e45c"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M20.7736 8.09994C22.3834 6.48381 22.315 4.36152 21.113 3.06183C20.5268 2.4281 19.6926 2.0233 18.7477 2.00098C17.7993 1.97858 16.8167 2.34127 15.91 3.09985C15.8868 3.11925 15.8645 3.13969 15.8432 3.16111L2.87446 16.1816C2.31443 16.7438 2 17.5051 2 18.2987V19.9922C2 21.0937 2.89197 22 4.00383 22H5.68265C6.48037 22 7.24524 21.6823 7.80819 21.1171L20.7736 8.09994ZM17.2071 5.79295C16.8166 5.40243 16.1834 5.40243 15.7929 5.79295C15.4024 6.18348 15.4024 6.81664 15.7929 7.20717L16.7929 8.20717C17.1834 8.59769 17.8166 8.59769 18.2071 8.20717C18.5976 7.81664 18.5976 7.18348 18.2071 6.79295L17.2071 5.79295Z" fill="#f8e45c"></path> </g></svg>
             </button>
-            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+            <button type="submit" class=" text-white font-bold py-1 px-1 rounded"
              @click="deleteArticle(article)">
-             <svg height="20px" width="20px" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" style=".st0{fill:#000000;}" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#ffffff" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path class="st0" d="M88.594,464.731C90.958,491.486,113.368,512,140.234,512h231.523c26.858,0,49.276-20.514,51.641-47.269 l25.642-335.928H62.952L88.594,464.731z M420.847,154.93l-23.474,307.496c-1.182,13.37-12.195,23.448-25.616,23.448H140.234 c-13.42,0-24.434-10.078-25.591-23.132L91.145,154.93H420.847z"></path> <path class="st0" d="M182.954,435.339c5.877-0.349,10.35-5.4,9.992-11.269l-10.137-202.234c-0.358-5.876-5.401-10.349-11.278-9.992 c-5.877,0.357-10.35,5.409-9.993,11.277l10.137,202.234C172.033,431.231,177.085,435.696,182.954,435.339z"></path> <path class="st0" d="M256,435.364c5.885,0,10.656-4.763,10.656-10.648V222.474c0-5.885-4.771-10.648-10.656-10.648 c-5.885,0-10.657,4.763-10.657,10.648v202.242C245.344,430.601,250.115,435.364,256,435.364z"></path> <path class="st0" d="M329.046,435.339c5.878,0.357,10.921-4.108,11.278-9.984l10.129-202.234c0.348-5.868-4.116-10.92-9.993-11.277 c-5.877-0.357-10.92,4.116-11.277,9.992L319.054,424.07C318.697,429.938,323.17,434.99,329.046,435.339z"></path> <path class="st0" d="M439.115,64.517c0,0-34.078-5.664-43.34-8.479c-8.301-2.526-80.795-13.566-80.795-13.566l-2.722-19.297 C310.388,9.857,299.484,0,286.642,0h-30.651H225.34c-12.825,0-23.728,9.857-25.616,23.175l-2.721,19.297 c0,0-72.469,11.039-80.778,13.566c-9.261,2.815-43.357,8.479-43.357,8.479C62.544,67.365,55.332,77.172,55.332,88.38v21.926h200.66 h200.676V88.38C456.668,77.172,449.456,67.365,439.115,64.517z M276.318,38.824h-40.636c-3.606,0-6.532-2.925-6.532-6.532 s2.926-6.532,6.532-6.532h40.636c3.606,0,6.532,2.925,6.532,6.532S279.924,38.824,276.318,38.824z"></path> </g> </g></svg>
+             <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 7H20" stroke="#ed333b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M6 10L7.70141 19.3578C7.87432 20.3088 8.70258 21 9.66915 21H14.3308C15.2974 21 16.1257 20.3087 16.2986 19.3578L18 10" stroke="#ed333b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#ed333b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
             </button>
           </td>
               </tr>
             </tbody>
           </table>
-          <Pagination class="mt-6" :links="articlesAll.links"/>
+          <Pagination :links="articles.links" />
         </div>
       </div>
     </div>
 
 </div>
 <!-- modal -->
-<ArticleCreateModal v-if="activemodal" @close="activemodal=false" >
+<ArticleCreateModal v-if="activemodal"  @affiche="GererMessage('article ajouté')" @close="activemodal=false" >
 </ArticleCreateModal>
 
 <ArticleEditModal
 :articles="articledites"
 v-if="activedit"
+@affiche="GererMessage('article modifié')"
 @close="activedit=false"
 ></ArticleEditModal>
 
@@ -81,6 +96,7 @@ v-if="activedelete"
 @close="activedelete=false"
 >
 </ArticleDeleteModal>
+</DashLayout>
 
 </template>
 
@@ -88,12 +104,12 @@ v-if="activedelete"
 import ArticleCreateModal from './Article/ArticleCreateModal.vue';
 import ArticleEditModal from './Article/ArticleEditModal .vue';
 import ArticleDeleteModal from './Article/ArticleDeleteModal.vue';
+import DashLayout from './DashLayout.vue';
 import Pagination from '../../Components/Pagination.vue';
-
   export default  {
     name: "tablearticles",
     props: {
-        articlesAll: Array,
+        articles: Array,
     },
     data(){
         return {
@@ -102,7 +118,8 @@ import Pagination from '../../Components/Pagination.vue';
             articledites:null,
             activedelete:false,
             articleAsupprimer:null,
-            search:''
+            search:'',
+            message:''
 
 
 
@@ -125,24 +142,28 @@ import Pagination from '../../Components/Pagination.vue';
         // search(){
         //     // this.$inertia.get("/dashboard",{search:this.searchTerm})
         // }
+        GererMessage(message) {
+      this.message = message;
+      setTimeout(() => {
+        this.message = "";
+      }, 3000);
+    },
+    searching(){
+        this.$inertia.get('/dashboard/articles',{search: this.search},{
+            preserveState: true,
+            replace: true,
+        });
+    }
+
 
 
     },
     computed:{
-        filteredARticles(){
-            return this.articlesAll.data.filter((article =>{
-                return (
-                    article.nom.toLowerCase().includes(this.search.toLocaleLowerCase())
-                    || article.categorie.toLowerCase().includes(this.search.toLocaleLowerCase())
 
-                )
-            })
-            )
-        }
 
     },
 
-    components: { ArticleCreateModal, ArticleEditModal, ArticleDeleteModal,Pagination },
+    components: { ArticleCreateModal, ArticleEditModal, ArticleDeleteModal, DashLayout, Pagination },
 
 };
 

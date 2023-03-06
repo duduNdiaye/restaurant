@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MenuJour;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class MenuJourController extends Controller
 {
@@ -15,6 +16,7 @@ class MenuJourController extends Controller
     public function index()
     {
         //
+        return Inertia::render('Restaurant/Menu/MenuSemaine');
     }
 
     /**
