@@ -189,10 +189,10 @@ const scrollToResults = () => {
 <template>
   <Head title="Welcome" />
 
-  <div class="bg-gray-100">
+  <div :class="[contenu1 ? 'bg-gray-100':'bg-white']">
     <header>
       <nav
-        :class="[contenu1 ? 'bg-white border-gray-100 border-b-2' : '',color ? 'bg-white':'']"
+        :class="[contenu1 ? 'bg-white border-gray-100 border-b-2' : '',color ? 'bg-black':'']"
         id="navbar"
         class="fixed md:flex z-40 transform-cpu text-center items-center justify-between px-4 py-3 w-full"
       >
