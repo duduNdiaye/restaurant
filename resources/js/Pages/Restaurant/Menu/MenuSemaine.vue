@@ -1,5 +1,5 @@
 <template >
-
+<DashLayout>
 <div class="container mx-auto py-4">
   <ul class="flex flex-wrap justify-center mb-4">
     <li class="mr-4 mb-4">
@@ -65,51 +65,53 @@
     <!-- Répéter le même modèle pour les autres jours de la semaine -->
   </div>
 </div>
+</DashLayout>
 
 </template>
 
 <script>
+import DashLayout from '../DashLayout.vue';
+
 
   export default  {
-    name: 'resources-js-pages-restaurant-menu-menu-semaine',
+    name: "resources-js-pages-restaurant-menu-menu-semaine",
     props: [],
-    mounted () {
-        const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    mounted() {
+        const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
         const date = new Date();
         const dayOfWeek = days[date.getDay()];
         this.dayOfWeek = dayOfWeek;
     },
-    data () {
-      return {
-          dayOfWeek:'',
-      }
+    data() {
+        return {
+            dayOfWeek: "",
+        };
     },
     methods: {
-        changeLundi(){
-            this.dayOfWeek='Lundi'
+        changeLundi() {
+            this.dayOfWeek = "Lundi";
         },
-        changeMardi(){
-            this.dayOfWeek='Mardi'
+        changeMardi() {
+            this.dayOfWeek = "Mardi";
         },
-        changeMercredi(){
-            this.dayOfWeek='Mercredi'
+        changeMercredi() {
+            this.dayOfWeek = "Mercredi";
         },
-        changeJeudi(){
-            this.dayOfWeek='Jeudi'
+        changeJeudi() {
+            this.dayOfWeek = "Jeudi";
         },
-        changeVendredi(){
-            this.dayOfWeek='Vendredi'
+        changeVendredi() {
+            this.dayOfWeek = "Vendredi";
         },
-        changeSamedi(){
-            this.dayOfWeek='Samedi'
+        changeSamedi() {
+            this.dayOfWeek = "Samedi";
         },
-        changeDimanche(){
-            this.dayOfWeek='Dimanche'
+        changeDimanche() {
+            this.dayOfWeek = "Dimanche";
         }
     },
-    computed: {
-
-    }
+    computed: {},
+    components: { DashLayout }
 }
 
 

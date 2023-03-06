@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 
 class ArticleController extends Controller
@@ -14,13 +15,15 @@ class ArticleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
-            // $m_id=Auth::id();
-            // $articles=Article::where('user_id',$m_id)->get();
-            $articles=Article::all();
-            return Inertia::render('Restaurant/Dashboard',
+            $m_id=Auth::id();
+            $articles=Article::when($request->search, function ($query, $search) {
+                $query->where('nom', 'like', '%' . $search . '%')
+                    ->OrWhere('categorie', 'like', '%' . $search . '%');
+            })->where('user_id',$m_id)->with('user')->paginate(5)->withQueryString();
+            return Inertia::render('Restaurant/Tablearticles',
             ['articles' => $articles,
         ]);
 

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommandeController;
-
+use App\Http\Controllers\MenuJourController;
 use Illuminate\Http\Request;
 
 /*
@@ -49,12 +49,12 @@ Route::middleware([
                 //     $query->where('nom','like','%'.$searchTerm.'%')
                 //     ->OrWhere('categorie','like','%'.$searchTerm.'%');
                 // })->where('user_id', Auth::id())->paginate(5)->withQueryString();
-                $articles = Article::where('user_id', Auth::id())->paginate(5);
+
                 $commandes=Commande::all();
                 return Inertia::render(
                     'Restaurant/Dashboard',
                     [
-                        'articles' => $articles,
+
                         'commandes'=>$commandes
 
                     ]
@@ -70,6 +70,8 @@ Route::middleware([
                 break;
         }
     })->name('dashboard');
+    Route::get('/dashboard/articles', [ArticleController::class,'index'])->name('articles.list');
+    Route::get('dashboard/menu',[MenuJourController::class,'index']);
 });
 
 Route::group(['prefix' => 'commandes'], function () {

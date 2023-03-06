@@ -84,7 +84,7 @@ const submit = () => {
 
                 <div class="flex justify-start relative space-x-4 mt-4">
   <button class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" @click="closeModal" >Quitter  </button>
-  <button class="px-4 py-2 text-white bg-blue-400 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" @click="submit();closeModal()">Ajouter</button>
+  <button class="px-4 py-2 text-white bg-blue-400 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" @click="submit();closeModal();showMessage()">Ajouter</button>
 </div>
               </div>
             </form>
@@ -101,7 +101,8 @@ const submit = () => {
     props:['activemodal','showmodal'],
     data(){
         return{
-            isSubmitted:true
+            isSubmitted:true,
+
         }
     },
     mounted(){
@@ -111,7 +112,11 @@ const submit = () => {
     methods:{
         closeModal(){
             this.$emit('close')
-        }
+        },
+        showMessage()
+        {
+            this.$emit('affiche')
+        },
     }
 };
 </script>
