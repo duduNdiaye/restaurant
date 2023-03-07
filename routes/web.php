@@ -76,6 +76,19 @@ Route::middleware([
 
 Route::group(['prefix' => 'commandes'], function () {
     Route::get('/', [CommandeController::class, 'client_commande'])->name('client.commande');
+    Route::get('/restaurant/{id}', function (int $id) {
+        $user = User::findOrFail($id);
+        $articles = Article::all();
+        return Inertia::render('Client/RestaurantDetails', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+            'user' => $user,
+            'articles' => $articles
+
+        ]);
+    })->name('restaurant.details');
     Route::post('/validation', function (Request $request) {
         Commande::create([
             'nomClient' => $request->NomClient,

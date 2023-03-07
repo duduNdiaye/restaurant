@@ -17,8 +17,8 @@ const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
 const contenu = ref("Articles");
-const contenu1 = ref(true);
-const contenu2 = ref(false);
+const contenu1 = ref(localStorage.getItem('contenu1') === 'true' || false);
+const contenu2 = ref(localStorage.getItem('contenu2') === 'true' || false);
 const articlerecherche = ref("");
 const cartAnimation = ref(false);
 const data = () => ({
@@ -40,9 +40,13 @@ const Contenu = () => {
   if (contenu.value == "Restaurants") {
     contenu1.value = false;
     contenu2.value = true;
+    localStorage.setItem('contenu1', contenu1.value.toString());
+    localStorage.setItem('contenu2', contenu2.value.toString());
   } else {
     contenu1.value = true;
     contenu2.value = false;
+    localStorage.setItem('contenu1', contenu1.value.toString());
+    localStorage.setItem('contenu2', contenu2.value.toString());
   }
 };
 
@@ -61,6 +65,9 @@ onMounted(() => {
       }
     }
   }
+
+  localStorage.setItem('contenu1', contenu1.value.toString());
+  localStorage.setItem('contenu2', contenu2.value.toString());
 });
 
 const total = computed(() => {
@@ -196,16 +203,18 @@ const scrollToResults = () => {
         id="navbar"
         class="fixed md:flex z-40 transform-cpu text-center items-center justify-between px-4 py-3 w-full"
       >
-        <div class="flex items-center">
+        <div class="flex items-center" >
           <h1
             class="text-3xl lg:block md:block hidden lg:ml-0 text-center bg-black text-white px-2 md:ml-0 font-title font-extrabold"
           >
             EatEasy
           </h1>
-          <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
-          <p class="font-bold text-xl ml-8 lg:hidden md:hidden" v-if="texte">
+          <ApplicationMark v-if="contenu1" class="h-9 w-auto lg:hidden md:hidden" />
+          <div v-if="contenu1">
+            <p  class="font-bold text-xl ml-8 lg:hidden md:hidden" v-if="texte">
             Que desirez-vous manger?
           </p>
+          </div>
           <div
             class="pt-2 relative md:hidden lg:block sm:block mx-auto text-gray-600"
             v-if="showSearchBar"
@@ -978,7 +987,7 @@ const scrollToResults = () => {
       </div>
       <div v-else class="flex-grow pt-28 pb-20">
         <div class="flex h-full flex-col items-center justify-center" style="opacity: 1">
-          <svg width="140" height="176" viewBox="0 0 231.91 292">
+          <svg class="w-40 h-40" viewBox="0 0 231.91 292">
             <defs>
               <linearGradient
                 id="linear-gradient"
