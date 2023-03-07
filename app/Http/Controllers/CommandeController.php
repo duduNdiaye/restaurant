@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
+use App\Models\Article;
+use Illuminate\Support\Facades\DB;
 use App\Models\Commande;
 use Illuminate\Http\Request;
-
-use App\Models\Article;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
@@ -30,42 +30,53 @@ class CommandeController extends Controller
         ]);
     }
 
-    public function init()
+    public function restaurant()
     {
-        if (!session('cart_id')) {
-            session(['cart_id' => uniqid()]);
-        }
-        return Inertia::render('Client/Welcome');
+        return Inertia::render('Client/RestaurantDetails', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+
+        ]);
     }
 
-    public function addToCart(Request $request, $id)
+    public function getArticles()
     {
-        $this->init();
-        $article = Article::find($id);
-        $cart = session()->get('cart');
+        $articles = Article::all();
 
-        if (!$cart) {
-            $cart = [
-                $id => ['nom' => $article->nom, 'quantity' => 1, 'prix' => $article->prix]
-            ];
-            session()->put('cart', $cart);
-            return redirect()->back()->with('success', 'Product added to cart successfully!');
-        }
-
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity']++;
-            session()->put('cart', $cart);
-            return redirect()->back()->with('success', 'Product added to cart successfully!');
-        }
-
-        $cart[$id] = ['nom' => $article->nom, 'quantity' => 1,  'prix' => $article->prix];
-        session()->put('cart', $cart);
-        return redirect()->back()->with('success', 'Product added to cart successfully!');
+        return response()->json($articles);
     }
 
-    public function showCart()
+
+    public function create_commande(Request $request)
     {
-        $cart = session()->get('cart');
-        return Inertia::render('Client/Welcome', ['cart' => $cart]);
+        Commande::create([
+            'nomClient' => $request->input('nom'),
+            'numeroClient' => $request->input('telephone'),
+            'coutTotal' => $request->input('total'),
+            'commentaire' => $request->input('commentaires'),
+            'modeReception' => $request->input('reception'),
+            'panier' => json_decode($request->input('cart_data')),
+            'numeroCommande' => $request->input('order_id'),
+            'date' => $request->input('ladate'),
+            'heure' => $request->input('heures'),
+            'adresse' => $request->input('adresse')
+        ]);
+
+        $commande = new Commande;
+        $commande->nomClient = $request->input('nom');
+        $commande->numeroClient = $request->input('telephone');
+        $commande->coutTotal = $request->input('total');
+        $commande->commentaire = $request->input('commentaires');
+        $commande->modeReception = $request->input('reception');
+        $commande->panier = json_decode($request->input('cart_data'));
+        $commande->numeroCommande = $request->input('order_id');
+        $commande->date = $request->input('ladate');
+        $commande->heure = $request->input('heures');
+        $commande->adresse = $request->input('adresse');
+
+        $commande->save();
+        return response()->json(['message' => 'La commande a été créée avec succès'], 201);
     }
 }
