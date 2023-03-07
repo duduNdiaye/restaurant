@@ -72,6 +72,7 @@ Route::middleware([
     })->name('dashboard');
     Route::get('/dashboard/articles', [ArticleController::class,'index'])->name('articles.list');
     Route::get('dashboard/menu',[MenuJourController::class,'index']);
+    Route::post('/menu/new',[MenuJourController::class,'store'])->name('store.menu');
 });
 
 Route::group(['prefix' => 'commandes'], function () {

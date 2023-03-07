@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
 use App\Models\MenuJour;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class MenuJourController extends Controller
@@ -16,7 +18,14 @@ class MenuJourController extends Controller
     public function index()
     {
         //
-        return Inertia::render('Restaurant/Menu/MenuSemaine');
+        $m_id=Auth::id();
+        $articles=Article::where('user_id',$m_id)->get();
+        $menus=MenuJour::all();
+        return Inertia::render('Restaurant/Menu/MenuSemaine',
+    [
+        'articles'=>$articles,
+        'menus'=>$menus
+]);
     }
 
     /**
@@ -39,8 +48,19 @@ class MenuJourController extends Controller
     public function store(Request $request)
     {
         //
-        $monMenu=new MenuJour($request->all());
-        $monMenu->saveOrFail();
+        $data = $request->validate([
+            'jour_semaine' => 'required|string|max:20',
+            'selectedArticles' => 'required|array',
+            'selectedArticles.*' => 'integer',
+        ]);
+        $monMenu = MenuJour::create([
+            'jour_semaine' => $data['jour_semaine'],
+        ]);
+        foreach ($request->input('selectedArticles') as $article) {
+            $monMenu->articles()->attach($article['id']);
+        }
+        // $monMenu->articles()->attach($data['selectedArticles']);
+
 
     }
 
