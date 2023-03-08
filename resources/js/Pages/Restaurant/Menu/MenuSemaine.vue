@@ -50,7 +50,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr v-for="menu in menus">
                 <td class="py-2 px-4 bg-gray-100 border text-center">thieboudieune</td>
                 <td class="py-2 px-4 bg-gray-100 border text-center ">Voir</td>
                 <td class="py-2 px-4 bg-gray-100 border text-center ">Modifier|supprimer</td>
@@ -60,7 +60,7 @@
         </table>
       </div>
     </div>
-    <MenuCreate   v-if="showCreateModal"/>
+    <MenuCreate   v-if="showCreateModal" :articles="articles"/>
     <!-- <ArticleCreateModal/> -->
     <!-- Répéter le même modèle pour les autres jours de la semaine -->
   </div>
@@ -78,7 +78,7 @@ import MenuCreate from './MenuCreate.vue';
 
   export default  {
     name: "resources-js-pages-restaurant-menu-menu-semaine",
-    props: [],
+    props: ['articles','menus'],
     mounted() {
         const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
         const date = new Date();

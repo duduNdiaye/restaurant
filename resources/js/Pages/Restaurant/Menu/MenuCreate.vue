@@ -1,3 +1,26 @@
+<script setup>
+import {  useForm } from '@inertiajs/vue3';
+const props = defineProps({
+    menujour: {
+        type: Object,
+        default: () => ({}),
+    },
+    articles:{
+        type: Array,
+        default: () => ({}),
+    }
+});
+const form = useForm({
+    jour_semaine: '',
+    selectedArticles: [],
+});
+const submit = () => {
+  form.post(route('store.menu'))
+    // this.showCreateModal=false
+
+
+};
+</script>
 <template>
 
 <div class="modal fixed w-full h-full top-0 left-0 flex items-center justify-center">
@@ -14,10 +37,11 @@
             </svg>
           </div>
         </div>
-
+        <form >
         <div class="mb-4">
-          <label class="block text-gray-700 font-bold mb-2" for="menu_jour">Jour du menu</label>
-          <select class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="menu_jour" name="menu_jour">
+          <label class="block text-gray-700 font-bold mb-2" for="jour_semaine">Jour du menu</label>
+          <select class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="jour_semaine" name="jour_semaine"
+          v-model="form.jour_semaine">
             <option value="lundi">Lundi</option>
             <option value="mardi">Mardi</option>
             <option value="mercredi">Mercredi</option>
@@ -30,56 +54,63 @@
 
         <div class="mb-4">
           <label class="block text-gray-700 font-bold mb-2" for="menu_articles">Articles</label>
-          <select class="js-example-basic-multiple bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="menu_articles" name="menu_articles[]" multiple="multiple">
-            <!-- Ajouter la liste d'articles ici -->
-          </select>
+            <Multiselect
+            v-model="form.selectedArticles"
+            mode="tags"
+            placeholder="Select your characters"
+            :options="articleOptions"
+            :search="true"
+            label="name"
+            track-by="id"
+            :multiple="true"
+            name="selectedArticles[]"
+             />
         </div>
 
         <div class="flex justify-end pt-2">
           <button class="modal-close px-4 bg-gray-400 p-3 rounded-lg text-white hover:bg-gray-300">Annuler</button>
-          <button class="px-4 bg-blue-500 p-3 ml-3 rounded-lg text-white hover:bg-blue-400">Ajouter</button>
+          <button class="px-4 bg-blue-500 p-3 ml-3 rounded-lg text-white hover:bg-blue-400" @click="submit">Ajouter</button>
         </div>
+    </form>
 
       </div>
     </div>
   </div>
 
 </template>
+<script>
+ import Multiselect from '@vueform/multiselect';
 
-<script >
+export default  {
+    name: "resources-js-pages-restaurant-menu-menu-create",
 
-  export default  {
-    name: 'resources-js-pages-restaurant-menu-menu-create',
-    props: {
-        articles:Array,
+    mounted() {
+
+
     },
-    mounted () {
+    data() {
+        return {
+      selectedArticles: [],
 
-    },
-    data () {
-      return {
-        articles:[
-            [id=>1,
-            nom=>"atieke",],
-            [
-            id=>2,
-            nom=>"Soup kandia",
-            ]
-
-        ]
-      }
+        };
     },
     methods: {
 
     },
     computed: {
+        articleOptions() {
+      return this.articles.map((article) => ({
+        id: article.id,
+        name: article.nom,
+        value: article.id,
+      }));
+    },
+    },
+    components: { Multiselect }
 
-    }
 }
 
 
 </script>
 
-<style scoped >
-
-</style>
+<style src="@vueform/multiselect/themes/default.css"></style>
