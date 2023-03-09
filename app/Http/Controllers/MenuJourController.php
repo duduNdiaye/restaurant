@@ -20,7 +20,12 @@ class MenuJourController extends Controller
         //
         $m_id=Auth::id();
         $articles=Article::where('user_id',$m_id)->get();
-        $menus=MenuJour::with('articles')->get();
+        // $menus=MenuJour::with('articles')->get();
+        $menus = MenuJour::whereHas('articles', function ($query) use ($m_id) {
+            $query->where('user_id', '=', $m_id);
+        })->with('articles')->get();
+        //cette fonction recupéré les articles associés au menus qui ont pour user_id
+        //l'id de l'utilisateur connecté
         return Inertia::render('Restaurant/Menu/MenuSemaine',
     [
         'articles'=>$articles,
@@ -103,7 +108,7 @@ class MenuJourController extends Controller
             'selectedArticles.*' => 'integer',
         ]);
 
-        $menuJour->jour_semaine=$data['jour_semaine'];
+        // $menuJour->jour_semaine=$data['jour_semaine'];
         $menuJour->id=$request->input('id');
         $menuJour->updateOrFail();
         $menuJour->articles()->detach();

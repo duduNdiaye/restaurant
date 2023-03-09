@@ -43,16 +43,8 @@ const submit = () => {
             <input type="hidden" v-model="form.id" name="id">
         <div class="mb-4">
           <label class="block text-gray-700 font-bold mb-2" for="jour_semaine">Jour du menu</label>
-          <select class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="jour_semaine" name="jour_semaine"
-          v-model="form.jour_semaine">
-            <option value="lundi">Lundi</option>
-            <option value="mardi">Mardi</option>
-            <option value="mercredi">Mercredi</option>
-            <option value="jeudi">Jeudi</option>
-            <option value="vendredi">Vendredi</option>
-            <option value="samedi">Samedi</option>
-            <option value="dimanche">Dimanche</option>
-          </select>
+          <input type="text" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="jour_semaine" name="jour_semaine" disabled v-model="form.jour_semaine">
+
         </div>
 
         <div class="mb-4">
