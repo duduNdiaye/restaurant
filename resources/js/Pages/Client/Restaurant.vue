@@ -1,7 +1,64 @@
+<script setup>
+import { Link, usePage } from "@inertiajs/inertia-vue3";
+import { defineProps, onMounted, computed, reactive, ref } from "vue";
+import axios from "axios";
+const temoin = ref('');
+const temoin1 = ref('');
+const temoin2 = ref('');
+const temoin3 = ref('');
+const temoin4 = ref('');
+const temoin5 = ref('');
+const temoin22 = ref('');
+const niveau = ref("");
+const i = ref();
+const i1 = ref(1);
+const i2 = ref(2);
+const i3 = ref(3);
+const i4 = ref(4);
+const i5 = ref(5);
+
+const nombre = ref(0)
+const Noter = (i) => {
+  if (i == 1) {
+    niveau.value = "insatisfaisant";
+    nombre.value = 1;
+  } else if (i == 2) {
+    niveau.value = "moyen";
+     nombre.value = 2;
+  } else if (i == 3) {
+    niveau.value = "agreable";
+     nombre.value = 3;
+  } else if (i == 4) {
+    niveau.value = "excellent";
+     nombre.value = 4;
+  } else {
+    niveau.value = "inoubliable";
+     nombre.value = 5;
+  }
+};
+
+const Note = (i) => {
+  if (i == 1) {
+    nombre.value = 1;
+  } else if (i == 2) {
+     nombre.value = 2;
+  } else if (i == 3) {
+     nombre.value = 3;
+  } else if (i == 4) {
+     nombre.value = 4;
+  } else {
+     nombre.value = 5;
+  }
+
+  console.log(nombre.value)
+
+};
+
+</script>
 <template>
   <div class="flex border-t border-solid border-border-200 border-opacity-100">
     <aside
-      :class="{ 'lg:sticky lg:top-16 relative': isAsideSticky }"
+
       ref="aside"
       class="bg-white lg:w-[27rem] lg:block hidden h-[39.2rem] p-3 px-8 overflow-y-auto"
     >
@@ -150,9 +207,9 @@
           class="product-card cart-type-neon overflow-hidden bg-white"
         >
           <span
-            class="block overflow-hidden w-auto h-56 bg-transparent opacity-100 lg:m-0 lg:p-0 lg:inset-0 m-0 p-0 inset-0"
+            class="block overflow-hidden w-auto lg:h-56 bg-transparent opacity-100 lg:m-0 lg:p-0 lg:inset-0 m-0 p-0 inset-0"
           >
-            <a :href="route('restaurant.details',user.id)" class="rounded-md">
+            <a :href="route('restaurant.details', user.id)" class="rounded-md">
               <img
                 :src="user.photo"
                 alt="Product image"
@@ -166,55 +223,45 @@
                 <span class="text-lg lg:text-xl font-semibold text-heading md:text-base">
                   {{ user.name }}</span
                 >
-                <div
-                  class="inline-flex ml-auto shrink-0 items-center rounded-full border border-accent bg-vert px-3 py-1 text-sm text-white"
-                >
-                  3.3<svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 25.056 24"
-                    class="h-2.5 w-2.5 ltr:ml-1 rtl:mr-1"
-                  >
-                    <g data-name="Group 36413" fill="currentColor">
-                      <path
-                        id="Path_22667"
-                        data-name="Path 22667"
-                        d="M19.474,34.679l-6.946-4.346L5.583,34.679a.734.734,0,0,1-1.1-.8L6.469,25.93.263,20.668a.735.735,0,0,1,.421-1.3l8.1-.566,3.064-7.6a.765.765,0,0,1,1.362,0l3.064,7.6,8.1.566a.735.735,0,0,1,.421,1.3L18.588,25.93l1.987,7.949a.734.734,0,0,1-1.1.8Z"
-                        transform="translate(0 -10.792)"
-                      ></path>
-                    </g>
-                  </svg>
+
+                <div class="flex space-x-1 bg-gray-200 rounded-full px-2 ml-auto mt-2">
+                    <svg width="64px" height="64px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M21.12 9.88005C21.0781 9.74719 20.9996 9.62884 20.8935 9.53862C20.7873 9.4484 20.6579 9.38997 20.52 9.37005L15.1 8.58005L12.67 3.67005C12.6008 3.55403 12.5027 3.45795 12.3853 3.39123C12.2678 3.32451 12.1351 3.28943 12 3.28943C11.8649 3.28943 11.7322 3.32451 11.6147 3.39123C11.4973 3.45795 11.3991 3.55403 11.33 3.67005L8.89999 8.58005L3.47999 9.37005C3.34211 9.38997 3.21266 9.4484 3.10652 9.53862C3.00038 9.62884 2.92186 9.74719 2.87999 9.88005C2.83529 10.0124 2.82846 10.1547 2.86027 10.2907C2.89207 10.4268 2.96124 10.5512 3.05999 10.6501L6.99999 14.4701L6.06999 19.8701C6.04642 20.0091 6.06199 20.1519 6.11497 20.2826C6.16796 20.4133 6.25625 20.5267 6.36999 20.6101C6.48391 20.6912 6.61825 20.7389 6.75785 20.7478C6.89746 20.7566 7.03675 20.7262 7.15999 20.6601L12 18.1101L16.85 20.6601C16.9573 20.7189 17.0776 20.7499 17.2 20.7501C17.3573 20.7482 17.5105 20.6995 17.64 20.6101C17.7537 20.5267 17.842 20.4133 17.895 20.2826C17.948 20.1519 17.9636 20.0091 17.94 19.8701L17 14.4701L20.93 10.6501C21.0305 10.5523 21.1015 10.4283 21.1351 10.2922C21.1687 10.1561 21.1634 10.0133 21.12 9.88005Z" fill="#000000"></path> </g></svg>
+                    <span class="text-black font-bold text-sm flex items-center justify-center">{{user.notation}}</span>
                 </div>
               </div>
-              <div class="flex space-x-3">
-                <svg
-                  width="64px"
-                  height="64px"
-                  viewBox="0 -0.05 26.1 26.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="#000000"
-                >
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                  <g
-                    id="SVGRepo_tracerCarrier"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></g>
-                  <g id="SVGRepo_iconCarrier">
+              <div class="flex ">
+                <div class="flex space-x-3">
+                  <svg
+                    width="64px"
+                    height="64px"
+                    viewBox="0 -0.05 26.1 26.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="#000000"
+                  >
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g
-                      id="Group_719"
-                      data-name="Group 719"
-                      transform="translate(-50 -100)"
-                    >
-                      <path
-                        id="Path_1486"
-                        data-name="Path 1486"
-                        d="M63,126c-7.2,0-13-1.6-13-3.5,0-1.3,2.6-2.4,6.5-3l1.6,1.7c-3.6.2-5.5.8-5.5,1.3,0,.8,4.3,1.5,10.4,1.5s10.5-.7,10.5-1.5c0-.6-1.9-1.1-5.5-1.3l1.6-1.7c3.9.6,6.5,1.7,6.5,3C76,124.4,70.2,126,63,126Zm4-17a4,4,0,1,1-4-4A4.012,4.012,0,0,1,67,109Zm-6,0a2,2,0,1,0,2-2A2.006,2.006,0,0,0,61,109Zm3,12-1,1-1-1c-.3-.4-6.6-5.8-7.8-10.5-.1-.3-.3-1.4.8-1.5.9-.1,1.1,1,1.1,1,.8,3.5,5.2,6.9,6.9,9,1.8-2.3,7-6.1,7-10,0-4.5-2.6-7-7-7-3.3,0-5.6,1.4-6.5,4,0,0-.4,1.2-1.1,1-.8-.2-.9-.8-.6-1.7A9,9,0,0,1,72,109C72,114,64.4,120.6,64,121Z"
-                        fill="#444"
-                      ></path>
+                      id="SVGRepo_tracerCarrier"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></g>
+                    <g id="SVGRepo_iconCarrier">
+                      <g
+                        id="Group_719"
+                        data-name="Group 719"
+                        transform="translate(-50 -100)"
+                      >
+                        <path
+                          id="Path_1486"
+                          data-name="Path 1486"
+                          d="M63,126c-7.2,0-13-1.6-13-3.5,0-1.3,2.6-2.4,6.5-3l1.6,1.7c-3.6.2-5.5.8-5.5,1.3,0,.8,4.3,1.5,10.4,1.5s10.5-.7,10.5-1.5c0-.6-1.9-1.1-5.5-1.3l1.6-1.7c3.9.6,6.5,1.7,6.5,3C76,124.4,70.2,126,63,126Zm4-17a4,4,0,1,1-4-4A4.012,4.012,0,0,1,67,109Zm-6,0a2,2,0,1,0,2-2A2.006,2.006,0,0,0,61,109Zm3,12-1,1-1-1c-.3-.4-6.6-5.8-7.8-10.5-.1-.3-.3-1.4.8-1.5.9-.1,1.1,1,1.1,1,.8,3.5,5.2,6.9,6.9,9,1.8-2.3,7-6.1,7-10,0-4.5-2.6-7-7-7-3.3,0-5.6,1.4-6.5,4,0,0-.4,1.2-1.1,1-.8-.2-.9-.8-.6-1.7A9,9,0,0,1,72,109C72,114,64.4,120.6,64,121Z"
+                          fill="#444"
+                        ></path>
+                      </g>
                     </g>
-                  </g>
-                </svg>
-                <span>{{ user.adresse }}</span>
+                  </svg>
+                  <span>{{ user.adresse }}</span>
+                </div>
+                <span v-if="temoin == user.id"  class="text-vert ml-auto text-sm font-bold">{{niveau}}</span>
               </div>
             </header>
           </span>

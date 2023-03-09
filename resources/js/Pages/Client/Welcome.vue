@@ -20,6 +20,7 @@ const contenu = ref("Articles");
 const contenu1 = ref(localStorage.getItem('contenu1') === 'true' || false);
 const contenu2 = ref(localStorage.getItem('contenu2') === 'true' || false);
 const articlerecherche = ref("");
+let isPage1 = ref(true);
 const cartAnimation = ref(false);
 const data = () => ({
   loading: true,
@@ -68,6 +69,7 @@ onMounted(() => {
 
   localStorage.setItem('contenu1', contenu1.value.toString());
   localStorage.setItem('contenu2', contenu2.value.toString());
+  console.log(props.articles)
 });
 
 const total = computed(() => {
@@ -171,19 +173,23 @@ const Diminuer = (car) => {
 };
 
 const recherche = computed(() => {
-  if (count.value) {
+  if (count.value && isPage1 === true) {
     return props.articles.filter((article) => article.nomResto == cart.value[0].restau);
   }
-
-  if (articlerecherche.value) {
-    return props.articles.filter((article) =>
-      article.nom.toLowerCase().includes(articlerecherche.value.toLocaleLowerCase())
-    );
-  } else {
+   else{
     return props.articles;
   }
+
+//   if (articlerecherche.value) {
+//     return props.articles.filter((article) =>
+//       article.nom.toLowerCase().includes(articlerecherche.value.toLocaleLowerCase())
+//     );
+//   } else {
+//     return props.articles;
+//   }
 });
 
+console.log(recherche.value)
 const scrollToResults = () => {
   // Vérifie si la référence vers la section des résultats est définie
   const results = document.getElementById("results");
@@ -251,7 +257,7 @@ const scrollToResults = () => {
         </div>
 
         <div
-          class="md:flex lg:border-none md:border-none lg:bg-opacity-0 bg-white border-t-2 border-b-2 border-gray-200  md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
+          class="md:flex bg-white lg:border-none md:border-none lg:bg-opacity-0  border-t-2 border-b-2 border-gray-200  md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
           :class="[open ? 'left-0' : 'left-[-100%]']"
         >
           <div class="md:mx-4 md:my-0 my-6 flex">

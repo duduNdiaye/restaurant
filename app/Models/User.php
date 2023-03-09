@@ -29,6 +29,8 @@ class User extends Authenticatable
         'id',
         'email',
         'password',
+        'notation',
+        'nombrenote',
         'tel',
         'heureOuvert',
         'heureFerme',
