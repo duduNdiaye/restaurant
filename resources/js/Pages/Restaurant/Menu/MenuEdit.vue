@@ -12,6 +12,7 @@ const props = defineProps({
     }
 });
 const form = useForm({
+    id:props.menujour.id,
     jour_semaine: props.menujour.jour_semaine,
 
     selectedArticles: props.menujour.articles.map((article) => article.id),
@@ -39,6 +40,7 @@ const submit = () => {
           </div>
         </div>
         <form >
+            <input type="hidden" v-model="form.id" name="id">
         <div class="mb-4">
           <label class="block text-gray-700 font-bold mb-2" for="jour_semaine">Jour du menu</label>
           <select class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="jour_semaine" name="jour_semaine"

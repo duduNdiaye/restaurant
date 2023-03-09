@@ -104,13 +104,13 @@ class MenuJourController extends Controller
         ]);
 
         $menuJour->jour_semaine=$data['jour_semaine'];
-        $alpha=$menuJour->id;
+        $menuJour->id=$request->input('id');
         $menuJour->updateOrFail();
         $menuJour->articles()->detach();
+
         $menuJour->articles()->attach($data['selectedArticles']);
-        // foreach ($request->input('selectedArticles') as $article) {
-        //     $menuJour->articles()->attach([$article=>['menu_jour_id'=>$menuJour->id]]);
-        // }
+                                                        // foreach ($request->input('selectedArticles') as $article) {
+                                                        //     $menuJour->articles()->attach([$article=>['menu_jour_id'=>$menuJour->id]]);
 
     }
 
