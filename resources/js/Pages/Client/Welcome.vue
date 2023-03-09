@@ -257,7 +257,7 @@ const scrollToResults = () => {
         </div>
 
         <div
-          class="md:flex lg:border-none md:border-none lg:bg-opacity-0  border-t-2 border-b-2 border-gray-200  md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
+          class="md:flex bg-white lg:border-none md:border-none lg:bg-opacity-0  border-t-2 border-b-2 border-gray-200  md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
           :class="[open ? 'left-0' : 'left-[-100%]']"
         >
           <div class="md:mx-4 md:my-0 my-6 flex">

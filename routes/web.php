@@ -78,14 +78,14 @@ Route::middleware([
 Route::group(['prefix' => 'commandes'], function () {
     Route::get('/', [CommandeController::class, 'client_commande'])->name('client.commande');
     Route::get('/restaurant/{id}', function (int $id) {
-        $user = User::findOrFail($id);
+        $usere = User::findOrFail($id);
         $articles = Article::all();
         return Inertia::render('Client/RestaurantDetails', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
             'laravelVersion' => Application::VERSION,
             'phpVersion' => PHP_VERSION,
-            'user' => $user,
+            'usere' => $usere,
             'articles' => $articles
 
         ]);
@@ -104,7 +104,27 @@ Route::group(['prefix' => 'commandes'], function () {
             'adresse' => $request->AdresseClient
         ]);
 
+
+
     })->name('validation.commande');
+
+    Route::post('/note', function (Request $request) {
+        $user = User::findOrFail($request->user_id);
+        $oldNotation = $user->notation ?? 0; // si notation n'existe pas, on initialise à 0
+        $newNotation = $request->note;
+        $lesnotes = $user->nombrenote ?? 0;
+        if ($oldNotation == 0) {
+            $avgNotation = $newNotation;
+        } else {
+            $avgNotation = ($oldNotation + $newNotation) / 2;
+        }
+
+
+        $user->update([
+            'notation' => $avgNotation,
+            'nombrenote' => $lesnotes + 1
+        ]);
+    })->name('note.resto');
 });
 
 Route::post('/article/new',[ArticleController::class,'store'])->name('store.article');

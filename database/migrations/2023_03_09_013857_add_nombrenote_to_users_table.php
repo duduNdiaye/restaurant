@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('notation')->default(0)->nullable();
+            $table->string('nombrenote')->default(0)->nullable();
         });
     }
 

@@ -2,6 +2,7 @@
 import { Link, usePage } from "@inertiajs/inertia-vue3";
 import { defineProps, onMounted, computed, reactive, ref } from "vue";
 import axios from "axios";
+import { useForm } from "@inertiajs/vue3";
 
 const add = ref("");
 const cart = ref([]);
@@ -11,11 +12,73 @@ const cartAnimation = ref(false);
 const panier = ref(false);
 const now = ref(new Date());
 const actif = ref("");
+const nombre = ref(0);
+const i = ref();
+const niveau = ref("");
+const temoin = ref(false);
+const i1 = ref(1);
+const i2 = ref(2);
+const i3 = ref(3);
+const i4 = ref(4);
+const i5 = ref(5);
+const message = ref("Merci d'avoir note");
+const lanote = ref(false);
+
+const Noter = (i) => {
+  if (i == 1) {
+    niveau.value = "insatisfaisant";
+    nombre.value = 1;
+  } else if (i == 2) {
+    niveau.value = "moyen";
+    nombre.value = 2;
+  } else if (i == 3) {
+    niveau.value = "agreable";
+    nombre.value = 3;
+  } else if (i == 4) {
+    niveau.value = "excellent";
+    nombre.value = 4;
+  } else {
+    niveau.value = "inoubliable";
+    nombre.value = 5;
+  }
+  temoin.value = true;
+  const form = useForm({
+    note: nombre.value,
+    user_id: props.usere.id,
+  });
+  form.post(route("note.resto"), {
+    onSuccess: () => {
+      console.log("parfait");
+    },
+    onError: () => {
+      console.log("desole");
+    },
+  });
+  setTimeout(() => {
+    lanote.value = false;
+  }, 1000);
+};
 
 const props = defineProps({
-  user: {},
+  canLogin: Boolean,
+  canRegister: Boolean,
+  laravelVersion: String,
+  phpVersion: String,
+  usere: {},
   articles: {},
 });
+
+const CloseNote = () => {
+  lanote.value = !lanote.value;
+};
+
+const scrollToResults = () => {
+  // Vérifie si la référence vers la section des résultats est définie
+  const results = document.getElementById("menu");
+  if (results) {
+    results.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+  }
+};
 
 onMounted(() => {
   if (localStorage.getItem("cart")) {
@@ -35,11 +98,11 @@ onMounted(() => {
   }, 1000);
 
   console.log(heureEntiere.value);
-  console.log(props.user.heureOuvert);
-  console.log(props.user.heureFerme);
+  console.log(props.usere.heureOuvert);
+  console.log(props.usere.heureFerme);
   if (
-    props.user.heureOuvert > heureEntiere.value &&
-    props.user.heureFerme <= heureEntiere.value
+    props.usere.heureOuvert > heureEntiere.value &&
+    props.usere.heureFerme <= heureEntiere.value
   ) {
     actif.value = "Ferme";
   } else {
@@ -88,23 +151,21 @@ const addItem = (article) => {
   console.log(panier.value);
 };
 const recherche = computed(() => {
-  return props.articles.filter((article) => article.user_id == props.user.id);
+  return props.articles.filter((article) => article.user_id == props.usere.id);
 });
 </script>
 <template>
   <div class="flex items-center h-60 justify-center">
-    <img :src="user.photo" class="h-full w-full object-cover object-center" alt="" />
+    <img :src="usere.photo" class="h-full w-full object-cover object-center" alt="" />
   </div>
   <div
-    class="flex px-5 items-center z-40 transform-cpu bg-white text-center border-b border-gray-200 md:px-5 lg:px-28 py-3 w-full"
+    class="flex px-5 items-center justify-center z-40 transform-cpu bg-white text-center border-b border-gray-200 md:px-5 lg:px-24 py-3 w-full"
   >
     <div class="flex items-center space-x-7">
-      <h1
-        class="text-3xl flex  bg-black text-white px-2 font-title font-extrabold"
-      >
+      <h1 class="text-3xl flex bg-black text-white px-2 font-title font-extrabold">
         EatEasy
       </h1>
-      <div class=" relative hidden md:block lg:block sm:block mx-auto text-gray-600">
+      <div class="relative hidden md:block lg:block sm:block mx-auto text-gray-600">
         <input
           class="border-2 border-gray-300 outline-none bg-white focus:ring-gray-200 focus:outline-none focus:border-none lg:w-96 h-[3rem] px-5 pr-16 rounded-full text-sm focus:outline-none"
           type="search"
@@ -133,8 +194,13 @@ const recherche = computed(() => {
         </button>
       </div>
     </div>
-    <div class="flex lg:flex lg:block md:block md:flex hidden space-x-4 items-center ml-auto">
-      <button
+
+    <div
+      v-if="canLogin"
+      class="flex lg:flex lg:block md:block md:flex hidden space-x-4 items-center ml-auto"
+    >
+      <a
+        v-if="$page.props.user"
         class="bg-white border-2 border-gray-100 flex rounded-full py-2 space-x-2 px-3 hover:bg-gray-100"
       >
         <svg
@@ -160,51 +226,99 @@ const recherche = computed(() => {
           </g>
         </svg>
         <span class="font-bold text-black flex justify-center items-center"
-          >Se connecter</span
+          >Connecter</span
         >
-      </button>
-      <button
-        class="bg-white border-2 border-gray-100 flex rounded-full py-2 space-x-2 px-3 hover:bg-gray-100"
-      >
-        <svg
-          class="w-5 h-5 mt-[0.5] icon flex justify-center items-center"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+      </a>
+      <template v-else>
+        <a
+          :href="route('login')"
+          class="bg-white border-2 border-gray-100 flex rounded-full py-2 space-x-2 px-3 hover:bg-gray-100"
         >
-          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-          <g
-            id="SVGRepo_tracerCarrier"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          ></g>
-          <g id="SVGRepo_iconCarrier">
-            <path
-              d="M13 2C10.2386 2 8 4.23858 8 7C8 7.55228 8.44772 8 9 8C9.55228 8 10 7.55228 10 7C10 5.34315 11.3431 4 13 4H17C18.6569 4 20 5.34315 20 7V17C20 18.6569 18.6569 20 17 20H13C11.3431 20 10 18.6569 10 17C10 16.4477 9.55228 16 9 16C8.44772 16 8 16.4477 8 17C8 19.7614 10.2386 22 13 22H17C19.7614 22 22 19.7614 22 17V7C22 4.23858 19.7614 2 17 2H13Z"
-              fill="#000000"
-            ></path>
-            <path
-              d="M3 11C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H11.2821C11.1931 13.1098 11.1078 13.2163 11.0271 13.318C10.7816 13.6277 10.5738 13.8996 10.427 14.0945C10.3536 14.1921 10.2952 14.2705 10.255 14.3251L10.2084 14.3884L10.1959 14.4055L10.1915 14.4115C10.1914 14.4116 10.191 14.4122 11 15L10.1915 14.4115C9.86687 14.8583 9.96541 15.4844 10.4122 15.809C10.859 16.1336 11.4843 16.0346 11.809 15.5879L11.8118 15.584L11.822 15.57L11.8638 15.5132C11.9007 15.4632 11.9553 15.3897 12.0247 15.2975C12.1637 15.113 12.3612 14.8546 12.5942 14.5606C13.0655 13.9663 13.6623 13.2519 14.2071 12.7071L14.9142 12L14.2071 11.2929C13.6623 10.7481 13.0655 10.0337 12.5942 9.43937C12.3612 9.14542 12.1637 8.88702 12.0247 8.7025C11.9553 8.61033 11.9007 8.53682 11.8638 8.48679L11.822 8.43002L11.8118 8.41602L11.8095 8.41281C11.4848 7.96606 10.859 7.86637 10.4122 8.19098C9.96541 8.51561 9.86636 9.14098 10.191 9.58778L11 9C10.191 9.58778 10.1909 9.58773 10.191 9.58778L10.1925 9.58985L10.1959 9.59454L10.2084 9.61162L10.255 9.67492C10.2952 9.72946 10.3536 9.80795 10.427 9.90549C10.5738 10.1004 10.7816 10.3723 11.0271 10.682C11.1078 10.7837 11.1931 10.8902 11.2821 11H3Z"
-              fill="#000000"
-            ></path>
-          </g>
-        </svg>
+          <svg
+            class="w-5 h-5 mt-[0.5] icon flex justify-center items-center"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <rect width="24" height="24" fill="white"></rect>
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9999 6C9.79077 6 7.99991 7.79086 7.99991 10C7.99991 12.2091 9.79077 14 11.9999 14C14.209 14 15.9999 12.2091 15.9999 10C15.9999 7.79086 14.209 6 11.9999 6ZM17.1115 15.9974C17.8693 16.4854 17.8323 17.5491 17.1422 18.1288C15.7517 19.2966 13.9581 20 12.0001 20C10.0551 20 8.27215 19.3059 6.88556 18.1518C6.18931 17.5723 6.15242 16.5032 6.91351 16.012C7.15044 15.8591 7.40846 15.7251 7.68849 15.6097C8.81516 15.1452 10.2542 15 12 15C13.7546 15 15.2018 15.1359 16.3314 15.5954C16.6136 15.7102 16.8734 15.8441 17.1115 15.9974Z"
+                fill="#323232"
+              ></path>
+            </g>
+          </svg>
+          <span class="font-bold text-black flex justify-center items-center"
+            >Se connecter</span
+          >
+        </a>
+        <a
+          v-if="canRegister"
+          :href="route('register')"
+          class="bg-white border-2 border-gray-100 flex rounded-full py-2 space-x-2 px-3 hover:bg-gray-100"
+        >
+          <svg
+            class="w-5 h-5 mt-[0.5] icon flex justify-center items-center"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M13 2C10.2386 2 8 4.23858 8 7C8 7.55228 8.44772 8 9 8C9.55228 8 10 7.55228 10 7C10 5.34315 11.3431 4 13 4H17C18.6569 4 20 5.34315 20 7V17C20 18.6569 18.6569 20 17 20H13C11.3431 20 10 18.6569 10 17C10 16.4477 9.55228 16 9 16C8.44772 16 8 16.4477 8 17C8 19.7614 10.2386 22 13 22H17C19.7614 22 22 19.7614 22 17V7C22 4.23858 19.7614 2 17 2H13Z"
+                fill="#000000"
+              ></path>
+              <path
+                d="M3 11C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H11.2821C11.1931 13.1098 11.1078 13.2163 11.0271 13.318C10.7816 13.6277 10.5738 13.8996 10.427 14.0945C10.3536 14.1921 10.2952 14.2705 10.255 14.3251L10.2084 14.3884L10.1959 14.4055L10.1915 14.4115C10.1914 14.4116 10.191 14.4122 11 15L10.1915 14.4115C9.86687 14.8583 9.96541 15.4844 10.4122 15.809C10.859 16.1336 11.4843 16.0346 11.809 15.5879L11.8118 15.584L11.822 15.57L11.8638 15.5132C11.9007 15.4632 11.9553 15.3897 12.0247 15.2975C12.1637 15.113 12.3612 14.8546 12.5942 14.5606C13.0655 13.9663 13.6623 13.2519 14.2071 12.7071L14.9142 12L14.2071 11.2929C13.6623 10.7481 13.0655 10.0337 12.5942 9.43937C12.3612 9.14542 12.1637 8.88702 12.0247 8.7025C11.9553 8.61033 11.9007 8.53682 11.8638 8.48679L11.822 8.43002L11.8118 8.41602L11.8095 8.41281C11.4848 7.96606 10.859 7.86637 10.4122 8.19098C9.96541 8.51561 9.86636 9.14098 10.191 9.58778L11 9C10.191 9.58778 10.1909 9.58773 10.191 9.58778L10.1925 9.58985L10.1959 9.59454L10.2084 9.61162L10.255 9.67492C10.2952 9.72946 10.3536 9.80795 10.427 9.90549C10.5738 10.1004 10.7816 10.3723 11.0271 10.682C11.1078 10.7837 11.1931 10.8902 11.2821 11H3Z"
+                fill="#000000"
+              ></path>
+            </g>
+          </svg>
 
-        <span class="font-bold text-black flex justify-center items-center"
-          >S'inscrire</span
-        >
-      </button>
+          <span class="font-bold text-black flex justify-center items-center"
+            >S'inscrire</span
+          >
+        </a>
+      </template>
     </div>
   </div>
 
-  <div class="flex space-x-9 border-b border-gray-200 w-screen py-5 px-12">
-    <a href="#" class="text-black font-semibold">Accueil</a>
-    <a href="#" class="text-black font-semibold">Restaurants</a>
-    <button class="text-black font-semibold">Notation</button>
-    <a href="#" class="text-black font-semibold">Menu</a>
-    <button class="bg-black hover:bg-gray-400 px-2 rounded-full flex space-x-2">
+  <div
+    class="flex space-x-9 border-b border-gray-200 overflow-x-scroll w-screen py-5 px-12"
+  >
+    <a
+      :href="route('acceuil')"
+      class="text-black focus:border-b focus:border-black font-semibold"
+      >Accueil</a
+    >
+    <button
+      @click="CloseNote()"
+      class="text-black font-semibold bg-gray-100 rounded-full px-2"
+    >
+      Noter le restaurant
+    </button>
+    <button @click="scrollToResults()" class="text-black font-semibold focus:border-b focus:border-black"
+      >Menu du jour</button
+    >
+    <button
+      class="bg-black hover:bg-gray-400 focus:border-b focus:border-black px-2 rounded-full flex space-x-2"
+    >
       <svg
-       class="h-4 w-4 icon mt-1"
+        class="h-4 w-4 icon mt-1"
         viewBox="0 0 32 32"
         stroke="#fff"
         version="1.1"
@@ -227,9 +341,9 @@ const recherche = computed(() => {
   </div>
   <div class="p-6 px-2 bg-white">
     <div class="flex flex-col space-y-1 px-9">
-      <div class="flex">
+      <div class="flex justify-center items-center">
         <div class="flex flex-col space-y-2">
-          <span class="font-black text-5xl">{{ user.name }}</span>
+          <span class="font-black flex text-5xl">{{ usere.name }}</span>
           <div
             class="text-red-500 space-x-1 font-bold mt-2 text-sm flex justify-center items-center"
           >
@@ -258,42 +372,8 @@ const recherche = computed(() => {
             <span> {{ actif }} a l'heure actuelle</span>
           </div>
         </div>
-        <!-- <a
-          :href="route('client.commande')"
-          class="flex lg:w-36 space-x-1 bg-black px-3 ml-auto items-center justify-center rounded-full"
-        >
-          <svg
-            class="w-8 h-8 icon"
-            stroke="#fff"
-            viewBox="0 0 32 32"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-            fill="#000000"
-          >
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-            <g
-              id="SVGRepo_tracerCarrier"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></g>
-            <g id="SVGRepo_iconCarrier">
-              <g id="icomoon-ignore"></g>
-              <path
-                d="M30.622 9.602h-22.407l-1.809-7.464h-5.027v1.066h4.188l5.198 21.443c-1.108 0.323-1.923 1.334-1.923 2.547 0 1.472 1.193 2.666 2.666 2.666s2.666-1.194 2.666-2.666c0-0.603-0.208-1.153-0.545-1.599h7.487c-0.337 0.446-0.545 0.997-0.545 1.599 0 1.472 1.193 2.666 2.665 2.666s2.666-1.194 2.666-2.666c0-1.473-1.193-2.665-2.666-2.666v0h-11.403l-0.517-2.133h14.968l4.337-12.795zM13.107 27.196c0 0.882-0.717 1.599-1.599 1.599s-1.599-0.717-1.599-1.599c0-0.882 0.717-1.599 1.599-1.599s1.599 0.718 1.599 1.599zM24.836 27.196c0 0.882-0.718 1.599-1.6 1.599s-1.599-0.717-1.599-1.599c0-0.882 0.717-1.599 1.599-1.599 0.882 0 1.6 0.718 1.6 1.599zM11.058 21.331l-2.585-10.662h20.662l-3.615 10.662h-14.462z"
-                fill="#000000"
-              ></path>
-            </g>
-          </svg>
-          <span class="text-white font-semibold">Panier</span>
-          <span class="text-white text-2xl font-bold mt-[-0.5rem]">.</span>
-          <span
-            :class="{ 'animate-bounce text-red-500': cartAnimation }"
-            class="text-white text-xl font-black"
-            >{{ count }}</span
-          >
-        </a> -->
-        <div class="flex justify-center items-center ml-auto">
+
+        <div class="flex lg:block md:block hidden justify-center items-center ml-auto">
           <select class="focus:ring-black focus:outline-none focus:border-none mb-5 w-96">
             <option value="1">PIZZAS</option>
             <option value="2">PLATS NATIONAUX</option>
@@ -324,7 +404,9 @@ const recherche = computed(() => {
               ></path>
             </g>
           </svg>
-          <span class="flex text-sm justify-center items-center">4.7(15 notes)</span>
+          <span class="flex text-sm justify-center items-center"
+            >{{ usere.notation }}({{ usere.nombrenote }})notes</span
+          >
         </div>
         <div
           class="flex lg:block hidden mt-[-0.8rem] justify-center items-center text-gray-300 text-xl"
@@ -359,7 +441,7 @@ const recherche = computed(() => {
             </g>
           </svg>
 
-          {{ user.tel }}</span
+          {{ usere.tel }}</span
         >
         <div
           class="flex lg:block hidden mt-[-0.8rem] justify-center items-center text-gray-300 text-xl"
@@ -390,7 +472,7 @@ const recherche = computed(() => {
               </g>
             </g>
           </svg>
-          {{ user.adresse }}</span
+          {{ usere.adresse }}</span
         >
         <div
           class="flex lg:block hidden mt-[-0.8rem] justify-center items-center text-gray-300 text-xl"
@@ -401,24 +483,38 @@ const recherche = computed(() => {
           class="flex md:justify-start lg:justify-start justify-center items-center space-x-1 text-gray-500 text-sm font-semibold"
         >
           <span class="text-sm">Ouvert a: </span>
-          <span class="font-black text-sm flex text-black">{{ user.heureOuvert }}H</span>
+          <span class="font-black text-sm flex text-black">{{ usere.heureOuvert }}H</span>
           <div class="flex mt-[-0.4rem] justify-center items-center font-bold text-2xl">
             -
           </div>
           <span class="text-sm">Ferme a: </span>
-          <span class="font-black text-md text-black">{{ user.heureFerme }}H</span>
+          <span class="font-black text-md text-black">{{ usere.heureFerme }}H</span>
         </div>
       </div>
     </div>
 
-    <div class="w-full h-fit px-4 pb-8 lg:p-8">
+    <div class="lg:hidden md:hidden block flex justify-center items-center">
+      <div>
+        <select
+          class="focus:ring-black focus:outline-none focus:border-none mb-5 w-full mt-3"
+        >
+          <option value="1">PIZZAS</option>
+          <option value="2">PLATS NATIONAUX</option>
+          <option value="3">BURGERS</option>
+          <option value="4">BOISSON</option>
+          <option value="4">AUTRES</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="w-full h-fit mt-4 lg:mt-0 md:mt-0 px-4 pb-8 lg:p-8">
       <div
-        class="grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
+        class="grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3 border-b-2 border-gray-200"
       >
         <article
           v-for="article in recherche"
           :key="article.id"
-          class="product-card cart-type-neon overflow-hidden bg-white duration-50 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
+          class="product-card cart-type-neon overflow-hidden bg-white duration-300 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
         >
           <span
             @mouseover="add = article.id"
@@ -478,6 +574,9 @@ const recherche = computed(() => {
           </span>
         </article>
       </div>
+      <div class="mt-4" id="menu">
+        <span class="text-black font-bold text-5xl">Menu du Jour</span>
+      </div>
       <transition name="panier">
         <div
           v-if="panier"
@@ -509,24 +608,352 @@ const recherche = computed(() => {
       </transition>
     </div>
   </div>
+  <footer
+    class="fixed bottom-0 border-t-2 z-[55] border-gray-200 shadow-2xl bg-white w-full px-6 py-3 lg:hidden md:hidden"
+  >
+    <div class="flex justify-between items-center">
+      <div>
+        <button
+          @click="toggleMenu()"
+          class="absolute md:hidden mt-5 left-6 top-0.5 cursor-pointer text-4xl"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            :class="[open ? 'bi bi-x text-red-500' : 'bi bi-filter-left text-blue-500']"
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"
+            />
+          </svg>
+        </button>
+      </div>
+      <div>
+        <button
+          @click="toggleMenu()"
+          class="absolute md:hidden mt-5 top-0.5 cursor-pointer text-4xl"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+            />
+          </svg>
+        </button>
+      </div>
+      <div>
+        <button
+          @click="toggleCart()"
+          class="absolute md:hidden mt-5 top-0.5 cursor-pointer text-4xl"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+            />
+          </svg>
+        </button>
+      </div>
+      <div>
+        <button
+          @click="showModal = !showModal"
+          class="absolute md:hidden mt-5 top-0.5 cursor-pointer text-4xl"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+            />
+          </svg>
+        </button>
+      </div>
+      <div>
+        <button class="mt-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </footer>
+  <div
+    @click.self="lanote = false"
+    v-if="lanote"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
+  ></div>
+  <transition name="panierrr">
+    <div
+      v-if="lanote"
+      @click.self="lanote = false"
+      class="z-[52] rounded-t-md fixed top-0 duration-700 ease-in-out w-full"
+    >
+      <div
+        class="modal-dialog rounded-t-md mx-auto md:h-80 lg:h-80 w-11/12 md:w-96 lg:w-1/3 my-12 md:my-24 lg:my-28"
+      >
+        <div
+          class="modal-content relative flex flex-col space-y-6 h-full bg-white shadow-lg rounded-t-md text-current"
+        >
+          <div
+            class="modal-footer rounded-md bg-white space-y-3 flex flex-col items-center justify-center px-4 py-3 border-t border-gray-200"
+          >
+            <div class="flex items-center justify-center">
+              <img
+                :src="usere.photo"
+                class="rounded-full object-cover object-center w-12 h-12"
+                alt=""
+              />
+            </div>
+            <span class="text-black text-lg font-bold"
+              >Donnez une note pour le restaurant</span
+            >
+            <span class="text-black uppercase font-bold text-xl">{{ usere.name }}</span>
+          </div>
+          <div class="flex items-center justify-center space-x-6">
+            <button
+              :class="[i1 &lt;= nombre && temoin ? 'text-black' : 'text-white']"
+              @click="Noter((i = 1))"
+            >
+              <svg
+                class="w-12 h-12 icon"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    opacity="0.15"
+                    d="M12 17L6 20L7.5 14L3 9L9.5 8.5L12 3L14.5 8.5L21 9L16.5 14L18 20L12 17Z"
+                    fill="#000000"
+                  ></path>
+                  <path
+                    d="M12 17L6 20L7.5 14L3 9L9.5 8.5L12 3L14.5 8.5L21 9L16.5 14L18 20L12 17Z"
+                    stroke="#000000"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </g>
+              </svg>
+            </button>
+            <button
+              :class="[i2 &lt;= nombre && temoin ? 'text-black' : 'text-white']"
+              @click="Noter((i = 2))"
+            >
+              <svg
+                class="w-12 h-12 icon"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    opacity="0.15"
+                    d="M12 17L6 20L7.5 14L3 9L9.5 8.5L12 3L14.5 8.5L21 9L16.5 14L18 20L12 17Z"
+                    fill="#000000"
+                  ></path>
+                  <path
+                    d="M12 17L6 20L7.5 14L3 9L9.5 8.5L12 3L14.5 8.5L21 9L16.5 14L18 20L12 17Z"
+                    stroke="#000000"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </g>
+              </svg>
+            </button>
+            <button
+              :class="[i3 &lt;= nombre && temoin ? 'text-black' : 'text-white']"
+              @click="Noter((i = 3))"
+            >
+              <svg
+                class="w-12 h-12 icon"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    opacity="0.15"
+                    d="M12 17L6 20L7.5 14L3 9L9.5 8.5L12 3L14.5 8.5L21 9L16.5 14L18 20L12 17Z"
+                    fill="#000000"
+                  ></path>
+                  <path
+                    d="M12 17L6 20L7.5 14L3 9L9.5 8.5L12 3L14.5 8.5L21 9L16.5 14L18 20L12 17Z"
+                    stroke="#000000"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </g>
+              </svg>
+            </button>
+            <button
+              :class="[i4 &lt;= nombre && temoin ? 'text-black' : 'text-white']"
+              @click="Noter((i = 4))"
+            >
+              <svg
+                class="w-12 h-12 icon"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    opacity="0.15"
+                    d="M12 17L6 20L7.5 14L3 9L9.5 8.5L12 3L14.5 8.5L21 9L16.5 14L18 20L12 17Z"
+                    fill="#000000"
+                  ></path>
+                  <path
+                    d="M12 17L6 20L7.5 14L3 9L9.5 8.5L12 3L14.5 8.5L21 9L16.5 14L18 20L12 17Z"
+                    stroke="#000000"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </g>
+              </svg>
+            </button>
+            <button
+              :class="[i5 &lt;= nombre && temoin ? 'text-black' : 'text-white']"
+              @click="Noter((i = 5))"
+            >
+              <svg
+                class="w-12 h-12 icon"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    opacity="0.15"
+                    d="M12 17L6 20L7.5 14L3 9L9.5 8.5L12 3L14.5 8.5L21 9L16.5 14L18 20L12 17Z"
+                    fill="#000000"
+                  ></path>
+                  <path
+                    d="M12 17L6 20L7.5 14L3 9L9.5 8.5L12 3L14.5 8.5L21 9L16.5 14L18 20L12 17Z"
+                    stroke="#000000"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </g>
+              </svg>
+            </button>
+          </div>
+          <div class="flex justify-center items-center">
+            <span v-if="temoin" class="text-vert font-bold">{{ message }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
 </template>
+
+<script>
+export default {
+  components: {},
+  props: {
+    dater: {
+      type: Boolean,
+      required: true,
+    },
+  },
+};
+</script>
+
 <style>
-.panier-enter-active,
-.panier-leave-active {
+.panierrr-enter-active,
+.panierrr-leave-active {
   transition: transform 0.5s ease, opacity 0.5s ease;
-  transform: translateX(100%);
+  transform: translateY(10%);
   opacity: 0;
 }
 
-.panier-enter,
-.panier-leave-to {
+.panierrr-enter,
+.panierrr-leave-to {
   opacity: 0;
-  transform: translateX(100%);
+  transform: translateY(10%);
 }
 
-.panier-leave,
-.panier-enter-to {
+.panierrr-leave,
+.panierrr-enter-to {
   opacity: 1;
-  transform: translateX(0);
+  transform: translateY(0);
 }
 </style>
