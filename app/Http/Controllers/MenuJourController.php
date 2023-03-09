@@ -20,7 +20,7 @@ class MenuJourController extends Controller
         //
         $m_id=Auth::id();
         $articles=Article::where('user_id',$m_id)->get();
-        $menus=MenuJour::all();
+        $menus=MenuJour::with('articles')->get();
         return Inertia::render('Restaurant/Menu/MenuSemaine',
     [
         'articles'=>$articles,
@@ -55,11 +55,12 @@ class MenuJourController extends Controller
         ]);
         $monMenu = MenuJour::create([
             'jour_semaine' => $data['jour_semaine'],
+            'articles'=>'xnxn'
         ]);
-        foreach ($request->input('selectedArticles') as $article) {
-            $monMenu->articles()->attach($article['id']);
-        }
-        // $monMenu->articles()->attach($data['selectedArticles']);
+        // foreach ($request->input('selectedArticles') as $article) {
+        //     $monMenu->articles()->attach($article);
+        // }
+        $monMenu->articles()->attach($data['selectedArticles']);
 
 
     }
@@ -96,7 +97,20 @@ class MenuJourController extends Controller
     public function update(Request $request, MenuJour $menuJour)
     {
         //
-        $menuJour->updateOrFail($request->all());
+        $data = $request->validate([
+            'jour_semaine' => 'required|string|max:20',
+            'selectedArticles' => 'required|array',
+            'selectedArticles.*' => 'integer',
+        ]);
+
+        $menuJour->jour_semaine=$data['jour_semaine'];
+        $alpha=$menuJour->id;
+        $menuJour->updateOrFail();
+        $menuJour->articles()->detach();
+        $menuJour->articles()->attach($data['selectedArticles']);
+        // foreach ($request->input('selectedArticles') as $article) {
+        //     $menuJour->articles()->attach([$article=>['menu_jour_id'=>$menuJour->id]]);
+        // }
 
     }
 
@@ -109,6 +123,7 @@ class MenuJourController extends Controller
     public function destroy(MenuJour $menuJour)
     {
         //
-        $menuJour->deleteOrFail();
+        $menuJour->articles()->detach();
+        $menuJour->delete();
     }
 }

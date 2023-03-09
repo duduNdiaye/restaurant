@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class MenuJour extends Model
 {
     use HasFactory;
+    protected $fillable=[
+        'jour_semaine',
+        'articles'
+    ];
     public function articles() :BelongsToMany
     {
         return $this->belongsToMany(Article::class);

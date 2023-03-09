@@ -1,12 +1,10 @@
-<template lang="html">
+<template>
 
-  <section class="resources-js-pages-restaurant-menu-menu-delete">
-    <h1>resources-js-pages-restaurant-menu-menu-delete Component</h1>
-  </section>
+
 
 </template>
 
-<script lang="js">
+<script >
 
   export default  {
     name: 'resources-js-pages-restaurant-menu-menu-delete',
@@ -30,8 +28,6 @@
 
 </script>
 
-<style scoped lang="scss">
-  .resources-js-pages-restaurant-menu-menu-delete {
+<style scoped >
 
-  }
 </style>

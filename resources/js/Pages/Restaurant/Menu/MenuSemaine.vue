@@ -51,18 +51,35 @@
           </thead>
           <tbody>
             <tr v-for="menu in menus">
-                <td class="py-2 px-4 bg-gray-100 border text-center">thieboudieune</td>
-                <td class="py-2 px-4 bg-gray-100 border text-center ">Voir</td>
-                <td class="py-2 px-4 bg-gray-100 border text-center ">Modifier|supprimer</td>
+
+                <td v-if="menu.jour_semaine==dayOfWeek.toLowerCase()" class="py-2 px-4 bg-gray-100 border text-center">{{ menu.jour_semaine }}</td>
+                <td v-if="menu.jour_semaine==dayOfWeek.toLowerCase()" class="py-2 px-4 bg-gray-100 border text-center ">
+                    <span v-for="article in menu.articles">{{ article.nom }},</span>
+                </td>
+                <td v-if="menu.jour_semaine==dayOfWeek.toLowerCase()"  class="py-2 px-4 bg-gray-100 border text-center ">
+                    <button @click="showEdit(menu)" class="p-2 rounded-full bg-yellow-500 hover:bg-yellow-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.07 2.93a.75.75 0 011.06 0l5 5a.75.75 0 010 1.06l-8.8 8.8a1.5 1.5 0 01-.44.3l-4.14 1.38a.5.5 0 01-.62-.62l1.38-4.14a1.5 1.5 0 01.3-.44l8.8-8.8zm-1.13 2.47l-5 5 1.06 1.06 5-5-1.06-1.06z" />
+                         </svg>
+                    </button>
+
+<button class="p-2 rounded-full bg-red-500 hover:bg-red-600">
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+    <path fill-rule="evenodd" d="M15.85 4.15a.5.5 0 00-.7 0L10 9.29l-5.15-5.14a.5.5 0 00-.7.7L9.29 10l-5.14 5.15a.5.5 0 00.7.7L10 10.71l5.15 5.14a.5.5 0 00.7-.7L10.71 10l5.14-5.15a.5.5 0 000-.7z" clip-rule="evenodd" />
+  </svg>
+</button>
+
+                </td>
 
             </tr>
           </tbody>
         </table>
+        <p>{{ menus.articles }}</p>
       </div>
     </div>
-    <MenuCreate   v-if="showCreateModal" :articles="articles"/>
-    <!-- <ArticleCreateModal/> -->
+    <MenuCreate @close="showCreateModal=false"  v-if="showCreateModal" :articles="articles"/>
     <!-- Répéter le même modèle pour les autres jours de la semaine -->
+    <MenuEdit v-if="showEditModal" :menujour="menuedite" :articles="articles" @close="showEditModal=false"/>
   </div>
 </div>
 
@@ -71,9 +88,9 @@
 </template>
 
 <script>
-import ArticleCreateModal from '../Article/ArticleCreateModal.vue';
 import DashLayout from '../DashLayout.vue';
 import MenuCreate from './MenuCreate.vue';
+import MenuEdit from './MenuEdit.vue';
 
 
   export default  {
@@ -88,7 +105,9 @@ import MenuCreate from './MenuCreate.vue';
     data() {
         return {
             dayOfWeek: "",
-            showCreateModal:false
+            showCreateModal:false,
+            showEditModal:false,
+            menuedite:null,
         };
     },
     methods: {
@@ -117,10 +136,16 @@ import MenuCreate from './MenuCreate.vue';
             console.log(this.showCreateModal)
             this.showCreateModal=!this.showCreateModal;
             console.log(this.showCreateModal)
+        },
+        showEdit(menuedite)
+        {
+            console.log(this.showEditModal)
+            this.showEditModal= !this.showEditModal;
+            this.menuedite=menuedite;
         }
     },
     computed: {},
-    components: { DashLayout, MenuCreate, ArticleCreateModal }
+    components: { DashLayout, MenuCreate, MenuEdit }
 }
 
 

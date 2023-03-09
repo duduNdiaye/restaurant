@@ -120,7 +120,7 @@ import { Link } from '@inertiajs/vue3';
               <img class="w-10 h-10 rounded-full border-2 border-gray-500" src="" alt="">
               <div class="font-semibold text-left">
                 <div>{{  $page.props.user.name  }}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 hover:dark:text-white hover:text-gray-900 ">{{  $page.props.user.role  }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 hover:dark:text-gray-800 hover:text-gray-900 ">{{  $page.props.user.role  }}</div>
               </div>
             </div>
             <!-- Drop down -->
@@ -137,7 +137,7 @@ import { Link } from '@inertiajs/vue3';
         </div>
       </div>
       <div class="h-[calc(120vh-50px)] bg-gray-100 p-[20px] w-full "  >
-        <div class=" bg-gray-100 rounded-md p-[20px] h-full">
+        <div class=" bg-gray-100 rounded-md p-[20px] h-full overflow-y-auto">
           <router-view>
 
             <slot/>

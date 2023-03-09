@@ -12,6 +12,7 @@ const props = defineProps({
 });
 const form = useForm({
     jour_semaine: '',
+
     selectedArticles: [],
 });
 const submit = () => {
@@ -23,15 +24,15 @@ const submit = () => {
 </script>
 <template>
 
-<div class="modal fixed w-full h-full top-0 left-0 flex items-center justify-center">
-    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+<div class="modal fixed w-full h-full top-0 left-0 flex items-center justify-center" v-if="isSubmitted">
+    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50" @click.self="closeModal"></div>
 
     <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
 
       <div class="modal-content py-4 text-left px-6">
         <div class="flex justify-between items-center pb-3">
           <p class="text-2xl font-bold">Ajouter un menu</p>
-          <div class="modal-close cursor-pointer z-50">
+          <div class="modal-close cursor-pointer z-50" @click="closeModal">
             <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
               <path d="M18 1.8l-1.8-1.8-7.2 7.2-7.2-7.2-1.8 1.8 7.2 7.2-7.2 7.2 1.8 1.8 7.2-7.2 7.2 7.2 1.8-1.8-7.2-7.2z"></path>
             </svg>
@@ -65,11 +66,14 @@ const submit = () => {
             :multiple="true"
             name="selectedArticles[]"
              />
+
         </div>
+       <p>{{ form.selectedArticles }}</p>
+
 
         <div class="flex justify-end pt-2">
-          <button class="modal-close px-4 bg-gray-400 p-3 rounded-lg text-white hover:bg-gray-300">Annuler</button>
-          <button class="px-4 bg-blue-500 p-3 ml-3 rounded-lg text-white hover:bg-blue-400" @click="submit">Ajouter</button>
+          <button class="modal-close px-4 bg-gray-400 p-3 rounded-lg text-white hover:bg-gray-300" type="button" @click="closeModal">Annuler</button>
+          <button class="px-4 bg-blue-500 p-3 ml-3 rounded-lg text-white hover:bg-blue-400" type="button" @click="submit();closeModal()">Ajouter</button>
         </div>
     </form>
 
@@ -91,10 +95,14 @@ export default  {
     data() {
         return {
       selectedArticles: [],
+      isSubmitted:true
 
         };
     },
     methods: {
+        closeModal(){
+            this.$emit('close')
+        }
 
     },
     computed: {

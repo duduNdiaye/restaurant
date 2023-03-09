@@ -7,6 +7,22 @@
       @click="showmodal">
       Créer un nouvel article
     </button>
+    <div class="fixed bottom-4 right-4 z-50">
+        <div v-if="message && message=='article ajouté'" class="bg-green-600 text-white px-4 py-2 rounded-md shadow-md">
+            Votre insertion a été effectuée avec succès !
+        </div>
+    </div>
+    <div class="fixed bottom-4 right-4 z-50">
+        <div v-if="message && message=='article modifié'" class="bg-yellow-600 text-white px-4 py-2 rounded-md shadow-md">
+            Votre modification a été effectuée avec succès !
+        </div>
+    </div>
+    <div class="fixed bottom-4 right-4 z-50">
+        <div v-if="message && message=='article supprimé'" class="bg-red-600 text-white px-4 py-2 rounded-md shadow-md">
+            Votre suppression a été effectuée avec succès !
+        </div>
+    </div>
+
     <div class="flex flex-row justify-between">
         <h1 class="text-3xl font-semibold mb-6">Liste des articles </h1>
         <!--ICI LA SEARCH BAR-->
@@ -32,18 +48,7 @@
                 <th></th>
               </tr>
             </thead>
-            <div v-if="message && message=='article modifié'"  class="relative top-0 left-0 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded " >
-                <strong class="font-bold">{{ message }}</strong>
-                <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                    <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title></title><path d="M14.348 14.849l.707-.707L10 9.192l-5.656 5.657.707.707L10 10.606l4.646 4.243z"/></svg>
-                </span>
-             </div>
-                <div v-if="message && message=='article article ajouté'"  class=" relative top-0 left-0 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded " >
-                    <strong class="font-bold">{{ message }}</strong>
-                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3" >
-                    <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849l.707-.707L10 9.192l-5.656 5.657.707.707L10 10.606l4.646 4.243z"/></svg>
-                    </span>
-                </div>
+
             <tbody class="bg-white divide-y divide-gray-200" >
 
               <tr v-for="article in articles.data" :key="article.id">
@@ -93,6 +98,7 @@ v-if="activedit"
 <ArticleDeleteModal
 :article="articleAsupprimer"
 v-if="activedelete"
+@affiche="GererMessage('article supprimé')"
 @close="activedelete=false"
 >
 </ArticleDeleteModal>
