@@ -3417,6 +3417,10 @@ export default {
     window.removeEventListener("scroll", this.handleScroll);
     window.removeEventListener("scroll", this.hondleScroll);
   },
+
+  created(){
+       console.log()
+  },
   methods: {
     toggleMenu() {
       this.open = !this.open;
