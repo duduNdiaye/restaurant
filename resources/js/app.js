@@ -6,7 +6,7 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
-
+import Vue3Geolocation from 'vue3-geolocation'
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 createInertiaApp({
@@ -17,6 +17,7 @@ createInertiaApp({
            props) })
             .use(plugin)
             .use(SetupCalendar, {})
+            .use(Vue3Geolocation)
             .component('Calendar', Calendar)
             .component('DatePicker', DatePicker)
             .use(ZiggyVue, Ziggy)

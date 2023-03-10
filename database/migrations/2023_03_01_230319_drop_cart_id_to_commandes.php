@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('commandes', function (Blueprint $table) {
-            //
+            $table->string('cart_id');
         });
     }
 };
