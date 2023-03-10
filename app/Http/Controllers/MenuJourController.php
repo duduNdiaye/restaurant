@@ -22,10 +22,11 @@ class MenuJourController extends Controller
         $articles=Article::where('user_id',$m_id)->get();
         $menus=MenuJour::with('articles')->get();
         return Inertia::render('Restaurant/Menu/MenuSemaine',
-    [
+            [
         'articles'=>$articles,
         'menus'=>$menus
-]);
+            ]
+        );
     }
 
     /**

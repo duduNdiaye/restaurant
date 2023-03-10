@@ -17,8 +17,7 @@ const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
 const contenu = ref("Articles");
-const contenu1 = ref(localStorage.getItem('contenu1') === 'true' || false);
-const contenu2 = ref(localStorage.getItem('contenu2') === 'true' || false);
+
 const articlerecherche = ref("");
 let isPage1 = ref(true);
 const cartAnimation = ref(false);
@@ -36,20 +35,7 @@ const created = () => {
     });
 };
 
-const Contenu = () => {
-  console.log("moma");
-  if (contenu.value == "Restaurants") {
-    contenu1.value = false;
-    contenu2.value = true;
-    localStorage.setItem('contenu1', contenu1.value.toString());
-    localStorage.setItem('contenu2', contenu2.value.toString());
-  } else {
-    contenu1.value = true;
-    contenu2.value = false;
-    localStorage.setItem('contenu1', contenu1.value.toString());
-    localStorage.setItem('contenu2', contenu2.value.toString());
-  }
-};
+
 
 onMounted(() => {
   if (localStorage.getItem("cart")) {
@@ -67,8 +53,7 @@ onMounted(() => {
     }
   }
 
-  localStorage.setItem('contenu1', contenu1.value.toString());
-  localStorage.setItem('contenu2', contenu2.value.toString());
+
   console.log(props.articles)
 });
 
@@ -202,12 +187,12 @@ const scrollToResults = () => {
 <template>
   <Head title="Welcome" />
 
-  <div :class="[contenu1 ? 'bg-gray-100':'bg-white']">
+  <div class="'bg-gray-100">
     <header>
       <nav
-        :class="[contenu1 ? 'bg-white border-gray-100 border-b-2' : '',color ? 'bg-black':'']"
+
         id="navbar"
-        class="fixed md:flex z-40 transform-cpu text-center items-center justify-between px-4 py-3 w-full"
+        class="fixed md:flex bg-white border-gray-100 border-b-2 z-40 transform-cpu text-center items-center justify-between px-4 py-3 w-full"
       >
         <div class="flex items-center" >
           <h1
@@ -215,8 +200,8 @@ const scrollToResults = () => {
           >
             EatEasy
           </h1>
-          <ApplicationMark v-if="contenu1" class="h-9 w-auto lg:hidden md:hidden" />
-          <div v-if="contenu1">
+          <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
+          <div >
             <p  class="font-bold text-xl ml-8 lg:hidden md:hidden" v-if="texte">
             Que desirez-vous manger?
           </p>
@@ -263,7 +248,7 @@ const scrollToResults = () => {
           <div class="md:mx-4 md:my-0 my-6 flex">
             <button
               @click="(showModal = !showModal), (showModal1 = !showModal1)"
-              :class="[contenu1 ? 'text-black':'text-white']" class="px-3 py-2  font-bold hover:text-indigo-600"
+              class="px-3 text-black py-2  font-bold hover:text-indigo-600"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -285,24 +270,16 @@ const scrollToResults = () => {
                 />
               </svg>
             </button>
-            <span :class="[contenu1 ? 'text-black':'text-white']" class="font-bold   mt-2 w-[6rem] h-5 rounded-full"
+            <span  class="text-black font-bold   mt-2 w-[6rem] h-5 rounded-full"
               >Ma position</span
             >
           </div>
           <div class="md:mx-4 md:my-0 my-6">
-            <select
-              v-model="contenu"
-              @click="Contenu()"
-              :class="[contenu1 ? 'text-black bg-white':'bg-black bg-opacity-20 text-white']"
-              class="rounded border border-gray-300 focus:ring-gray-300 lg:mt-0 focus:border-none font-bold w-36 px-4 py-2  border border-gray-200"
-            >
-              <option value="Restaurants">Restaurants</option>
-              <option value="Articles">Articles</option>
-            </select>
+            <a :href="route('resto.accueil')" class="text-black font-bold">Nos restaurants</a>
 
           </div>
           <div class="md:mx-4 md:my-0 my-6">
-            <a href="#" :class="[contenu1 ? 'text-black':'text-white']" class="px-3 py-2 font-bold text-black hover:text-indigo-600"
+            <a href="#" class="text-black px-3 py-2 font-bold text-black hover:text-indigo-600"
               >Contact</a
             >
           </div>
@@ -343,8 +320,8 @@ const scrollToResults = () => {
     </header>
 
     <div
-      :class="[contenu1 ? 'bg-grocery' : 'bg-resto']"
-      class="h-screen lg:block md:block hidden"
+
+      class="bg-grocery h-screen lg:block md:block hidden"
     >
       <section class="text-gray-600 body-font">
         <div
@@ -352,18 +329,18 @@ const scrollToResults = () => {
         >
           <div class="w-full md:w-2/3 flex flex-col mb-16 items-center text-center">
             <h1
-              v-if="contenu1"
+
               class="title-font sm:text-6xl text-3xl mb-4 font-black text-gray-900"
             >
               Plus besoin de faire la queue!
             </h1>
-            <span
+            <!-- <span
               v-else
               class="title-font sm:text-5xl text-2xl text-white mb-4 font-black text-gray-900"
             >
               Les meilleurs restaurants à portée de clic.
-            </span>
-            <p v-if="contenu1" class="lg:block hidden mb-8 leading-relaxed">
+            </span> -->
+            <p  class="lg:block hidden mb-8 leading-relaxed">
               Découvrez le moyen le plus rapide et le plus facile de déguster vos plats
               préférés chez votre restaurant préféré sans quitter votre maison grâce à
               notre application de commande en ligne.
@@ -387,18 +364,18 @@ const scrollToResults = () => {
                 Rechercher
               </button>
             </div>
-            <p v-if="contenu1" class="text-sm mt-2 text-gray-500 mb-8 w-full">
+            <p class="text-sm mt-2 text-gray-500 mb-8 w-full">
               Que voulez vous manger? Ou le voulez-vous?
             </p>
-            <p v-else class="text-lg mt-2 text-gray-500 mb-8 text-white w-full">
+            <!-- <p v-else class="text-lg mt-2 text-gray-500 mb-8 text-white w-full">
               Que voulez vous manger? Ou le voulez-vous?
-            </p>
+            </p> -->
           </div>
         </div>
       </section>
     </div>
 
-    <section class="text-gray-600 body-font bg-white mt-1" v-if="contenu1">
+    <section class="text-gray-600 body-font bg-white mt-1" >
       <div class="container px-2 py-4 mx-auto flex flex-wrap lg:block md:block hidden">
         <div class="flex flex-wrap -m-4">
           <div
@@ -2243,13 +2220,13 @@ const scrollToResults = () => {
       </div>
     </div>
 
-    <Restaurant :users="users" v-if="contenu2"/>
 
-    <div v-if="contenu1" class="flex border-t border-solid border-border-200 border-opacity-100">
+
+    <div  class="flex border-t border-solid border-border-200 border-opacity-100">
       <aside
         :class="{ 'lg:sticky lg:top-16 relative': isAsideSticky }"
         ref="aside"
-        class="hidden bg-white h-[39.2rem] bg-light xl:block xl:w-72 undefined p-3 px-8 overflow-y-auto"
+        class="hidden bg-white h-[36.5rem] bg-light xl:block xl:w-72 undefined p-3 px-8 overflow-y-auto"
       >
         <div class="max-h-full flex-grow overflow-hidden">
           <ul class="text-gray-700 mt-8">

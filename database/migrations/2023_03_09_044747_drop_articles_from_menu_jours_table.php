@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('menu_jours', function (Blueprint $table) {
-            $table->id();
-            $table->string('jour_semaine');
-            $table->longText('articles');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->timestamps();
+        Schema::table('menu_jours', function (Blueprint $table) {
+            $table->dropColumn('articles');
         });
     }
 
@@ -29,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('menu_jours');
+        Schema::table('menu_jours', function (Blueprint $table) {
+            $table->string('articles');
+        });
     }
 };

@@ -2,13 +2,13 @@
 import { Link, usePage } from "@inertiajs/inertia-vue3";
 import { defineProps, onMounted, computed, reactive, ref } from "vue";
 import axios from "axios";
-const temoin = ref('');
-const temoin1 = ref('');
-const temoin2 = ref('');
-const temoin3 = ref('');
-const temoin4 = ref('');
-const temoin5 = ref('');
-const temoin22 = ref('');
+const temoin = ref("");
+const temoin1 = ref("");
+const temoin2 = ref("");
+const temoin3 = ref("");
+const temoin4 = ref("");
+const temoin5 = ref("");
+const temoin22 = ref("");
 const niveau = ref("");
 const i = ref();
 const i1 = ref(1);
@@ -17,23 +17,39 @@ const i3 = ref(3);
 const i4 = ref(4);
 const i5 = ref(5);
 
-const nombre = ref(0)
+const props = defineProps({
+  canLogin: Boolean,
+  canRegister: Boolean,
+  laravelVersion: String,
+  phpVersion: String,
+  articles: {},
+  users: {},
+});
+
+const shake = () => {
+  isShaking.value = true;
+  setTimeout(() => {
+    isShaking.value = false;
+  }, 1000);
+};
+
+const nombre = ref(0);
 const Noter = (i) => {
   if (i == 1) {
     niveau.value = "insatisfaisant";
     nombre.value = 1;
   } else if (i == 2) {
     niveau.value = "moyen";
-     nombre.value = 2;
+    nombre.value = 2;
   } else if (i == 3) {
     niveau.value = "agreable";
-     nombre.value = 3;
+    nombre.value = 3;
   } else if (i == 4) {
     niveau.value = "excellent";
-     nombre.value = 4;
+    nombre.value = 4;
   } else {
     niveau.value = "inoubliable";
-     nombre.value = 5;
+    nombre.value = 5;
   }
 };
 
@@ -41,24 +57,203 @@ const Note = (i) => {
   if (i == 1) {
     nombre.value = 1;
   } else if (i == 2) {
-     nombre.value = 2;
+    nombre.value = 2;
   } else if (i == 3) {
-     nombre.value = 3;
+    nombre.value = 3;
   } else if (i == 4) {
-     nombre.value = 4;
+    nombre.value = 4;
   } else {
-     nombre.value = 5;
+    nombre.value = 5;
   }
 
-  console.log(nombre.value)
-
+  console.log(nombre.value);
 };
-
 </script>
 <template>
+  <header>
+    <nav
+      id="navbar"
+      class="fixed md:flex bg-white border-gray-100 border-b-2 z-40 transform-cpu text-center items-center justify-between px-4 py-3 w-full"
+    >
+      <div class="flex items-center">
+        <h1
+          class="text-3xl lg:block md:block hidden lg:ml-0 text-center bg-black text-white px-2 md:ml-0 font-title font-extrabold"
+        >
+          EatEasy
+        </h1>
+        <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
+        <div>
+          <p class="font-bold text-xl ml-8 lg:hidden md:hidden" v-if="texte">
+            Que desirez-vous manger?
+          </p>
+        </div>
+        <div
+          class="pt-2 relative md:hidden lg:block sm:block mx-auto text-gray-600"
+          v-if="showSearchBar"
+        >
+          <input
+            v-model="articlerecherche"
+            @keydown.enter="scrollToResults"
+            class="border-none bg-gray-200 focus:ring-vert focus:border-none lg:ml-16 lg:w-96 h-[3rem] px-5 pr-16 rounded-lg text-sm focus:outline-none"
+            type="search"
+            name="search"
+            placeholder="Search"
+          />
+          <button class="absolute right-0 top-0 mt-5 mr-4">
+            <svg
+              class="text-gray-600 h-4 w-4 fill-current"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              version="1.1"
+              id="Capa_1"
+              x="0px"
+              y="0px"
+              viewBox="0 0 56.966 56.966"
+              style="enable-background: new 0 0 56.966 56.966"
+              xml:space="preserve"
+              width="512px"
+              height="512px"
+            >
+              <path
+                d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="md:flex bg-white lg:border-none md:border-none lg:bg-opacity-0 border-t-2 border-b-2 border-gray-200 md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
+        :class="[open ? 'left-0' : 'left-[-100%]']"
+      >
+        <div class="md:mx-4 md:my-0 my-6 flex">
+          <button
+            @click="(showModal = !showModal), (showModal1 = !showModal1)"
+            class="px-3 text-black py-2 font-bold hover:text-indigo-600"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+              />
+            </svg>
+          </button>
+          <span class="text-black font-bold mt-2 w-[6rem] h-5 rounded-full"
+            >Ma position</span
+          >
+        </div>
+        <div class="md:mx-4 md:my-0 my-6">
+          <a :href="route('resto.accueil')" class="text-black font-bold"
+            >Nos restaurants</a
+          >
+        </div>
+        <div class="md:mx-4 md:my-0 my-6">
+          <a
+            href="#"
+            class="text-black px-3 py-2 font-bold text-black hover:text-indigo-600"
+            >Contact</a
+          >
+        </div>
+        <div v-if="canLogin" class="flex flex-col md:flex-row md:my-0 my-6">
+          <a
+            v-if="$page.props.user"
+            :href="route('dashboard')"
+            class="px-3 py-2 bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
+            >Button 1</a
+          >
+
+          <template v-else>
+            <a
+              :href="route('login')"
+              class="px-3 py-2 lg:ml-4 md:ml-4 text-center bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
+              >Login
+            </a>
+            <a
+              v-if="canRegister"
+              :href="route('register')"
+              class="px-3 py-2 lg:ml-4 md:ml-4 font-bold text-center bg-vert text-white rounded hover:bg-haver mt-3 md:mt-0"
+              >Register
+            </a>
+          </template>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <div class="relative w-full h-[33rem] overflow-hidden">
+    <div class="carousel">
+      <div class="carousel-inner">
+        <div :class="['carousel-item', index1 === current ? 'active' : '']">
+          <img
+            src="../../../../storage/app/public/pexels-chan-walrus-958545.jpg"
+            alt="item.caption"
+            class="w-full"
+          />
+          <div class="carousel-caption flex justify-center items-center flex flex-col">
+            <h3
+              :class="`shake ${shak ? 'animate-shake ' : ''}`"
+              class="text-6xl text-white font-bold bg-black w-fit"
+            >
+              Bienvenue sur EATEASY
+            </h3>
+            <p
+              class="text-gray-500 opacity-0 translate-y-2 transition-opacity transition-transform duration-500 ease-out"
+            >
+              C'est la premiere
+            </p>
+          </div>
+        </div>
+        <div :class="['carousel-item', index2 === current ? 'active' : '']">
+          <img
+            src="../../../../storage/app/public/pexels-ella-olsson-3026808.jpg"
+            alt="item.caption"
+            class="w-full"
+          />
+          <div class="carousel-caption flex flex-col items-center justify-center">
+            <h3   class="text-4xl text-white font-black bg-black w-96">
+              Votre site de commande en ligne
+            </h3>
+            <p
+              class="text-gray-500 opacity-0 translate-y-2 transition-opacity transition-transform duration-500 ease-out"
+            >
+              item.description
+            </p>
+          </div>
+        </div>
+        <div :class="['carousel-item', index3 === current ? 'active' : '']">
+          <img
+            src="../../../../storage/app/public/pexels-narda-yescas-1566837.jpg"
+            alt="item.caption"
+            class="w-full"
+          />
+          <div class="carousel-caption flex flex-col items-center justify-center">
+            <h3    :class="`shake ${shak ? 'animate-shake ' : ''}`" class="text-4xl text-white font-black bg-black w-96">
+              Dans vos restaurants preferes
+            </h3>
+            <p
+              class="text-gray-500 opacity-0 translate-y-2 transition-opacity transition-transform duration-500 ease-out"
+            >
+              item.description
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="flex border-t border-solid border-border-200 border-opacity-100">
     <aside
-
       ref="aside"
       class="bg-white lg:w-[27rem] lg:block hidden h-[39.2rem] p-3 px-8 overflow-y-auto"
     >
@@ -225,11 +420,33 @@ const Note = (i) => {
                 >
 
                 <div class="flex space-x-1 bg-gray-200 rounded-full px-2 ml-auto mt-2">
-                    <svg width="64px" height="64px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M21.12 9.88005C21.0781 9.74719 20.9996 9.62884 20.8935 9.53862C20.7873 9.4484 20.6579 9.38997 20.52 9.37005L15.1 8.58005L12.67 3.67005C12.6008 3.55403 12.5027 3.45795 12.3853 3.39123C12.2678 3.32451 12.1351 3.28943 12 3.28943C11.8649 3.28943 11.7322 3.32451 11.6147 3.39123C11.4973 3.45795 11.3991 3.55403 11.33 3.67005L8.89999 8.58005L3.47999 9.37005C3.34211 9.38997 3.21266 9.4484 3.10652 9.53862C3.00038 9.62884 2.92186 9.74719 2.87999 9.88005C2.83529 10.0124 2.82846 10.1547 2.86027 10.2907C2.89207 10.4268 2.96124 10.5512 3.05999 10.6501L6.99999 14.4701L6.06999 19.8701C6.04642 20.0091 6.06199 20.1519 6.11497 20.2826C6.16796 20.4133 6.25625 20.5267 6.36999 20.6101C6.48391 20.6912 6.61825 20.7389 6.75785 20.7478C6.89746 20.7566 7.03675 20.7262 7.15999 20.6601L12 18.1101L16.85 20.6601C16.9573 20.7189 17.0776 20.7499 17.2 20.7501C17.3573 20.7482 17.5105 20.6995 17.64 20.6101C17.7537 20.5267 17.842 20.4133 17.895 20.2826C17.948 20.1519 17.9636 20.0091 17.94 19.8701L17 14.4701L20.93 10.6501C21.0305 10.5523 21.1015 10.4283 21.1351 10.2922C21.1687 10.1561 21.1634 10.0133 21.12 9.88005Z" fill="#000000"></path> </g></svg>
-                    <span class="text-black font-bold text-sm flex items-center justify-center">{{user.notation}}</span>
+                  <svg
+                    width="64px"
+                    height="64px"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g
+                      id="SVGRepo_tracerCarrier"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></g>
+                    <g id="SVGRepo_iconCarrier">
+                      <path
+                        d="M21.12 9.88005C21.0781 9.74719 20.9996 9.62884 20.8935 9.53862C20.7873 9.4484 20.6579 9.38997 20.52 9.37005L15.1 8.58005L12.67 3.67005C12.6008 3.55403 12.5027 3.45795 12.3853 3.39123C12.2678 3.32451 12.1351 3.28943 12 3.28943C11.8649 3.28943 11.7322 3.32451 11.6147 3.39123C11.4973 3.45795 11.3991 3.55403 11.33 3.67005L8.89999 8.58005L3.47999 9.37005C3.34211 9.38997 3.21266 9.4484 3.10652 9.53862C3.00038 9.62884 2.92186 9.74719 2.87999 9.88005C2.83529 10.0124 2.82846 10.1547 2.86027 10.2907C2.89207 10.4268 2.96124 10.5512 3.05999 10.6501L6.99999 14.4701L6.06999 19.8701C6.04642 20.0091 6.06199 20.1519 6.11497 20.2826C6.16796 20.4133 6.25625 20.5267 6.36999 20.6101C6.48391 20.6912 6.61825 20.7389 6.75785 20.7478C6.89746 20.7566 7.03675 20.7262 7.15999 20.6601L12 18.1101L16.85 20.6601C16.9573 20.7189 17.0776 20.7499 17.2 20.7501C17.3573 20.7482 17.5105 20.6995 17.64 20.6101C17.7537 20.5267 17.842 20.4133 17.895 20.2826C17.948 20.1519 17.9636 20.0091 17.94 19.8701L17 14.4701L20.93 10.6501C21.0305 10.5523 21.1015 10.4283 21.1351 10.2922C21.1687 10.1561 21.1634 10.0133 21.12 9.88005Z"
+                        fill="#000000"
+                      ></path>
+                    </g>
+                  </svg>
+                  <span
+                    class="text-black font-bold text-sm flex items-center justify-center"
+                    >{{ user.notation }}</span
+                  >
                 </div>
               </div>
-              <div class="flex ">
+              <div class="flex">
                 <div class="flex space-x-3">
                   <svg
                     width="64px"
@@ -261,7 +478,11 @@ const Note = (i) => {
                   </svg>
                   <span>{{ user.adresse }}</span>
                 </div>
-                <span v-if="temoin == user.id"  class="text-vert ml-auto text-sm font-bold">{{niveau}}</span>
+                <span
+                  v-if="temoin == user.id"
+                  class="text-vert ml-auto text-sm font-bold"
+                  >{{ niveau }}</span
+                >
               </div>
             </header>
           </span>
@@ -279,7 +500,20 @@ export default {
       stars: [1, 2, 3, 4, 5],
       visit: "",
       hov: false,
+      index1: 0,
+      index2: 1,
+      index3: 2,
+      shak: false,
+
+      current: 0,
     };
+  },
+
+  created() {
+    setInterval(() => {
+      this.current = (this.current + 1) % 3;
+      this.shak = true;
+    }, 5000);
   },
 
   props: {
@@ -295,9 +529,123 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
+.bg-resto {
+  background-image: url(../../../../storage/app/public/fondresto.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
 svg {
   height: 1.5rem;
   width: 1.5rem;
+}
+
+.carousel {
+  position: relative;
+  height: 0;
+  padding-bottom: 60%;
+}
+
+.carousel-inner {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.carousel-item {
+  position: absolute;
+  top: 0;
+  bottom: 10%;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+}
+
+.carousel-item.active {
+  opacity: 1;
+}
+
+.carousel-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .carousel {
+    height: 0;
+    padding-bottom: 40%;
+  }
+}
+
+@media (min-width: 768px) {
+  .carousel {
+    height: 0;
+    padding-bottom: 33.33%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .carousel {
+    height: 0;
+    padding-bottom: 25%;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .carousel-caption p {
+    animation: slide-in 0.5s ease-out both;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.shake {
+  display: inline-block;
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-shake {
+  animation-name: shake;
 }
 </style>

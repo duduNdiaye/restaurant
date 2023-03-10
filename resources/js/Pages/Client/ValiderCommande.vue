@@ -969,7 +969,7 @@ export default {
 
 .shake {
   display: inline-block;
-  animation-duration: 1s;
+  animation-duration: 1s ;
   animation-fill-mode: both;
 }
 

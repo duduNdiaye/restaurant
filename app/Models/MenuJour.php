@@ -11,10 +11,12 @@ class MenuJour extends Model
     use HasFactory;
     protected $fillable=[
         'jour_semaine',
-        'articles'
+        'articles',
+        'id',
+        'user_id'
     ];
     public function articles() :BelongsToMany
     {
-        return $this->belongsToMany(Article::class);
+        return $this->belongsToMany(Article::class, 'article_menu_jour');
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\MenuJourController;
+use App\Models\MenuJour;
 use Illuminate\Http\Request;
 
 /*
@@ -80,6 +81,7 @@ Route::group(['prefix' => 'commandes'], function () {
     Route::get('/', [CommandeController::class, 'client_commande'])->name('client.commande');
     Route::get('/restaurant/{id}', function (int $id) {
         $usere = User::findOrFail($id);
+        $menu = MenuJour::where('user_id', $usere->id)->with('articles')->get();
         $articles = Article::all();
         return Inertia::render('Client/RestaurantDetails', [
             'canLogin' => Route::has('login'),
@@ -87,10 +89,25 @@ Route::group(['prefix' => 'commandes'], function () {
             'laravelVersion' => Application::VERSION,
             'phpVersion' => PHP_VERSION,
             'usere' => $usere,
-            'articles' => $articles
+            'articles' => $articles,
+            'menu' => $menu
+
 
         ]);
     })->name('restaurant.details');
+    Route::get('/resto', function () {
+        $users = User::where('role', 'restaurant')->get();
+        return Inertia::render('Client/Restaurant', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+            'users' => $users
+
+
+
+        ]);
+    })->name('resto.accueil');
     Route::post('/validation', function (Request $request) {
         Commande::create([
             'nomClient' => $request->NomClient,
