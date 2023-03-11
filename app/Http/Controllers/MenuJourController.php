@@ -59,9 +59,10 @@ class MenuJourController extends Controller
             'selectedArticles' => 'required|array',
             'selectedArticles.*' => 'integer',
         ]);
+        $auth_id=Auth::id();
         $monMenu = MenuJour::create([
             'jour_semaine' => $data['jour_semaine'],
-            'articles'=>'xnxn'
+            'user_id'=>$auth_id
         ]);
         // foreach ($request->input('selectedArticles') as $article) {
         //     $monMenu->articles()->attach($article);

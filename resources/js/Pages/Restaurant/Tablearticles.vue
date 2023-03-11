@@ -26,10 +26,18 @@
     <div class="flex flex-row justify-between">
         <h1 class="text-3xl font-semibold mb-6">Liste des articles </h1>
         <!--ICI LA SEARCH BAR-->
-        <div class="flex items-center mb-4">
+        <!-- <div class="flex items-center mb-4">
           <label for="search" class="mr-2 text-md font-semibold ">Rechercher:</label>
           <input type="text" id="search"  name="search" v-model="search" @keyup="searching" class="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" >
+        </div> -->
+        <!-- endpoint -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div class="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4">
+                <label for="search" class="mr-2 text-md font-semibold ">Rechercher:</label>
+                <input type="search" id="search"  name="search" v-model="search" @keyup="searching" class="w-full py-2 pl-10 pr-4 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Recherche">
+            </div>
         </div>
+
         <!--FIN DE LA SEARCH BAR-->
     </div>
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
