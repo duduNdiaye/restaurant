@@ -75,6 +75,11 @@ Route::middleware([
     Route::get('dashboard/menu',[MenuJourController::class,'index']);
     Route::post('/menu/new',[MenuJourController::class,'store'])->name('store.menu');
     Route::put('/menu/edit',[MenuJourController::class,'update'])->name('edit.menu');
+    Route::get('/restau/profile',function(){
+        $auth_user=User::findOrFail(Auth::id());
+
+        return Inertia::render('Restaurant/Profile/ProfileInfo',['user'=>$auth_user]);
+    })->name('restau.profile');
 });
 
 Route::group(['prefix' => 'commandes'], function () {

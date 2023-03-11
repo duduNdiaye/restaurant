@@ -127,7 +127,8 @@ import { Link } from '@inertiajs/vue3';
             <div v-show="showDropDown" class="absolute right-[10px] z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
               <div class="py-1 text-left" role="none">
                 <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                <a href="#" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Account settings</a>
+                <Link :href="route('restau.profile')" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Infos profil</Link>
+                <Link href="#" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Paramètre profil</Link>
                 <form method="POST" @submit.prevent="logout">
                   <button type="submit" class="text-gray-700 block w-full  hover:bg-slate-900 hover:text-white px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
                 </form>
