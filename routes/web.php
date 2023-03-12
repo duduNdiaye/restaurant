@@ -72,7 +72,7 @@ Route::middleware([
         }
     })->name('dashboard');
     Route::get('/dashboard/articles', [ArticleController::class,'index'])->name('articles.list');
-    Route::get('dashboard/menu',[MenuJourController::class,'index']);
+    Route::get('dashboard/menu',[MenuJourController::class,'index'])->name('dashboard.menu');
     Route::post('/menu/new',[MenuJourController::class,'store'])->name('store.menu');
     Route::put('/menu/edit',[MenuJourController::class,'update'])->name('edit.menu');
     Route::get('/restau/profile',function(){

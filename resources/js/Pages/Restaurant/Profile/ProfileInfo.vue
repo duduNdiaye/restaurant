@@ -1,76 +1,68 @@
 <template>
     <DashLayout>
-        <div class=" px-4 py-6 sm:px-6 lg:px-8 lg:py-8 mt-4">
   <!-- Profile page content here -->
-
-  <div class="flex items-center justify-center h-full">
-  <div class="w-full md:w-2/3 max-w-md mx-auto">
-    <div class="bg-white hover:bg-slate-200 rounded-lg shadow-lg overflow-hidden">
-      <div class="relative h-48">
-        <img class="mx-auto h-36 w-36 mt-8 rounded-full" src="https://source.unsplash.com/random/400x400" alt="Profile picture">
+  <div class="p-16">
+<div class="p-8 bg-white shadow mt-12">
+  <div class="grid grid-cols-1 md:grid-cols-3">
+    <div class="grid grid-cols-3 text-center order-last md:order-first mt-20 md:mt-0">
+      <div>
+        <p class="font-bold text-gray-700 text-xl">22</p>
+        <p class="text-gray-400">Friends</p>
       </div>
-      <div class="p-4 ">
-        <h1 class="text-2xl font-bold text-gray-800 mb-2"> {{ user.name }}</h1>
-        <p class="text-gray-600 mb-4">{{ user.description }}.</p>
-        <div class="flex items-center mb-2">
-          <svg class="h-5 w-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-          <span class="text-gray-600">{{ user.adresse }}</span>
-
-        </div>
-        <p class="text-gray-600 mb-4">{{ user.tel }}.</p>
-        <div class="flex items-center mb-2">
-          <svg class="h-5 w-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 16s1.5-2 4-2 4 2 4 2"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16s-1.5-2-4-2-4 2-4 2"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22V11"></path>
-          </svg>
-          <span class="text-gray-600">
-            {{user.email}}</span>
+      <div>
+           <p class="font-bold text-gray-700 text-xl">10</p>
+        <p class="text-gray-400">Photos</p>
+      </div>
+          <div>
+           <p class="font-bold text-gray-700 text-xl">Email</p>
+        <p class="text-gray-400">{{ user.email }}</p>
+      </div>
     </div>
-    <div class="flex items-center mb-2">
-      <svg class="h-5 w-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15s1-2 4-2 4 2 4 2v3H4v-3z"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 15s-1-2-4-2-4 2-4 2v3h8v-3z"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 10.5s0-2-4-2-4 2-4 2"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22V12"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V2h8v5"></path>
-      </svg>
-      <span class="text-gray-600">Open from 9:00am to 5:00pm</span>
+    <div class="relative">
+      <div class="w-48 h-48 bg-indigo-100 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 -mt-24 flex items-center justify-center text-indigo-500">
+<!-- <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24" viewBox="0 0 20 20" fill="currentColor">
+  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+</svg> -->
+<img :src="user.photo" class="h-48 w-48 rounded-full"  :alt="user.name" >
+      </div>
     </div>
-    <div class="  flex flex-row justify-center ">
-<div>
-    <a href="#" class="flex justify-start ">
-  <svg class="h-6 w-6 text-gray-400 hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-  </svg>
 
-</a>
-</div>
-
-<div class=" flex justify-end items-end ml-4">
-    <a href="#" class="">
-  <svg class="h-6 w-6 text-gray-400 hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm-6-5a5 5 0 110 10 5 5 0 010-10z"/>
-  </svg>
-
-</a>
-</div>
-
+    <div class="space-x-8 flex  justify-end  mt-32 md:mt-0 md:justify-center " >
+<button
+  class="text-white py-2 px-4 uppercase rounded bg-blue-400 hover:bg-blue-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
+>
+  <a href="">Editer profil</a>
+</button>
+    <button
+  class="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
+>
+  <a href="">Deconnexion</a>
+</button>
     </div>
   </div>
 
-</div>
+  <div class="mt-20 text-center border-b pb-12">
+    <h1 class="text-4xl font-medium text-gray-700">{{ user.name }} <span class="font-light text-gray-500">{{user.role}}</span></h1>
+    <p class="font-light text-gray-600 mt-3">{{ user.adresse }}</p>
+
+    <p class="mt-8 text-gray-500">{{ user.description }}</p>
+    <p class="mt-2 text-gray-500">University of Computer Science</p>
+  </div>
+
+  <div class="mt-12 flex flex-col justify-center">
+    <p class="text-gray-600 text-center font-light lg:px-16">An artist of considerable range, Ryan — the name taken by Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs and records all of his own music, giving it a warm, intimate feel with a solid groove structure. An artist of considerable range.</p>
+    <button
+  class="text-indigo-500 py-2 px-4  font-medium mt-4"
+>
+  Show more
+</button>
+  </div>
 
 </div>
 </div>
 
-</div>
 
-</DashLayout>
+    </DashLayout>
 </template>
 <script>
 import DashLayout from '../DashLayout.vue';
