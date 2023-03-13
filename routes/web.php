@@ -172,7 +172,7 @@ Route::group(['prefix' => 'commandes'], function () {
         if ($oldNotation == 0) {
             $avgNotation = $newNotation;
         } else {
-            $avgNotation = ($oldNotation + $newNotation) / 2;
+            $avgNotation = round(($oldNotation + $newNotation) / 2, 1);
         }
 
 

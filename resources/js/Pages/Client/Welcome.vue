@@ -23,7 +23,7 @@ const latitude = ref(0);
 const longitude = ref(0);
 const errorMessage = "";
 
-const click = ref('En cliquant ici')
+const click = ref("En cliquant ici");
 
 const articlerecherche = ref("");
 let isPage1 = ref(true);
@@ -34,11 +34,10 @@ const data = () => ({
 
 const getPosition = () => {
   if (navigator.geolocation) {
-    isLoading.value =true;
-    click.value = 'Patientez...'
+    isLoading.value = true;
+    click.value = "Patientez...";
     navigator.geolocation.getCurrentPosition(
       (position) => {
-
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         console.log(latitude);
@@ -85,7 +84,6 @@ const created = () => {
 };
 
 onMounted(() => {
-
   const lat1Rad = (ulat.value * Math.PI) / 180;
   const lon1Rad = (ulng.value * Math.PI) / 180;
   const lat2Rad = (rlat.value * Math.PI) / 180;
@@ -104,7 +102,6 @@ onMounted(() => {
 const total = computed(() => {
   return cart.value.reduce((acc, item) => acc + item.prix * item.quantite, 0);
 });
-
 
 const recherche = computed(() => {
   if (count.value && isPage1 === true) {
@@ -152,39 +149,45 @@ const scrollToResults = () => {
               Que desirez-vous manger?
             </p>
           </div>
-          <div
-            class="pt-2 relative md:hidden lg:block sm:block mx-auto text-gray-600"
-            v-if="showSearchBar"
+          <dropdown
+            :options="filteredRestaurants"
+            label="name"
+            v-model="selectedRestaurant"
           >
-            <input
-              v-model="articlerecherche"
-              @keydown.enter="scrollToResults"
-              class="border-none bg-gray-200 focus:ring-vert focus:border-none lg:ml-16 lg:w-96 h-[3rem] px-5 pr-16 rounded-lg text-sm focus:outline-none"
-              type="search"
-              name="search"
-              placeholder="Search"
-            />
-            <button class="absolute right-0 top-0 mt-5 mr-4">
-              <svg
-                class="text-gray-600 h-4 w-4 fill-current"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                version="1.1"
-                id="Capa_1"
-                x="0px"
-                y="0px"
-                viewBox="0 0 56.966 56.966"
-                style="enable-background: new 0 0 56.966 56.966"
-                xml:space="preserve"
-                width="512px"
-                height="512px"
-              >
-                <path
-                  d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"
-                />
-              </svg>
-            </button>
-          </div>
+            <div
+              class="pt-2 relative md:hidden lg:block sm:block mx-auto text-gray-600"
+              v-if="showSearchBar"
+            >
+              <input
+                v-model="articlerecherche"
+                @keydown.enter="scrollToResults"
+                class="border-none bg-gray-200 focus:ring-vert focus:border-none lg:ml-16 lg:w-96 h-[3rem] px-5 pr-16 rounded-lg text-sm focus:outline-none"
+                type="search"
+                name="search"
+                placeholder="Search"
+              />
+              <button class="absolute right-0 top-0 mt-5 mr-4">
+                <svg
+                  class="text-gray-600 h-4 w-4 fill-current"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  version="1.1"
+                  id="Capa_1"
+                  x="0px"
+                  y="0px"
+                  viewBox="0 0 56.966 56.966"
+                  style="enable-background: new 0 0 56.966 56.966"
+                  xml:space="preserve"
+                  width="512px"
+                  height="512px"
+                >
+                  <path
+                    d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </dropdown>
         </div>
 
         <div
@@ -308,38 +311,37 @@ const scrollToResults = () => {
                     ></path>
                   </g></svg
                 >Donnez votre adresse
-                 <svg
-                v-if="isLoading"
-                :class="{ 'animate-spin ml-20': isLoading }"
-                id="spinner"
-                class="w-6 h-6 ml-20 icon text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                stroke="#ffffff"
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    d="M20.0001 12C20.0001 13.3811 19.6425 14.7386 18.9623 15.9405C18.282 17.1424 17.3022 18.1477 16.1182 18.8587C14.9341 19.5696 13.5862 19.9619 12.2056 19.9974C10.825 20.0328 9.45873 19.7103 8.23975 19.0612"
-                    stroke="#000000"
-                    stroke-width="3.55556"
+                <svg
+                  v-if="isLoading"
+                  :class="{ 'animate-spin ml-20': isLoading }"
+                  id="spinner"
+                  class="w-6 h-6 ml-20 icon text-white"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  stroke="#ffffff"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
                     stroke-linecap="round"
-                  ></path>
-                </g>
-              </svg></span
-              >
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      d="M20.0001 12C20.0001 13.3811 19.6425 14.7386 18.9623 15.9405C18.282 17.1424 17.3022 18.1477 16.1182 18.8587C14.9341 19.5696 13.5862 19.9619 12.2056 19.9974C10.825 20.0328 9.45873 19.7103 8.23975 19.0612"
+                      stroke="#000000"
+                      stroke-width="3.55556"
+                      stroke-linecap="round"
+                    ></path>
+                  </g></svg
+              ></span>
               <button
                 :class="{ 'btn-clicked bg-gray-600': isLoading }"
                 @click="getPosition()"
                 class="text-white bg-black text-xl font-bold flex px-3 py-5 ml-auto"
               >
-                {{click}}
+                {{ click }}
               </button>
             </div>
           </div>
@@ -649,8 +651,6 @@ const scrollToResults = () => {
       </div>
     </footer>
 
-
-
     <!-- <div v-if="showModal1"
             class="modal fixed top-0 left-0  w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-40 bg-gray-700 z-50">
 
@@ -711,7 +711,6 @@ const scrollToResults = () => {
         </div>
       </div>
     </div>
-
 
     <div
       :class="[showTitre ? 'left-0' : 'left-[-100%] lg:block md:block hidden']"

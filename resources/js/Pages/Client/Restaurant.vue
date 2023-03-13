@@ -7,7 +7,11 @@ const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
 const contenu = ref("Articles");
+const restosearch = ref("");
 const showComponent = ref(false);
+const texte = ref(false);
+const selectedRestaurant = ref('')
+const drop = ref(false);
 
 const props = defineProps({
   canLogin: Boolean,
@@ -17,7 +21,6 @@ const props = defineProps({
   articles: {},
   users: {},
 });
-
 
 const total = computed(() => {
   return cart.value.reduce((acc, item) => acc + item.prix * item.quantite, 0);
@@ -120,7 +123,40 @@ const Note = (i) => {
     nombre.value = 5;
   }
 
-  console.log(nombre.value);
+};
+
+const recherche = computed(() => {
+
+
+    if (restosearch.value) {
+      return props.users.filter((user) =>
+        user.name.toLowerCase().startsWith(restosearch.value.toLocaleLowerCase())
+      );
+    } else {
+      return props.users;
+    }
+});
+
+console.log("users:",recherche)
+
+const onInput = () => {
+    if(restosearch.value != '') {
+      drop.value = true;
+    } else {
+      drop.value = false;
+    }
+};
+
+const Chercher = (name) => {
+    restosearch.value = name;
+};
+
+const scrollToResults = () => {
+  // Vérifie si la référence vers la section des résultats est définie
+  const results = document.getElementById("result");
+  if (results) {
+    results.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+  }
 };
 </script>
 <template>
@@ -135,80 +171,60 @@ const Note = (i) => {
         >
           EatEasy
         </h1>
-        <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
+        <!-- <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" /> -->
         <div>
           <p class="font-bold text-xl ml-8 lg:hidden md:hidden" v-if="texte">
             Que desirez-vous manger?
           </p>
         </div>
-        <div
-          class="pt-2 relative md:hidden lg:block sm:block mx-auto text-gray-600"
-          v-if="showSearchBar"
-        >
-          <input
-            v-model="articlerecherche"
-            @keydown.enter="scrollToResults"
-            class="border-none bg-gray-200 focus:ring-vert focus:border-none lg:ml-16 lg:w-96 h-[3rem] px-5 pr-16 rounded-lg text-sm focus:outline-none"
-            type="search"
-            name="search"
-            placeholder="Search"
-          />
-          <button class="absolute right-0 top-0 mt-5 mr-4">
-            <svg
-              class="text-gray-600 h-4 w-4 fill-current"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              version="1.1"
-              id="Capa_1"
-              x="0px"
-              y="0px"
-              viewBox="0 0 56.966 56.966"
-              style="enable-background: new 0 0 56.966 56.966"
-              xml:space="preserve"
-              width="512px"
-              height="512px"
-            >
-              <path
-                d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"
-              />
-            </svg>
-          </button>
-        </div>
+
+          <div
+            class="pt-2 relative md:hidden lg:block sm:block mx-auto text-gray-600"
+
+          >
+            <input @input="onInput()"
+              v-model="restosearch"
+
+              @keydown.enter="scrollToResults(),drop=false"
+              class="border-none bg-gray-200 focus:ring-0 focus:border-none lg:ml-16 lg:w-96 h-[3rem] px-5 pr-16 rounded-lg text-sm focus:outline-none"
+              type="search"
+              autocomplete="off"
+              name="search"
+              placeholder="Search"
+            />
+            <button class="absolute right-0 top-0 mt-5 mr-4">
+              <svg
+                class="text-gray-600 h-4 w-4 fill-current"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                version="1.1"
+                id="Capa_1"
+                x="0px"
+                y="0px"
+                viewBox="0 0 56.966 56.966"
+                style="enable-background: new 0 0 56.966 56.966"
+                xml:space="preserve"
+                width="512px"
+                height="512px"
+              >
+                <path
+                  d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"
+                />
+              </svg>
+            </button>
+            <div v-if="drop" class="absolute rounded-md border border-gray-300 lg:ml-16 lg:w-96 mt-2 bg-white overflow-hidden ">
+                <div class=" py-2 px-3">
+                    <p v-for="user in recherche" @click="Chercher(user.name)" :key="user.id" class="cursor-pointor text-sm hover:bg-gray-100 text-start font-medium text-gray-600 py-2 border-b border-gray-100">{{user.name}}</p>
+                </div>
+            </div>
+          </div>
+
       </div>
 
       <div
         class="md:flex bg-white lg:border-none md:border-none lg:bg-opacity-0 border-t-2 border-b-2 border-gray-200 md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
-        :class="[open ? 'left-0' : 'left-[-100%]']"
+
       >
-        <div class="md:mx-4 md:my-0 my-6 flex">
-          <button
-            @click="(showModal = !showModal), (showModal1 = !showModal1)"
-            class="px-3 text-black py-2 font-bold hover:text-indigo-600"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
-              />
-            </svg>
-          </button>
-          <span class="text-black font-bold mt-2 w-[6rem] h-5 rounded-full"
-            >Ma position</span
-          >
-        </div>
         <div class="md:mx-4 md:my-0 my-6">
           <a :href="route('resto.accueil')" class="text-black font-bold"
             >Nos restaurants</a
@@ -262,11 +278,7 @@ const Note = (i) => {
             >
               Bienvenue sur EATEASY
             </h3>
-            <p
-              class="text-gray-500 opacity-0 translate-y-2 transition-opacity transition-transform duration-500 ease-out"
-            >
-              C'est la premiere
-            </p>
+
           </div>
         </div>
         <div :class="['carousel-item', index2 === current ? 'active' : '']">
@@ -279,11 +291,7 @@ const Note = (i) => {
             <h3 class="text-4xl text-white font-black bg-black w-96">
               Votre site de commande en ligne
             </h3>
-            <p
-              class="text-gray-500 opacity-0 translate-y-2 transition-opacity transition-transform duration-500 ease-out"
-            >
-              item.description
-            </p>
+
           </div>
         </div>
         <div :class="['carousel-item', index3 === current ? 'active' : '']">
@@ -299,61 +307,96 @@ const Note = (i) => {
             >
               Dans vos restaurants preferes
             </h3>
-            <p
-              class="text-gray-500 opacity-0 translate-y-2 transition-opacity transition-transform duration-500 ease-out"
-            >
-              item.description
-            </p>
+
           </div>
         </div>
       </div>
     </div>
   </div>
-  <section class="text-gray-600 body-font bg-white mt-1">
+  <section class="text-gray-600 body-font bg-white mt-10">
     <div class="container px-2 py-4 mx-auto flex flex-wrap lg:block md:block hidden">
       <div class="flex flex-wrap -m-4">
         <div
           class="p-4 lg:w-4/12 w-full lg:block md:block hidden hover:scale-105 transition duration-200"
         >
           <div
-            class="flex items-center justify-center bg-rose border-2 rounded-lg border-gray-200 border-opacity-50 p-4 sm:flex-row flex-col"
+            class="flex relative items-center justify-center bg-white border-2 border-gray-300 border-opacity-50 p-4 sm:flex-row flex-col"
           >
-            <div
-              class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0"
-            >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                class="w-8 h-8"
-                viewBox="0 0 24 24"
+            <div class="flex-grow items-center">
+              <div
+                class="absolute bg-vert rounded-full p-2 -translate-x-1/2 -translate-x-1/2 left-1/2 top-[-1.5rem]"
               >
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-              </svg>
-            </div>
-            <div class="flex-grow">
-              <h2 class="text-white text-2xl title-font font-bold mb-3">
-                Traitement rapide
-              </h2>
-              <p class="leading-relaxed text-white text-base">
-                Blue bottle crucifix vinyl post-ironic four dollar
-              </p>
-              <a class="mt-3 text-white inline-flex items-center"
-                >Learn More
                 <svg
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  class="w-4 h-4 ml-2"
-                  viewBox="0 0 24 24"
+                  fill="#ffffff"
+                  class="w-14 h-14 icon"
+                  version="1.1"
+                  id="Layer_1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  viewBox="0 0 511.999 511.999"
+                  xml:space="preserve"
                 >
-                  <path d="M5 12h14M12 5l7 7-7 7"></path>
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <g>
+                      <g>
+                        <path
+                          d="M256.747,86.809C149.033,86.809,61.4,174.442,61.4,282.156c0,107.715,87.633,195.348,195.347,195.348 c107.715,0,195.347-87.633,195.347-195.348C452.094,174.441,364.462,86.809,256.747,86.809z M256.747,462.295 c-99.328,0-180.138-80.81-180.138-180.139s80.81-180.138,180.138-180.138c99.329,0,180.138,80.809,180.138,180.138 S356.076,462.295,256.747,462.295z"
+                        ></path>
+                      </g>
+                    </g>
+                    <g>
+                      <g>
+                        <path
+                          d="M256.748,155.943c-69.594,0-126.214,56.619-126.214,126.213c0,11.232,1.478,22.375,4.392,33.119l14.678-3.983 c-2.564-9.445-3.863-19.249-3.863-29.137c0-61.208,49.797-111.004,111.005-111.004c17.825,0,34.844,4.093,50.584,12.167 l6.941-13.534C296.364,160.6,277.01,155.943,256.748,155.943z"
+                        ></path>
+                      </g>
+                    </g>
+                    <g>
+                      <g>
+                        <path
+                          d="M156.761,330.436l-13.691,6.624c7.979,16.492,19.726,31.348,33.97,42.961l9.611-11.787 C174.116,358.013,163.78,344.943,156.761,330.436z"
+                        ></path>
+                      </g>
+                    </g>
+                    <g>
+                      <g>
+                        <path
+                          d="M333.721,182.124l-9.282,12.046c27.526,21.212,43.314,53.281,43.314,87.984c0,61.208-49.797,111.005-111.005,111.005 c-21.791,0-42.88-6.309-60.991-18.241l-8.368,12.699c20.602,13.575,44.585,20.751,69.359,20.751 c69.595,0,126.214-56.619,126.214-126.214C382.961,242.698,365.013,206.238,333.721,182.124z"
+                        ></path>
+                      </g>
+                    </g>
+                    <g>
+                      <g>
+                        <path
+                          d="M63.945,48.058v88.065H47.181V48.058H31.972v88.065H15.209V48.058H0v88.065v13.111v2.098h0.057 c0.96,18.283,14.386,33.312,31.916,36.738v281.83h15.209V188.07c17.529-3.427,30.955-18.455,31.916-36.739h0.057v-2.098v-13.111 V48.058H63.945z M39.577,173.601c-12.73,0-23.211-9.813-24.278-22.27h48.557C62.787,163.788,52.306,173.601,39.577,173.601z"
+                        ></path>
+                      </g>
+                    </g>
+                    <g>
+                      <g>
+                        <path
+                          d="M499.327,42.243c-22.486,13.731-36.456,38.628-36.456,64.975V273.63h33.919v196.269h15.209v-196.27v-92.423V34.496 L499.327,42.243z M496.791,181.205v77.215h-18.711V107.217c0-16.624,6.948-32.525,18.711-43.896V181.205z"
+                        ></path>
+                      </g>
+                    </g>
+                  </g>
                 </svg>
-              </a>
+              </div>
+              <h2
+                class="text-vert flex items-center justify-center text-center text-2xl title-font font-bold mb-3"
+              >
+                Trouver ici vos restaurants preferes
+              </h2>
+              <span class="flex items-center justify-center text-center"
+                >Avec des services a couper le souffles, des varietes de plats, tous a
+                porter de clic</span
+              >
             </div>
           </div>
         </div>
@@ -361,44 +404,42 @@ const Note = (i) => {
           class="p-4 lg:w-4/12 w-full lg:block md:block hidden hover:scale-105 transition duration-200"
         >
           <div
-            class="flex items-center justify-center bg-jaune border-2 rounded-lg border-gray-200 border-opacity-50 p-4 sm:flex-row flex-col"
+            class="flex relative items-center justify-center bg-white border-2 border-gray-300 border-opacity-50 p-4 sm:flex-row flex-col"
           >
-            <div
-              class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0"
-            >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                class="w-8 h-8"
-                viewBox="0 0 24 24"
+            <div class="flex-grow items-center">
+              <div
+                class="absolute bg-vert rounded-full p-2 -translate-x-1/2 -translate-x-1/2 left-1/2 top-[-1.5rem]"
               >
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-              </svg>
-            </div>
-            <div class="flex-grow">
-              <h2 class="text-white text-2xl title-font font-bold mb-3">
-                Traitement efficace
-              </h2>
-              <p class="leading-relaxed text-white text-base">
-                Blue bottle crucifix vinyl post-ironic four dollar
-              </p>
-              <a class="mt-3 text-white inline-flex items-center"
-                >Learn More
                 <svg
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  class="w-4 h-4 ml-2"
+                  class="w-14 h-14 icon"
                   viewBox="0 0 24 24"
+                  stroke="#fff"
+                  fill="#ffffff"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path d="M5 12h14M12 5l7 7-7 7"></path>
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      d="M17.2 20.7501C17.0776 20.7499 16.9573 20.7189 16.85 20.6601L12 18.1101L7.14999 20.6601C7.02675 20.7262 6.88746 20.7566 6.74786 20.7478C6.60825 20.7389 6.47391 20.6912 6.35999 20.6101C6.24625 20.5267 6.15796 20.4133 6.10497 20.2826C6.05199 20.1519 6.03642 20.0091 6.05999 19.8701L6.99999 14.4701L3.05999 10.6501C2.96124 10.5512 2.89207 10.4268 2.86027 10.2907C2.82846 10.1547 2.83529 10.0124 2.87999 9.88005C2.92186 9.74719 3.00038 9.62884 3.10652 9.53862C3.21266 9.4484 3.34211 9.38997 3.47999 9.37005L8.89999 8.58005L11.33 3.67005C11.3991 3.55403 11.4973 3.45795 11.6147 3.39123C11.7322 3.32451 11.8649 3.28943 12 3.28943C12.1351 3.28943 12.2678 3.32451 12.3853 3.39123C12.5027 3.45795 12.6008 3.55403 12.67 3.67005L15.1 8.58005L20.52 9.37005C20.6579 9.38997 20.7873 9.4484 20.8935 9.53862C20.9996 9.62884 21.0781 9.74719 21.12 9.88005C21.1647 10.0124 21.1715 10.1547 21.1397 10.2907C21.1079 10.4268 21.0387 10.5512 20.94 10.6501L17 14.4701L17.93 19.8701C17.9536 20.0091 17.938 20.1519 17.885 20.2826C17.832 20.4133 17.7437 20.5267 17.63 20.6101C17.5034 20.6976 17.3539 20.7463 17.2 20.7501ZM12 16.5201C12.121 16.5215 12.2403 16.5488 12.35 16.6001L16.2 18.6001L15.47 14.3101C15.4502 14.1897 15.4589 14.0664 15.4953 13.9501C15.5318 13.8337 15.595 13.7275 15.68 13.6401L18.8 10.6401L14.49 10.0001C14.3708 9.98109 14.2578 9.93401 14.1605 9.86271C14.0631 9.79141 13.9841 9.69795 13.93 9.59005L12 5.69005L10.07 9.60005C10.0159 9.70795 9.9369 9.80141 9.83952 9.87271C9.74214 9.94401 9.62918 9.99109 9.50999 10.0101L5.19999 10.6401L8.31999 13.6401C8.40493 13.7275 8.46817 13.8337 8.50464 13.9501C8.54111 14.0664 8.54979 14.1897 8.52999 14.3101L7.79999 18.6301L11.65 16.6301C11.7573 16.5683 11.8767 16.5308 12 16.5201Z"
+                      fill="#000000"
+                    ></path>
+                  </g>
                 </svg>
-              </a>
+              </div>
+              <h2
+                class="text-vert flex items-center justify-center text-center text-2xl title-font font-bold mb-3"
+              >
+                Pouvez aussi voir les notations de chaque restaurant
+              </h2>
+              <span class="flex items-center justify-center text-center"
+                >Des notations basees sur le restaurant, ainsi que de la qualite de ses
+                produits et sevices</span
+              >
             </div>
           </div>
         </div>
@@ -406,45 +447,45 @@ const Note = (i) => {
           class="p-4 lg:w-4/12 w-full lg:block md:block hidden hover:scale-105 transition duration-200"
         >
           <div
-            class="flex items-center justify-center bg-vert border-2 rounded-lg border-gray-200 border-opacity-50 p-4 sm:flex-row flex-col"
+            class="flex relative items-center justify-center bg-white border-2 border-gray-300 border-opacity-50 p-4 sm:flex-row flex-col"
           >
-            <div
-              class="w-16 h-16 sm:mr-8 sm:mb-0 mb-4 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 flex-shrink-0"
-            >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                class="w-10 h-10"
-                viewBox="0 0 24 24"
+            <div class="flex-grow items-center">
+              <div
+                class="absolute bg-vert rounded-full p-2 -translate-x-1/2 -translate-x-1/2 left-1/2 top-[-1.5rem]"
               >
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </div>
-            <div class="flex-grow">
-              <h2 class="text-white text-2xl title-font font-bold mb-3">
-                Traitement securise
-              </h2>
-              <p class="leading-relaxed text-white text-base">
-                Blue bottle crucifix vinyl post-ironic four dollar
-              </p>
-              <a class="mt-3 text-white inline-flex items-center"
-                >Learn More
                 <svg
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  class="w-4 h-4 ml-2"
-                  viewBox="0 0 24 24"
+                  fill="#ffffff"
+                  version="1.1"
+                  id="Layer_1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  class="w-14 h-14 icon"
+                  viewBox="0 0 256 241"
+                  enable-background="new 0 0 256 241"
+                  xml:space="preserve"
                 >
-                  <path d="M5 12h14M12 5l7 7-7 7"></path>
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      d="M254,188V2H2v186h111v29H75v22h106v-22h-38v-29H254z M19,19h217v151H19L19,19z M75.397,68.237l8.796,68.658h29.376 l8.71-68.658H86.327l-7.173-24.85l-3.928,1.11l6.832,23.654L75.397,68.237z M126.463,108.287c0,0-1.11-9.991,14.176-9.991h24.338 c15.2,0,14.176,9.991,14.176,9.991H126.463z M179.066,126.903c0,0,1.025,9.991-14.176,9.991h-24.252 c-15.286,0-14.176-9.991-14.176-9.991H179.066z M128.769,122.036c-2.476,0-4.526-1.964-4.526-4.526c0-2.476,1.964-4.526,4.526-4.526 h48.334c2.476,0,4.526,1.964,4.526,4.526c0,2.476-2.049,4.526-4.526,4.526H128.769z M182.653,150.387H73.347v-8.283h109.306V150.387 z"
+                    ></path>
+                  </g>
                 </svg>
-              </a>
+              </div>
+              <h2
+                class="text-vert flex items-center justify-center text-center text-2xl title-font font-bold mb-3"
+              >
+                Faites vos commandes facilement sans ambiguite
+              </h2>
+              <span class="flex items-center justify-center text-center"
+                >Commander, payer de maniere securisee et pourquoi pas vous faire
+                livre!</span
+              >
             </div>
           </div>
         </div>
@@ -461,151 +502,73 @@ const Note = (i) => {
   <div class="flex border-t border-solid border-border-200 border-opacity-100">
     <aside
       ref="aside"
-      class="bg-white lg:w-[27rem] lg:block hidden h-[39.2rem] p-3 px-8 overflow-y-auto"
+      class="bg-white lg:w-[20rem] lg:block hidden h-[39.2rem] p-3 px-8 overflow-y-auto"
     >
       <div class="max-h-full flex flex-col overflow-hidden mt-8">
-        <button class="text-xl bg-gray-200 rounded-full py-2 font-bold">Trier</button>
-        <ul class="text-gray-700 items-start flex flex-col mt-6 space-y-3">
-          <li class="space-x-3">
-            <input
-              type="radio"
-              id="option1"
-              name="options"
-              value="option1"
-              class="appearance-none border-4 border-gray-500 checked:text-black checked:bg-black checked:border-transparent focus:ring-0 outline-none focus:outline-none w-5 h-5"
-            />
-            <span class="text-black text-[0.9rem] font-extrabold"
-              >Les restaurants (par defaut)</span
-            >
-          </li>
-          <li class="space-x-3">
-            <input
-              type="radio"
-              id="option2"
-              name="options"
-              value="option2"
-              class="w-5 h-5 border-4 border-gray-500 focus:ring-0 checked:text-black checked:bg-black checked:border-transparent"
-            />
-            <span class="text-black text-md font-extrabold">Les plus populaires</span>
-          </li>
-          <li class="space-x-3">
-            <input
-              type="radio"
-              id="option3"
-              name="options"
-              value="option3"
-              class="w-5 h-5 border-4 border-gray-500 focus:ring-0 checked:text-black checked:bg-black checked:border-transparent"
-            />
-            <span class="text-black text-md font-extrabold"
-              >Restaurants avec livraison</span
-            >
-          </li>
-        </ul>
-        <div class="mt-10">
-          <span class="text-lg font-bold">Categorie de Nourriture</span>
-          <ul class="text-gray-700 mt-6 space-y-3">
-            <li class="space-x-4 flex">
-              <svg
-                fill="#000000"
-                width="64px"
-                height="64px"
-                viewBox="0 0 32 32"
-                id="dish"
-                version="1.1"
-                xml:space="preserve"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <g>
-                    <path
-                      d="M15,8H17c0.6,0,1-0.4,1-1s-0.4-1-1-1H15c-0.6,0-1,0.4-1,1S14.4,8,15,8z"
-                    ></path>
-                    <path
-                      d="M29.9,20.5C29.7,20.2,29.3,20,29,20h-1.1c-0.5-4.4-4.1-8.8-8.7-10.2c-2.1-0.7-4.4-0.7-6.5,0C8.2,11.2,4.5,15.6,4.1,20H3 c-0.3,0-0.7,0.2-0.9,0.5s-0.2,0.7,0,1C3.5,24.3,6.3,26,9.5,26h13.1c3.1,0,6-1.7,7.4-4.6C30,21.1,30,20.8,29.9,20.5z M13.3,11.7 c1.7-0.5,3.6-0.5,5.3,0c3.7,1.1,6.8,4.7,7.3,8.3H6.1C6.6,16.4,9.6,12.9,13.3,11.7z M22.5,24H9.5c-1.8,0-3.4-0.7-4.6-2h22.2 C25.9,23.3,24.3,24,22.5,24z"
-                    ></path>
-                  </g>
-                </g>
-              </svg>
-              <span class="text-black text-[1rem] font-extrabold">Plats nationaux</span>
-            </li>
-            <li class="space-x-4 flex">
-              <svg
-                fill="#000000"
-                width="64px"
-                height="64px"
-                viewBox="0 0 512 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <title>ionicons-v5-l</title>
-                  <path
-                    d="M384,352H184.36l-41,35-41-35H16v24c0,30.59,21.13,55.51,47.26,56,2.43,15.12,8.31,28.78,17.16,39.47C93.51,487.28,112.54,496,134,496H266c21.46,0,40.49-8.72,53.58-24.55,8.85-10.69,14.73-24.35,17.16-39.47,13.88-.25,26.35-7.4,35-18.63A61.26,61.26,0,0,0,384,376Z"
-                  ></path>
-                  <path
-                    d="M105,320h0l38.33,28.19L182,320H384v-8a40.07,40.07,0,0,0-32-39.2c-.82-29.69-13-54.54-35.51-72C295.67,184.56,267.85,176,236,176H164c-68.22,0-114.43,38.77-116,96.8A40.07,40.07,0,0,0,16,312v8h89Z"
-                  ></path>
-                  <path
-                    d="M463.08,96H388.49l8.92-35.66L442,45,432,16,370,36,355.51,96H208v32h18.75l1.86,16H236c39,0,73.66,10.9,100.12,31.52A121.9,121.9,0,0,1,371,218.07a124.16,124.16,0,0,1,10.73,32.65,72,72,0,0,1,27.89,90.9A96,96,0,0,1,416,376c0,22.34-7.6,43.63-21.4,59.95a80,80,0,0,1-31.83,22.95,109.21,109.21,0,0,1-18.53,33c-1.18,1.42-2.39,2.81-3.63,4.15H416c16,0,23-8,25-23l36.4-345H496V96Z"
-                  ></path>
-                </g>
-              </svg>
-              <span class="text-black text-md font-extrabold">Fast Food</span>
-            </li>
-            <li class="space-x-4 flex">
-              <!-- <svg
-                fill="#000000"
-                width="64px"
-                height="64px"
-                viewBox="0 -3.84 122.88 122.88"
-                version="1.1"
-                id="Layer_1"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                style="enable-background: new 0 0 122.88 115.21"
-                xml:space="preserve"
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <g>
-                    <path
-                      d="M29.03,100.46l20.79-25.21l9.51,12.13L41,110.69C33.98,119.61,20.99,110.21,29.03,100.46L29.03,100.46z M53.31,43.05 c1.98-6.46,1.07-11.98-6.37-20.18L28.76,1c-2.58-3.03-8.66,1.42-6.12,5.09L37.18,24c2.75,3.34-2.36,7.76-5.2,4.32L16.94,9.8 c-2.8-3.21-8.59,1.03-5.66,4.7c4.24,5.1,10.8,13.43,15.04,18.53c2.94,2.99-1.53,7.42-4.43,3.69L6.96,18.32 c-2.19-2.38-5.77-0.9-6.72,1.88c-1.02,2.97,1.49,5.14,3.2,7.34L20.1,49.06c5.17,5.99,10.95,9.54,17.67,7.53 c1.03-0.31,2.29-0.94,3.64-1.77l44.76,57.78c2.41,3.11,7.06,3.44,10.08,0.93l0.69-0.57c3.4-2.83,3.95-8,1.04-11.34L50.58,47.16 C51.96,45.62,52.97,44.16,53.31,43.05L53.31,43.05z M65.98,55.65l7.37-8.94C63.87,23.21,99-8.11,116.03,6.29 C136.72,23.8,105.97,66,84.36,55.57l-8.73,11.09L65.98,55.65L65.98,55.65z"
-                    ></path>
-                  </g>
-                </g>
-              </svg> -->
-              <span class="text-black text-md font-extrabold">Toutes categories</span>
-            </li>
-          </ul>
+        <button
+          class="text-lg flex items-center justify-center space-x-3 bg-gray-200 rounded-full py-2 font-semibold"
+        >
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M9.90693 3.9999C9.93791 3.99996 9.96894 4.00001 10 4.00001C10.0311 4.00001 10.0621 3.99996 10.0931 3.9999C10.4618 3.99929 10.8242 3.99869 11.147 4.08519C12.0098 4.31636 12.6836 4.99023 12.9148 5.85296C13.0013 6.1758 13.0007 6.53821 13.0001 6.90693C13.0001 6.93792 13 6.96895 13 7.00001H21C21.5523 7.00001 22 7.44772 22 8.00001C22 8.55229 21.5523 9.00001 21 9.00001H13C13 9.03107 13.0001 9.0621 13.0001 9.09309C13.0007 9.46181 13.0013 9.82422 12.9148 10.1471C12.6836 11.0098 12.0098 11.6837 11.147 11.9148C10.8242 12.0013 10.4618 12.0007 10.0931 12.0001C10.0621 12.0001 10.0311 12 10 12C9.96894 12 9.93791 12.0001 9.90692 12.0001C9.5382 12.0007 9.17579 12.0013 8.85295 11.9148C7.99022 11.6837 7.31635 11.0098 7.08519 10.1471C6.99868 9.82421 6.99928 9.46181 6.9999 9.09308C6.99995 9.0621 7 9.03106 7 9.00001H5C4.44772 9.00001 4 8.55229 4 8.00001C4 7.44772 4.44772 7.00001 5 7.00001H7C7 6.96895 6.99995 6.93792 6.9999 6.90693C6.99928 6.53821 6.99868 6.1758 7.08519 5.85296C7.31635 4.99023 7.99022 4.31636 8.85295 4.08519C9.17579 3.99869 9.5382 3.99929 9.90693 3.9999ZM9.49861 6.00536C9.39195 6.01022 9.36685 6.01805 9.37059 6.01704C9.19804 6.06328 9.06327 6.19805 9.01704 6.3706C9.0162 6.37411 9.00963 6.40483 9.00535 6.49861C9.00024 6.61064 9 6.75845 9 7.00001V9.00001C9 9.24156 9.00024 9.38937 9.00535 9.5014C9.01021 9.60806 9.01804 9.63315 9.01704 9.62942C9.06327 9.80196 9.19804 9.93674 9.37059 9.98297C9.36685 9.98197 9.39195 9.98979 9.49861 9.99466C9.61063 9.99977 9.75844 10 10 10C10.2416 10 10.3894 9.99977 10.5014 9.99466C10.608 9.98979 10.6331 9.98197 10.6294 9.98297C10.802 9.93674 10.9367 9.80196 10.983 9.62942C10.982 9.63315 10.9898 9.60806 10.9946 9.5014C10.9998 9.38937 11 9.24156 11 9.00001V7.00001C11 6.75845 10.9998 6.61064 10.9946 6.49861C10.9898 6.39196 10.982 6.36686 10.983 6.3706M9.49861 6.00536C9.61063 6.00025 9.75844 6.00001 10 6.00001L9.49861 6.00536ZM10 6.00001C10.2416 6.00001 10.3894 6.00025 10.5014 6.00536L10 6.00001ZM10.5014 6.00536C10.5952 6.00963 10.6259 6.0162 10.6294 6.01704L10.5014 6.00536ZM10.6298 6.01713C10.6298 6.01713 10.6296 6.0171 10.6294 6.01704L10.6298 6.01713ZM15.9069 11.9999C15.9379 12 15.9689 12 16 12C16.0311 12 16.0621 12 16.0931 11.9999C16.4618 11.9993 16.8242 11.9987 17.147 12.0852C18.0098 12.3164 18.6836 12.9902 18.9148 13.853C19.0013 14.1758 19.0007 14.5382 19.0001 14.9069C19.0001 14.9379 19 14.9689 19 15H21C21.5523 15 22 15.4477 22 16C22 16.5523 21.5523 17 21 17H19C19 17.0311 19.0001 17.0621 19.0001 17.0931C19.0007 17.4618 19.0013 17.8242 18.9148 18.1471C18.6836 19.0098 18.0098 19.6837 17.147 19.9148C16.8242 20.0013 16.4618 20.0007 16.0931 20.0001C16.0621 20.0001 16.0311 20 16 20C15.9689 20 15.9379 20.0001 15.9069 20.0001C15.5382 20.0007 15.1758 20.0013 14.853 19.9148C13.9902 19.6837 13.3164 19.0098 13.0852 18.1471C12.9987 17.8242 12.9993 17.4618 12.9999 17.0931C12.9999 17.0621 13 17.0311 13 17H5C4.44772 17 4 16.5523 4 16C4 15.4477 4.44772 15 5 15H13C13 14.969 12.9999 14.9379 12.9999 14.9069C12.9993 14.5382 12.9987 14.1758 13.0852 13.853C13.3164 12.9902 13.9902 12.3164 14.853 12.0852C15.1758 11.9987 15.5382 11.9993 15.9069 11.9999ZM15.4986 14.0054C15.392 14.0102 15.3669 14.018 15.3706 14.017C15.198 14.0633 15.0633 14.1981 15.017 14.3706C15.018 14.3669 15.0102 14.392 15.0054 14.4986C15.0002 14.6106 15 14.7585 15 15V17C15 17.2416 15.0002 17.3894 15.0054 17.5014C15.0102 17.6081 15.018 17.6332 15.017 17.6294C15.0633 17.802 15.198 17.9367 15.3706 17.983C15.3669 17.982 15.392 17.9898 15.4986 17.9947C15.6106 17.9998 15.7584 18 16 18C16.2416 18 16.3894 17.9998 16.5014 17.9947C16.608 17.9898 16.6331 17.982 16.6294 17.983C16.802 17.9367 16.9367 17.802 16.983 17.6294C16.982 17.6332 16.9898 17.6081 16.9946 17.5014C16.9998 17.3894 17 17.2416 17 17V15C17 14.7585 16.9998 14.6106 16.9946 14.4986C16.9898 14.392 16.982 14.3669 16.983 14.3706C16.9367 14.1981 16.802 14.0633 16.6294 14.017C16.6331 14.018 16.608 14.0102 16.5014 14.0054C16.3894 14.0002 16.2416 14 16 14C15.7584 14 15.6106 14.0002 15.4986 14.0054Z"
+                fill="#0F1729"
+              ></path>
+            </g>
+          </svg>
+          <span>Trier</span>
+        </button>
+        <div class="flex mt-8 px-6 flex-col items-start justify-center space-y-4">
+          <button
+            class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+          >
+            Restos par defaut
+          </button>
+          <button
+            class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+          >
+            Les mieux notes
+          </button>
+          <button
+            class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+          >
+            Avec livraison
+          </button>
+          <button
+            class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+          >
+            Plat nationaux
+          </button>
+          <button
+            class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+          >
+            Fast Food
+          </button>
+          <button
+            class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+          >
+            Patisserie
+          </button>
         </div>
       </div>
     </aside>
     <div class="w-full h-fit px-4 pb-8 mb-12 lg:p-8">
       <div
-        id="results"
+        id="result"
         class="grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
       >
         <article
-          v-for="user in users"
+          v-for="user in recherche"
           :key="user.id"
-          class="product-card cart-type-neon overflow-hidden bg-white"
+          class="product-card hover:shadow-xl duration-300 cart-type-neon overflow-hidden bg-white"
         >
           <span
             class="block overflow-hidden w-auto lg:h-56 bg-transparent opacity-100 lg:m-0 lg:p-0 lg:inset-0 m-0 p-0 inset-0"
@@ -717,7 +680,7 @@ const Note = (i) => {
           />
         </svg>
         <span
-          :class="{ 'animate-bounce text-red-500': cartAnimation }"
+
           class="font-bold ml-2 text-sm text-white"
           >{{ count }} items</span
         >
@@ -1072,6 +1035,7 @@ const Note = (i) => {
 </template>
 <script>
 import "v-calendar/dist/style.css";
+import Dropdown from "vue-dropdowns";
 export default {
   data() {
     return {
@@ -1083,11 +1047,11 @@ export default {
       index2: 1,
       index3: 2,
       shak: false,
-
+      showSearchBar: false,
       current: 0,
     };
   },
-
+ components:{Dropdown},
   created() {
     setInterval(() => {
       this.current = (this.current + 1) % 3;
@@ -1104,7 +1068,21 @@ export default {
   },
 
   mounted() {
-    console.log(this.users[1].name);
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.handleScroll);
+  },
+  methods: {
+    handleScroll() {
+      this.scrollY = window.scrollY;
+
+      if (this.scrollY > 0) {
+        this.showSearchBar = true;
+      } else {
+        this.showSearchBar = false;
+      }
+    },
   },
 };
 </script>
