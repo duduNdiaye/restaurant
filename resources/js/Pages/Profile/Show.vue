@@ -6,6 +6,7 @@ import SectionBorder from '@/Components/SectionBorder.vue';
 import TwoFactorAuthenticationForm from '@/Pages/Profile/Partials/TwoFactorAuthenticationForm.vue';
 import UpdatePasswordForm from '@/Pages/Profile/Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from '@/Pages/Profile/Partials/UpdateProfileInformationForm.vue';
+import DashLayout from '../Restaurant/DashLayout.vue';
 
 defineProps({
     confirmsTwoFactorAuthentication: Boolean,
@@ -14,12 +15,13 @@ defineProps({
 </script>
 
 <template>
-    <AppLayout title="Profile">
+     <DashLayout>
+    <!-- <AppLayout title="Profile">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Profile
             </h2>
-        </template>
+        </template> -->
 
         <div>
             <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
@@ -36,9 +38,9 @@ defineProps({
                 </div>
 
                 <div v-if="$page.props.jetstream.canManageTwoFactorAuthentication">
-                    <TwoFactorAuthenticationForm 
+                    <TwoFactorAuthenticationForm
                         :requires-confirmation="confirmsTwoFactorAuthentication"
-                        class="mt-10 sm:mt-0" 
+                        class="mt-10 sm:mt-0"
                     />
 
                     <SectionBorder />
@@ -53,5 +55,6 @@ defineProps({
                 </template>
             </div>
         </div>
-    </AppLayout>
+       </DashLayout>
+    <!-- </AppLayout> -->
 </template>

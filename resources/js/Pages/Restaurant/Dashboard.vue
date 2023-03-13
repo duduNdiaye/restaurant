@@ -1,6 +1,7 @@
 
-<script >
+<script>
 
+//   STATS FIN SCRIPT
 export default {
 
     data() {
@@ -89,8 +90,18 @@ import Tablearticles from './Tablearticles.vue';
             <TableArticles v-if="ShowArticles"  :articles-all="articles" />
             <DashboardOther v-if="ShowCards" :commandes="commandes"/>
             <MenuSemaine v-if="showMenu"/>
+
+<!-- STATS -->
+
+
+<!--  END STATS -->
    </DashLayout>
 
 </template>
+
 <style scoped>
 </style>
+<!-- STATS SCRIPT -->
+<script setup>
+
+</script>

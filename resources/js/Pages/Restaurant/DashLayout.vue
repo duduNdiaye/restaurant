@@ -55,15 +55,15 @@ import { Link } from '@inertiajs/vue3';
 
 </script>
 <template>
-    <div class="w-screen h-screen flex "  >
+    <div class="w-screen h-screen flex  "  >
     <!-- Side bar -->
-    <div class="w-[400px] h-full bg-gray-300 text-white" v-show="showSide" ref="snbar">
+    <div class="w-[400px] h-full  bg-gray-300 text-white" v-show="showSide" ref="snbar">
       <div class="h-[50px] bg-gray-900 flex justify-start  items-center ">
         <div class="px-[20px]">
           <h3 class="font-bold text-xl"><Link :href="route('dashboard')">EasyEAT Dashboard</Link></h3>
         </div>
       </div>
-      <div class="h-[calc(120vh-50px)] bg-gray-800 py-[20px]">
+      <div class="h-[calc(100vh-50px)] bg-gray-800 py-[20px]">
         <div class="flex flex-col justify-between h-full px-[20px] space-y-[10px]">
           <div class=" flex flex-col justify-between space-y-[10px]">
             <Link href="/dashboard"   class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-200 hover:text-gray-800  transition duration-400 ease-in-out">
@@ -74,26 +74,16 @@ import { Link } from '@inertiajs/vue3';
 
               Articles
             </Link>
-            <Link href="/dashboard/menu"   class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
+            <Link :href="route('dashboard.menu')"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
 
               Menus
             </Link>
-            <Link href="/commandes"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
+            <Link :href="route('dashboard.stats')"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
 
-              Commandes
+              Statistiques
             </Link>
 
 
-          </div>
-          <div class="h-[50px]">
-            <div>
-              <Link to="/setting" class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-300 hover:text-gray-800  transition duration-400 ease-in-out">
-                <svg aria-hidden="true" class="mr-2 w-[25px] h-[25px] fill-current" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path>
-                </svg>
-                Setting
-              </Link>
-            </div>
           </div>
         </div>
       </div>
@@ -117,7 +107,7 @@ import { Link } from '@inertiajs/vue3';
           <!-- User login -->
           <div class="w-[200px] ">
             <div class="flex items-center justify-start space-x-4" @click="toggleDrop">
-              <img class="w-10 h-10 rounded-full border-2 border-gray-500" src="" alt="">
+              <img class="w-10 h-10 rounded-full border-2 border-gray-500" :src="$page.props.user.photo" alt="">
               <div class="font-semibold text-left">
                 <div>{{  $page.props.user.name  }}</div>
                 <div class="text-xs text-gray-500 dark:text-gray-400 hover:dark:text-gray-800 hover:text-gray-900 ">{{  $page.props.user.role  }}</div>
@@ -127,7 +117,8 @@ import { Link } from '@inertiajs/vue3';
             <div v-show="showDropDown" class="absolute right-[10px] z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
               <div class="py-1 text-left" role="none">
                 <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                <a href="#" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Account settings</a>
+                <Link :href="route('restau.profile')" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Infos profil</Link>
+                <Link :href="route('profile.show')" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Paramètre profil</Link>
                 <form method="POST" @submit.prevent="logout">
                   <button type="submit" class="text-gray-700 block w-full  hover:bg-slate-900 hover:text-white px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
                 </form>
@@ -136,7 +127,7 @@ import { Link } from '@inertiajs/vue3';
           </div>
         </div>
       </div>
-      <div class="h-[calc(120vh-50px)] bg-gray-100 p-[20px] w-full "  >
+      <div class="h-[calc(100vh-50px)] bg-gray-100 p-[20px] w-full "  >
         <div class=" bg-gray-100 rounded-md p-[20px] h-full overflow-y-auto">
           <router-view>
 

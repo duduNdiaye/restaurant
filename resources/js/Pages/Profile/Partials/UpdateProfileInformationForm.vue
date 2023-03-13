@@ -17,6 +17,11 @@ const form = useForm({
     _method: 'PUT',
     name: props.user.name,
     email: props.user.email,
+    tel:props.user.tel,
+    adresse:props.user.adresse,
+    heureOuvert:props.user.heureOuvert,
+    heureFerme:props.user.heureFerme,
+    description:props.user.description,
     photo: null,
 });
 
@@ -127,7 +132,7 @@ const clearPhotoFileInput = () => {
                 <InputError :message="form.errors.photo" class="mt-2" />
             </div>
 
-            <!-- Name -->
+                <!-- Name -->
             <div class="col-span-6 sm:col-span-4">
                 <InputLabel for="name" value="Name" />
                 <TextInput
@@ -141,8 +146,8 @@ const clearPhotoFileInput = () => {
             </div>
 
             <!-- Email -->
-            <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="email" value="Email" />
+            <div class="col-span-4 sm:col-span-4">
+                <InputLabel for="email" value=" Adresse Email" />
                 <TextInput
                     id="email"
                     v-model="form.email"
@@ -172,6 +177,69 @@ const clearPhotoFileInput = () => {
                     </div>
                 </div>
             </div>
+
+
+            <!-- adresse -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="adresse" value="adresse" />
+                <TextInput
+                    id="adresse"
+                    v-model="form.adresse"
+                    type="text"
+                    class="mt-1 block w-full"
+                    autocomplete="adresse"
+                />
+                <InputError :message="form.errors.adresse" class="mt-2" />
+            </div>
+            <!-- telephone -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="tel" value="numero telephone" />
+                <TextInput
+                    id="tel"
+                    v-model="form.tel"
+                    type="text"
+                    class="mt-1 block w-full"
+                    autocomplete="tel"
+                />
+                <InputError :message="form.errors.tel" class="mt-2" />
+            </div>
+            <!-- description -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="description" value="description" />
+                <TextInput
+                    id="description"
+                    v-model="form.description"
+                    type="text"
+                    class="mt-1 block w-full"
+                    autocomplete="description"
+                />
+                <InputError :message="form.errors.description" class="mt-2" />
+            </div>
+            <!-- heureOuvert -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="heureOuvert" value="heure d'ouverture" />
+                <TextInput
+                    id="heureOuvert"
+                    v-model="form.heureOuvert"
+                    type="number"
+                    class="mt-1 block w-full"
+                    autocomplete="heureOuvert"
+                />
+                <InputError :message="form.errors.heureOuvert" class="mt-2" />
+            </div>
+            <!-- heureFerme -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="heureFerme" value="heure de fermeture" />
+                <TextInput
+                    id="heureFerme"
+                    v-model="form.heureFerme"
+                    type="number"
+                    class="mt-1 block w-full"
+                    autocomplete="heureFerme"
+                />
+                <InputError :message="form.errors.heureFerme" class="mt-2" />
+            </div>
+
         </template>
 
         <template #actions>
