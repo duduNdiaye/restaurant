@@ -55,15 +55,15 @@ import { Link } from '@inertiajs/vue3';
 
 </script>
 <template>
-    <div class="w-screen h-screen flex "  >
+    <div class="w-screen h-screen flex  "  >
     <!-- Side bar -->
-    <div class="w-[400px] h-full bg-gray-300 text-white" v-show="showSide" ref="snbar">
+    <div class="w-[400px] h-full  bg-gray-300 text-white" v-show="showSide" ref="snbar">
       <div class="h-[50px] bg-gray-900 flex justify-start  items-center ">
         <div class="px-[20px]">
           <h3 class="font-bold text-xl"><Link :href="route('dashboard')">EasyEAT Dashboard</Link></h3>
         </div>
       </div>
-      <div class="h-[calc(120vh-50px)] bg-gray-800 py-[20px]">
+      <div class="h-[calc(100vh-50px)] bg-gray-800 py-[20px]">
         <div class="flex flex-col justify-between h-full px-[20px] space-y-[10px]">
           <div class=" flex flex-col justify-between space-y-[10px]">
             <Link href="/dashboard"   class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md border-gray-200 hover:bg-gray-200 hover:text-gray-800  transition duration-400 ease-in-out">
@@ -78,7 +78,7 @@ import { Link } from '@inertiajs/vue3';
 
               Menus
             </Link>
-            <Link href=""  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
+            <Link :href="route('dashboard.stats')"  class="inline-flex relative items-center py-[10px] px-[10px] w-full text-sm font-medium rounded-md rounded-b-lg hover:bg-gray-300  hover:text-gray-800 transition duration-400 ease-in-out">
 
               Statistiques
             </Link>
@@ -118,7 +118,7 @@ import { Link } from '@inertiajs/vue3';
               <div class="py-1 text-left" role="none">
                 <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
                 <Link :href="route('restau.profile')" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Infos profil</Link>
-                <Link href="#" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Paramètre profil</Link>
+                <Link :href="route('profile.show')" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Paramètre profil</Link>
                 <form method="POST" @submit.prevent="logout">
                   <button type="submit" class="text-gray-700 block w-full  hover:bg-slate-900 hover:text-white px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
                 </form>
@@ -127,7 +127,7 @@ import { Link } from '@inertiajs/vue3';
           </div>
         </div>
       </div>
-      <div class="h-[calc(120vh-50px)] bg-gray-100 p-[20px] w-full "  >
+      <div class="h-[calc(100vh-50px)] bg-gray-100 p-[20px] w-full "  >
         <div class=" bg-gray-100 rounded-md p-[20px] h-full overflow-y-auto">
           <router-view>
 

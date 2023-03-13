@@ -72,13 +72,17 @@ Route::middleware([
         }
     })->name('dashboard');
     Route::get('/dashboard/articles', [ArticleController::class,'index'])->name('articles.list');
+    Route::get('/dashboard/stats', function(){
+        return Inertia::render('Restaurant/DashboardStats');
+    })->name('dashboard.stats');
     Route::get('dashboard/menu',[MenuJourController::class,'index'])->name('dashboard.menu');
     Route::post('/menu/new',[MenuJourController::class,'store'])->name('store.menu');
     Route::put('/menu/edit',[MenuJourController::class,'update'])->name('edit.menu');
     Route::get('/restau/profile',function(){
         $auth_user=User::findOrFail(Auth::id());
-
-        return Inertia::render('Restaurant/Profile/ProfileInfo',['user'=>$auth_user]);
+        $articles=Article::where('user_id',Auth::id())->count();
+        return Inertia::render('Restaurant/Profile/ProfileInfo',['user'=>$auth_user,
+        'articles'=>$articles]);
     })->name('restau.profile');
 });
 
