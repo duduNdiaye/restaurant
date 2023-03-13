@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, useForm } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
@@ -17,6 +17,13 @@ const cart = ref([]);
 const count = ref(0);
 const count1 = ref(false);
 const contenu = ref("Articles");
+const isLoading = ref(false);
+
+const latitude = ref(0);
+const longitude = ref(0);
+const errorMessage = "";
+
+const click = ref('En cliquant ici')
 
 const articlerecherche = ref("");
 let isPage1 = ref(true);
@@ -24,6 +31,48 @@ const cartAnimation = ref(false);
 const data = () => ({
   loading: true,
 });
+
+const getPosition = () => {
+  if (navigator.geolocation) {
+    isLoading.value =true;
+    click.value = 'Patientez...'
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        console.log(latitude);
+        console.log(longitude);
+
+        const form = useForm({
+          lat: latitude,
+          long: longitude,
+        });
+
+        form.post(route("cordonnees.client"), {
+          onSuccess: () => {
+            console.log("Parfait", form.lat, " ", form.long);
+            isLoading.value = false;
+          },
+          onError: () => {
+            console.log("Mangui toub d, mais dialoul!");
+          },
+        });
+      },
+      (error) => {
+        console.log(error.message);
+      }
+    );
+  } else {
+    console.log("Your browser does not support geolocation API");
+  }
+};
+
+const ulat = ref(14.7905795);
+const ulng = ref(-16.927785);
+const rlat = ref(14.760464);
+const rlng = ref(-16.929817);
+const EARTH_RADIUS = ref(6371);
 
 const created = () => {
   // Charger les données des articles
@@ -35,146 +84,44 @@ const created = () => {
     });
 };
 
-
-
 onMounted(() => {
-  if (localStorage.getItem("cart")) {
-    cart.value = JSON.parse(localStorage.getItem("cart"));
-    count.value = cart.value.length;
-  }
-  if (count.value != 0) {
-    count1.value = true;
-  }
-  for (let i = 0; i < props.articles.length; i++) {
-    for (let u = 0; u < props.users.length; u++) {
-      if (props.articles[i].user_id == props.users[u].id) {
-        props.articles[i].nomResto = props.users[u].name;
-      }
-    }
-  }
 
+  const lat1Rad = (ulat.value * Math.PI) / 180;
+  const lon1Rad = (ulng.value * Math.PI) / 180;
+  const lat2Rad = (rlat.value * Math.PI) / 180;
+  const lon2Rad = (rlng.value * Math.PI) / 180;
 
-  console.log(props.articles)
+  const dLat = lat2Rad - lat1Rad;
+  const dLon = lon2Rad - lon1Rad;
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = EARTH_RADIUS.value * c;
 });
 
 const total = computed(() => {
   return cart.value.reduce((acc, item) => acc + item.prix * item.quantite, 0);
 });
 
-const panier = ref(false);
-
-const addItemToCart = (article) => {
-  console.log(article.nomResto);
-  //Vérifie si l'article est déjà dans le panier
-  let index = cart.value.findIndex((item) => item.nom === article.nom);
-  if (index === -1) {
-    cart.value.push({
-      nom: article.nom,
-      photo: article.photo,
-      prix: parseFloat(article.prix),
-      quantite: 1,
-      total: parseFloat(article.prix),
-      restau: article.nomResto ?? "Nom du restaurant non spécifié",
-    });
-    count1.value = true;
-  } else {
-    cart.value[index].quantite++;
-    cart.value[index].total += parseFloat(article.prix);
-  }
-
-  count.value = cart.value.length;
-
-  localStorage.setItem("cart", JSON.stringify(cart.value));
-
-  cartAnimation.value = true;
-  setTimeout(() => {
-    cartAnimation.value = false;
-  }, 1000);
-
-  panier.value = true; // affiche le modal de validation
-  console.log(panier.value);
-  setTimeout(() => {
-    console.log("here");
-    panier.value = false;
-  }, 2000);
-  console.log(panier.value);
-};
-
-const removeItemFromCart = (car) => {
-  let index = cart.value.findIndex((item) => item.nom === car.nom);
-  if (index === -1) {
-    return;
-  } else {
-    cart.value[index].quantite = 0;
-    if (cart.value[index].quantite === 0) {
-      cart.value.splice(index, 1);
-      count.value--;
-    }
-  }
-  count.value = cart.value.length;
-  if (count.value == 0) {
-    count1.value = false;
-  }
-
-  // enregistrer les données du panier dans le localStorage
-  localStorage.setItem("cart", JSON.stringify(cart.value));
-};
-
-const Augmenter = (car) => {
-  let index = cart.value.findIndex((item) => item.nom === car.nom);
-  if (index === -1) {
-    return;
-  } else {
-    cart.value[index].quantite++;
-    cart.value[index].total += parseFloat(car.prix);
-  }
-};
-const Diminuer = (car) => {
-  let index = cart.value.findIndex((item) => item.nom === car.nom);
-  if (index === -1) {
-    return;
-  } else {
-    if (cart.value[index].quantite > 1) {
-      // vérifie si la quantité est supérieure à 1
-      cart.value[index].quantite--;
-      cart.value[index].total -= parseFloat(car.prix);
-    }
-    if (cart.value[index].quantite === 1) {
-      // vérifie si la quantité est égale à 1
-      // ne fait rien
-    }
-    if (cart.value[index].quantite === 0) {
-      // vérifie si la quantité est égale à 0
-      cart.value.splice(index, 1);
-      count.value -= 1;
-    }
-
-    if (count.value === 0) {
-      count1.value = false;
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart.value));
-  }
-};
 
 const recherche = computed(() => {
   if (count.value && isPage1 === true) {
     return props.articles.filter((article) => article.nomResto == cart.value[0].restau);
-  }
-   else{
+  } else {
     return props.articles;
   }
 
-//   if (articlerecherche.value) {
-//     return props.articles.filter((article) =>
-//       article.nom.toLowerCase().includes(articlerecherche.value.toLocaleLowerCase())
-//     );
-//   } else {
-//     return props.articles;
-//   }
+  //   if (articlerecherche.value) {
+  //     return props.articles.filter((article) =>
+  //       article.nom.toLowerCase().includes(articlerecherche.value.toLocaleLowerCase())
+  //     );
+  //   } else {
+  //     return props.articles;
+  //   }
 });
 
-console.log(recherche.value)
 const scrollToResults = () => {
   // Vérifie si la référence vers la section des résultats est définie
   const results = document.getElementById("results");
@@ -190,21 +137,20 @@ const scrollToResults = () => {
   <div class="'bg-gray-100">
     <header>
       <nav
-
         id="navbar"
         class="fixed md:flex bg-white border-gray-100 border-b-2 z-40 transform-cpu text-center items-center justify-between px-4 py-3 w-full"
       >
-        <div class="flex items-center" >
+        <div class="flex items-center">
           <h1
             class="text-3xl lg:block md:block hidden lg:ml-0 text-center bg-black text-white px-2 md:ml-0 font-title font-extrabold"
           >
             EatEasy
           </h1>
           <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
-          <div >
-            <p  class="font-bold text-xl ml-8 lg:hidden md:hidden" v-if="texte">
-            Que desirez-vous manger?
-          </p>
+          <div>
+            <p class="font-bold text-xl ml-8 lg:hidden md:hidden" v-if="texte">
+              Que desirez-vous manger?
+            </p>
           </div>
           <div
             class="pt-2 relative md:hidden lg:block sm:block mx-auto text-gray-600"
@@ -242,13 +188,13 @@ const scrollToResults = () => {
         </div>
 
         <div
-          class="md:flex bg-white lg:border-none md:border-none lg:bg-opacity-0  border-t-2 border-b-2 border-gray-200  md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
+          class="md:flex bg-white lg:border-none md:border-none lg:bg-opacity-0 border-t-2 border-b-2 border-gray-200 md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
           :class="[open ? 'left-0' : 'left-[-100%]']"
         >
           <div class="md:mx-4 md:my-0 my-6 flex">
             <button
               @click="(showModal = !showModal), (showModal1 = !showModal1)"
-              class="px-3 text-black py-2  font-bold hover:text-indigo-600"
+              class="px-3 text-black py-2 font-bold hover:text-indigo-600"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -270,16 +216,19 @@ const scrollToResults = () => {
                 />
               </svg>
             </button>
-            <span  class="text-black font-bold   mt-2 w-[6rem] h-5 rounded-full"
+            <span class="text-black font-bold mt-2 w-[6rem] h-5 rounded-full"
               >Ma position</span
             >
           </div>
           <div class="md:mx-4 md:my-0 my-6">
-            <a :href="route('resto.accueil')" class="text-black font-bold">Nos restaurants</a>
-
+            <a :href="route('resto.accueil')" class="text-black font-bold"
+              >Nos restaurants</a
+            >
           </div>
           <div class="md:mx-4 md:my-0 my-6">
-            <a href="#" class="text-black px-3 py-2 font-bold text-black hover:text-indigo-600"
+            <a
+              href="#"
+              class="text-black px-3 py-2 font-bold text-black hover:text-indigo-600"
               >Contact</a
             >
           </div>
@@ -319,20 +268,16 @@ const scrollToResults = () => {
       </nav>
     </header>
 
-    <div
-
-      class="bg-grocery h-screen lg:block md:block hidden"
-    >
+    <div class="bg-grocery h-screen lg:block md:block hidden">
       <section class="text-gray-600 body-font">
         <div
-          class="container mx-auto flex flex-col px-5 lg:py-56 md:py-48 py-16 justify-center items-center"
+          class="container mx-auto flex flex-col px-5 lg:py-40 md:py-48 py-16 justify-center items-center"
         >
-          <div class="w-full md:w-2/3 flex flex-col mb-16 items-center text-center">
-            <h1
-
-              class="title-font sm:text-6xl text-3xl mb-4 font-black text-gray-900"
-            >
-              Plus besoin de faire la queue!
+          <div
+            class="w-full lg:w-[36rem] md:w-2/3 flex flex-col mb-16 items-center text-center"
+          >
+            <h1 class="title-font sm:text-6xl text-3xl mb-4 font-black text-gray-900">
+              Plus besoin de faire la queue pour mangez!
             </h1>
             <!-- <span
               v-else
@@ -340,42 +285,69 @@ const scrollToResults = () => {
             >
               Les meilleurs restaurants à portée de clic.
             </span> -->
-            <p  class="lg:block hidden mb-8 leading-relaxed">
-              Découvrez le moyen le plus rapide et le plus facile de déguster vos plats
-              préférés chez votre restaurant préféré sans quitter votre maison grâce à
-              notre application de commande en ligne.
-            </p>
 
-            <div class="flex w-full justify-center items-end">
-              <div class="mr-4 lg:w-full xl:w-1/2 w-2/4 md:w-full text-left">
-                <input
-                  v-model="articlerecherche"
-                  @keydown.enter="scrollToResults"
-                  placeholder="Rechercher..."
-                  type="text"
-                  id="hero-field"
-                  name="hero-field"
-                  class="w-full bg-white focus:ring-vert border-none shadow-2xl px-3 py-2 rounded-l-full text-gray-700 leading-8 transition-colors duration-200"
-                />
-              </div>
-              <button
-                class="inline-flex rounded-r-full text-white bg-yellow-500 border-0 py-2 px-6 focus:outline-none hover:bg-yellow-300 rounded text-lg"
+            <div class="bg-white flex shadow-xl border-2 border-black w-[33rem]">
+              <span class="text-black text-xl font-bold flex px-3 py-5 items-start"
+                ><svg
+                  class="w-6 h-6 icon"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#ffffff"
+                  stroke="#ffffff"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      fill="#000000"
+                      d="M256 17.108c-75.73 0-137.122 61.392-137.122 137.122.055 23.25 6.022 46.107 11.58 56.262L256 494.892l119.982-274.244h-.063c11.27-20.324 17.188-43.18 17.202-66.418C393.122 78.5 331.73 17.108 256 17.108zm0 68.56a68.56 68.56 0 0 1 68.56 68.562A68.56 68.56 0 0 1 256 222.79a68.56 68.56 0 0 1-68.56-68.56A68.56 68.56 0 0 1 256 85.67z"
+                    ></path>
+                  </g></svg
+                >Donnez votre adresse
+                 <svg
+                v-if="isLoading"
+                :class="{ 'animate-spin ml-20': isLoading }"
+                id="spinner"
+                class="w-6 h-6 ml-20 icon text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                stroke="#ffffff"
               >
-                Rechercher
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    d="M20.0001 12C20.0001 13.3811 19.6425 14.7386 18.9623 15.9405C18.282 17.1424 17.3022 18.1477 16.1182 18.8587C14.9341 19.5696 13.5862 19.9619 12.2056 19.9974C10.825 20.0328 9.45873 19.7103 8.23975 19.0612"
+                    stroke="#000000"
+                    stroke-width="3.55556"
+                    stroke-linecap="round"
+                  ></path>
+                </g>
+              </svg></span
+              >
+              <button
+                :class="{ 'btn-clicked bg-gray-600': isLoading }"
+                @click="getPosition()"
+                class="text-white bg-black text-xl font-bold flex px-3 py-5 ml-auto"
+              >
+                {{click}}
               </button>
             </div>
-            <p class="text-sm mt-2 text-gray-500 mb-8 w-full">
-              Que voulez vous manger? Ou le voulez-vous?
-            </p>
-            <!-- <p v-else class="text-lg mt-2 text-gray-500 mb-8 text-white w-full">
-              Que voulez vous manger? Ou le voulez-vous?
-            </p> -->
           </div>
         </div>
       </section>
     </div>
 
-    <section class="text-gray-600 body-font bg-white mt-1" >
+    <!-- <section class="text-gray-600 body-font bg-white mt-1">
       <div class="container px-2 py-4 mx-auto flex flex-wrap lg:block md:block hidden">
         <div class="flex flex-wrap -m-4">
           <div
@@ -523,7 +495,7 @@ const scrollToResults = () => {
           alt=""
         />
       </div>
-    </section>
+    </section> -->
 
     <section
       :class="[fixed ? 'fixed-top' : '', 'flex justify-between p-2 bg-white']"
@@ -677,39 +649,7 @@ const scrollToResults = () => {
       </div>
     </footer>
 
-    <button
-      class="bg-vert z-50 transform-gpu lg:block md:block hidden h-28 w-[6.5rem] rounded-lg fixed flex items-center justify-center inset-y-72 right-0"
-      @mouseover="showComponent = true"
-    >
-      <div class="flex flex-col">
-        <div class="flex text-center items-center justify-center p-2 text-white">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-6 h-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
-            />
-          </svg>
-          <span
-            :class="{ 'animate-bounce text-red-500': cartAnimation }"
-            class="font-bold ml-2 text-sm text-white"
-            >{{ count }} items</span
-          >
-        </div>
-        <div
-          class="flex items-center bg-white text-vert font-bold rounded py-2 w-20 ml-3 mt-2 justify-center"
-        >
-          {{ total }} F
-        </div>
-      </div>
-    </button>
+
 
     <!-- <div v-if="showModal1"
             class="modal fixed top-0 left-0  w-full h-full overflow-x-hidden overflow-y-auto bg-opacity-40 bg-gray-700 z-50">
@@ -772,351 +712,6 @@ const scrollToResults = () => {
       </div>
     </div>
 
-    <div
-      @mouseleave="showComponent = false"
-      :class="[
-        showComponent ? 'right-0' : 'right-[-100%] shadow-xl lg:block md:block hidden',
-      ]"
-      class="border-l-2 border-gray-100 z-50 transform-gpu duration-400 ease-in-out fixed right-0 top-[4.3rem] lg:h-[35rem] lg:w-[27rem] md:w-[24rem] w-[21rem] h-[29rem] bg-white text-white p-3"
-    >
-      <div class="flex justify-between border-b-2 border-gray-100 py-1">
-        <div class="justify-start">
-          <div class="flex text-center items-center justify-center p-2 text-vert">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
-              />
-            </svg>
-            <span class="font-bold ml-2 text-vert">{{ count }} items</span>
-          </div>
-        </div>
-        <div class="justify-end">
-          <button
-            @click="showComponent = false"
-            class="btn btn-danger rounded-full hover:bg-vert hover:text-white p-1 bg-gray-200 text-gray-400 absolute top-6 right-2"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
-      <div v-if="count1" class="flex-grow pt-2 pb-20 lg:h-96 h-72 overflow-y-scroll">
-        <div
-          v-for="car in cart"
-          :key="car.id"
-          class="flex items-center border-b border-solid border-border-200 border-opacity-75 py-4 text-sm sm:px-6"
-          style="opacity: 1"
-        >
-          <div class="flex-shrink-0">
-            <div
-              class="flex overflow-hidden flex-col-reverse items-center w-8 h-24 bg-gray-100 text-black rounded-full"
-            >
-              <button
-                @click="Diminuer(car)"
-                class="cursor-pointer p-2 transition-colors duration-200 hover:bg-vert focus:outline-none"
-              >
-                <span class="sr-only">minus</span
-                ><svg
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  class="h-3 w-3 stroke-2.5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M20 12H4"
-                  ></path>
-                </svg>
-              </button>
-              <div
-                class="flex flex-1 items-center justify-center px-3 text-sm font-semibold text-heading"
-              >
-                {{ car.quantite }}
-              </div>
-              <button
-                @click="Augmenter(car)"
-                class="cursor-pointer p-2 text-black transition-colors hover:border-black hover:text-white duration-200 hover:bg-vert focus:outline-none"
-                title=""
-              >
-                <span class="sr-only">plus</span
-                ><svg
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  class="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  ></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div
-            class="relative mx-4 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-gray-100 sm:h-16 sm:w-16"
-          >
-            <span
-              class="h-full"
-              style="
-                box-sizing: border-box;
-                display: block;
-                overflow: hidden;
-
-                background: none;
-                opacity: 1;
-                border: 0px;
-                margin: 0px;
-                padding: 0px;
-                position: absolute;
-                inset: 0px;
-              "
-              ><img
-                alt="Baby Spinach"
-                :src="car.photo"
-                decoding="async"
-                data-nimg="fill"
-                sizes="100vw"
-                class="h-56"
-                style="
-                  position: absolute;
-                  inset: 0px;
-                  box-sizing: border-box;
-                  padding: 0px;
-                  border: none;
-                  margin: auto;
-                  display: block;
-                  width: 0px;
-                  height: 10px;
-                  min-width: 100%;
-                  max-width: 100%;
-                  min-height: 100%;
-                  max-height: 100%;
-                  object-fit: contain;
-                "
-            /></span>
-          </div>
-
-          <div>
-            <h3 class="font-black text-sm text-black">{{ car.nom }}</h3>
-            <p class="text-sm font-bold text-vert">{{ car.prix }}</p>
-            <span class="text-sm text-gray-500">nombre: {{ car.quantite }}</span>
-          </div>
-
-          <div class="ml-auto flex flex-col">
-            <button
-              @click="removeItemFromCart(car)"
-              class="flex ml-16 mb-2 bg-gray-200 h-7 w-7 right-0 items-center justify-center rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-red-600 focus:bg-gray-100 focus:text-red-600 focus:outline-none ltr:ml-3 ltr:-mr-2 rtl:mr-3 rtl:-ml-2"
-            >
-              <span class="sr-only">close</span
-              ><svg
-                width="81px"
-                height="81px"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    opacity="0.15"
-                    d="M18 18V6H6V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18Z"
-                    fill="#000000"
-                  ></path>
-                  <path
-                    d="M10 10V16M14 10V16M18 6V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V6M4 6H20M15 6V5C15 3.89543 14.1046 3 13 3H11C9.89543 3 9 3.89543 9 5V6"
-                    stroke="#000000"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
-                </g>
-              </svg>
-            </button>
-            <span
-              class="font-semibold ml-4 mt-1 mr-2 text-gray-500 ltr:ml-auto rtl:mr-auto"
-              >{{ car.total }}FCFA</span
-            >
-          </div>
-        </div>
-      </div>
-      <div v-else class="flex-grow pt-28 pb-20">
-        <div class="flex h-full flex-col items-center justify-center" style="opacity: 1">
-          <svg class="w-40 h-40" viewBox="0 0 231.91 292">
-            <defs>
-              <linearGradient
-                id="linear-gradient"
-                x1="1"
-                y1="0.439"
-                x2="0.369"
-                y2="1"
-                gradientUnits="objectBoundingBox"
-              >
-                <stop offset="0" stop-color="#029477"></stop>
-                <stop offset="1" stop-color="#009e7f"></stop>
-              </linearGradient>
-            </defs>
-            <g
-              id="no_cart_in_bag_2"
-              data-name="no cart in bag 2"
-              transform="translate(-1388 -351)"
-            >
-              <ellipse
-                id="Ellipse_2873"
-                data-name="Ellipse 2873"
-                cx="115.955"
-                cy="27.366"
-                rx="115.955"
-                ry="27.366"
-                transform="translate(1388 588.268)"
-                fill="#ddd"
-                opacity="0.25"
-              ></ellipse>
-              <path
-                id="Path_18691"
-                data-name="Path 18691"
-                d="M29.632,0H170.368A29.828,29.828,0,0,1,200,30.021V209.979A29.828,29.828,0,0,1,170.368,240H29.632A29.828,29.828,0,0,1,0,209.979V30.021A29.828,29.828,0,0,1,29.632,0Z"
-                transform="translate(1403 381)"
-                fill="#009e7f"
-              ></path>
-              <path
-                id="Rectangle_1852"
-                data-name="Rectangle 1852"
-                d="M30,0H170a30,30,0,0,1,30,30v0a30,30,0,0,1-30,30H12.857A12.857,12.857,0,0,1,0,47.143V30A30,30,0,0,1,30,0Z"
-                transform="translate(1403 381)"
-                fill="#006854"
-              ></path>
-              <path
-                id="Rectangle_1853"
-                data-name="Rectangle 1853"
-                d="M42,0H158a42,42,0,0,1,42,42v0a18,18,0,0,1-18,18H18A18,18,0,0,1,0,42v0A42,42,0,0,1,42,0Z"
-                transform="translate(1403 381)"
-                fill="#006854"
-              ></path>
-              <path
-                id="Path_18685"
-                data-name="Path 18685"
-                d="M446.31,246.056a30,30,0,1,1,30-30A30.034,30.034,0,0,1,446.31,246.056Zm0-53.294A23.3,23.3,0,1,0,469.9,216.056,23.471,23.471,0,0,0,446.31,192.762Z"
-                transform="translate(1056.69 164.944)"
-                fill="#006854"
-              ></path>
-              <path
-                id="Path_18686"
-                data-name="Path 18686"
-                d="M446.31,375.181a30,30,0,1,1,30-30A30.034,30.034,0,0,1,446.31,375.181Zm0-53.294A23.3,23.3,0,1,0,469.9,345.181,23.471,23.471,0,0,0,446.31,321.887Z"
-                transform="translate(1057.793 95.684)"
-                fill="#009e7f"
-              ></path>
-              <circle
-                id="Ellipse_2874"
-                data-name="Ellipse 2874"
-                cx="28.689"
-                cy="28.689"
-                r="28.689"
-                transform="translate(1473.823 511.046)"
-                fill="#006854"
-              ></circle>
-              <circle
-                id="Ellipse_2875"
-                data-name="Ellipse 2875"
-                cx="15.046"
-                cy="15.046"
-                r="15.046"
-                transform="translate(1481.401 547.854) rotate(-45)"
-                fill="#009e7f"
-              ></circle>
-              <path
-                id="Path_18687"
-                data-name="Path 18687"
-                d="M399.71,531.27a71.755,71.755,0,0,1,12.65-13.6c3.4-2.863-1.5-7.726-4.882-4.882a78.392,78.392,0,0,0-13.73,15c-2.56,3.644,3.424,7.1,5.962,3.485Z"
-                transform="translate(1060.579 -35.703)"
-                fill="#006854"
-              ></path>
-              <path
-                id="Path_18688"
-                data-name="Path 18688"
-                d="M412.913,527.786a78.419,78.419,0,0,0-13.73-15c-3.38-2.843-8.289,2.017-4.882,4.882a71.785,71.785,0,0,1,12.65,13.6c2.535,3.609,8.525.162,5.962-3.485Z"
-                transform="translate(1060.566 -35.704)"
-                fill="#006854"
-              ></path>
-              <path
-                id="Path_18689"
-                data-name="Path 18689"
-                d="M583.278,527.786a78.417,78.417,0,0,0-13.73-15c-3.38-2.843-8.289,2.017-4.882,4.882a71.768,71.768,0,0,1,12.65,13.6c2.535,3.609,8.525.162,5.962-3.485Z"
-                transform="translate(970.304 -35.704)"
-                fill="#006854"
-              ></path>
-              <path
-                id="Path_18690"
-                data-name="Path 18690"
-                d="M570.075,531.27a71.77,71.77,0,0,1,12.65-13.6c3.4-2.863-1.5-7.726-4.882-4.882a78.407,78.407,0,0,0-13.73,15c-2.56,3.644,3.424,7.1,5.962,3.485Z"
-                transform="translate(970.318 -35.703)"
-                fill="#006854"
-              ></path>
-              <path
-                id="Path_18692"
-                data-name="Path 18692"
-                d="M301.243,287.464a19.115,19.115,0,0,1,8.071,9.077,19.637,19.637,0,0,1,1.6,7.88v26.085a19.349,19.349,0,0,1-9.672,16.957c-10.048-6.858-16.544-17.742-16.544-30S291.2,294.322,301.243,287.464Z"
-                transform="translate(1292.301 101.536)"
-                fill="url(#linear-gradient)"
-              ></path>
-              <path
-                id="Path_18693"
-                data-name="Path 18693"
-                d="M294.371,287.464a19.115,19.115,0,0,0-8.071,9.077,19.637,19.637,0,0,0-1.6,7.88v26.085a19.349,19.349,0,0,0,9.672,16.957c10.048-6.858,16.544-17.742,16.544-30S304.419,294.322,294.371,287.464Z"
-                transform="translate(1118.301 101.536)"
-                fill="url(#linear-gradient)"
-              ></path>
-            </g>
-          </svg>
-          <h4 class="mt-6 text-vert font-semibold">No products found</h4>
-        </div>
-      </div>
-      <div>
-        <div class="flex justify-end mt-2 mr-6 text-gray-600 font-black text-xl">
-          Total:
-          <span class="text-orange-500">{{ total }}FCFA</span>
-        </div>
-        <a
-          :href="route('client.commande')"
-          class="fixed border-t-2 border-gray-300 right-8 lg:w-[23rem] hover:bg-haver md:w-[21rem] w-[17rem] h-12 bg-vert bottom-5"
-        >
-          <div class="flex item-center justify-center">
-            <div class="font-black text-white lg:text-2xl text-xl mb-8 py-1 px-6">
-              Voir mon panier({{ count }})
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
 
     <div
       :class="[showTitre ? 'left-0' : 'left-[-100%] lg:block md:block hidden']"
@@ -2220,9 +1815,7 @@ const scrollToResults = () => {
       </div>
     </div>
 
-
-
-    <div  class="flex border-t border-solid border-border-200 border-opacity-100">
+    <!-- <div class="flex border-t border-solid border-border-200 border-opacity-100">
       <aside
         :class="{ 'lg:sticky lg:top-16 relative': isAsideSticky }"
         ref="aside"
@@ -3374,8 +2967,8 @@ const scrollToResults = () => {
         </transition>
       </div>
 
-      <!-- Ajouter d'autres articles ici -->
-    </div>
+
+    </div> -->
   </div>
 </template>
 
@@ -3418,9 +3011,21 @@ export default {
     window.removeEventListener("scroll", this.hondleScroll);
   },
 
-  created(){
-       console.log()
-  },
+  //   created() {
+  //     if (navigator.geolocation) {
+  //       navigator.geolocation.getCurrentPosition(
+  //         (position) => {
+  //           console.log(position.coords.latitude);
+  //           console.log(position.coords.longitude);
+  //         },
+  //         (error) => {
+  //           console.log(error.message);
+  //         }
+  //       );
+  //     } else {
+  //       console.log("your browser does not support geolocation API");
+  //     }
+  //   },
   methods: {
     toggleMenu() {
       this.open = !this.open;
@@ -3432,11 +3037,11 @@ export default {
       this.scrollY = window.scrollY;
 
       if (this.scrollY > 0) {
-        this.color = true
+        this.color = true;
         this.showSearchBar = true;
         this.texte = false;
       } else {
-        this.color = false
+        this.color = false;
         this.showSearchBar = false;
         this.texte = true;
       }
@@ -3465,11 +3070,15 @@ export default {
 }
 
 .bg-resto {
-  background-image: url(../../../../storage/app/public/fondresto.jpg);
+  background-image: url(../../../../storage/app/public/accu.jpg);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-clicked svg path {
+  stroke: #fff;
 }
 
 .fixedd {

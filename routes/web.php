@@ -51,12 +51,12 @@ Route::middleware([
                 //     ->OrWhere('categorie','like','%'.$searchTerm.'%');
                 // })->where('user_id', Auth::id())->paginate(5)->withQueryString();
 
-                $commandes=Commande::all();
+                $commandes = Commande::all();
                 return Inertia::render(
                     'Restaurant/Dashboard',
                     [
 
-                        'commandes'=>$commandes
+                        'commandes' => $commandes
 
                     ]
                 );
@@ -71,10 +71,10 @@ Route::middleware([
                 break;
         }
     })->name('dashboard');
-    Route::get('/dashboard/articles', [ArticleController::class,'index'])->name('articles.list');
-    Route::get('dashboard/menu',[MenuJourController::class,'index']);
-    Route::post('/menu/new',[MenuJourController::class,'store'])->name('store.menu');
-    Route::put('/menu/edit',[MenuJourController::class,'update'])->name('edit.menu');
+    Route::get('/dashboard/articles', [ArticleController::class, 'index'])->name('articles.list');
+    Route::get('dashboard/menu', [MenuJourController::class, 'index']);
+    Route::post('/menu/new', [MenuJourController::class, 'store'])->name('store.menu');
+    Route::put('/menu/edit', [MenuJourController::class, 'update'])->name('edit.menu');
 });
 
 Route::group(['prefix' => 'commandes'], function () {
@@ -96,6 +96,7 @@ Route::group(['prefix' => 'commandes'], function () {
         ]);
     })->name('restaurant.details');
     Route::get('/resto', function () {
+
         $users = User::where('role', 'restaurant')->get();
         return Inertia::render('Client/Restaurant', [
             'canLogin' => Route::has('login'),
@@ -121,10 +122,36 @@ Route::group(['prefix' => 'commandes'], function () {
             'heure' => $request->Lheure,
             'adresse' => $request->AdresseClient
         ]);
-
-
-
     })->name('validation.commande');
+
+    Route::post('/coordonnees', function (Request $request) {
+        $ulat = $request->lat;
+        $ulong = $request->long;
+        $radius = 2;
+        $haversine = "(6371 * acos(cos(radians($ulat)) * cos(radians(users.latitude)) *
+       cos(radians(users.longitude) - radians($ulong)) +
+     sin(radians($ulat)) * sin(radians(users.latitude))))";
+
+        $users = User::selectRaw('*, ' . $haversine . ' AS distance')
+        ->whereRaw($haversine . ' < ?', [$radius])
+            ->orderBy('distance', 'ASC')
+            ->get();
+
+        session()->put('users', $users);
+        return redirect()->route('cordonnees.client.success');
+    })->name('cordonnees.client');
+
+    Route::get('/coordonnees/success', function () {
+        $users = session()->get('users');
+
+        return Inertia::render('Client/Restaurant', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+            'users' => $users
+        ]);
+    })->name('cordonnees.client.success');
 
     Route::post('/note', function (Request $request) {
         $user = User::findOrFail($request->user_id);
@@ -145,6 +172,6 @@ Route::group(['prefix' => 'commandes'], function () {
     })->name('note.resto');
 });
 
-Route::post('/article/new',[ArticleController::class,'store'])->name('store.article');
-Route::put('article/edit/{article}',[ArticleController::class,'update'])->name('update.article');
-Route::delete('article/delete/{article}', [ArticleController::class,'destroy'])->name('delete.article');
+Route::post('/article/new', [ArticleController::class, 'store'])->name('store.article');
+Route::put('article/edit/{article}', [ArticleController::class, 'update'])->name('update.article');
+Route::delete('article/delete/{article}', [ArticleController::class, 'destroy'])->name('delete.article');
