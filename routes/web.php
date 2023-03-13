@@ -27,6 +27,7 @@ use Illuminate\Http\Request;
 
 Route::get('/', function () {
     $articles = Article::all();
+
     $users = User::where('role', 'restaurant')->get();
     return Inertia::render('Client/Welcome', [
         'canLogin' => Route::has('login'),
@@ -135,34 +136,9 @@ Route::group(['prefix' => 'commandes'], function () {
         ]);
     })->name('validation.commande');
 
-    Route::post('/coordonnees', function (Request $request) {
-        $ulat = $request->lat;
-        $ulong = $request->long;
-        $radius = 2;
-        $haversine = "(6371 * acos(cos(radians($ulat)) * cos(radians(users.latitude)) *
-       cos(radians(users.longitude) - radians($ulong)) +
-     sin(radians($ulat)) * sin(radians(users.latitude))))";
 
-        $users = User::selectRaw('*, ' . $haversine . ' AS distance')
-            ->whereRaw($haversine . ' < ?', [$radius])
-            ->orderBy('distance', 'ASC')
-            ->get();
 
-        session()->put('users', $users);
-        return redirect()->route('cordonnees.client.success');
-    })->name('cordonnees.client');
 
-    Route::get('/coordonnees/success', function () {
-        $users = session()->get('users');
-
-        return Inertia::render('Client/Restaurant', [
-            'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
-            'laravelVersion' => Application::VERSION,
-            'phpVersion' => PHP_VERSION,
-            'users' => $users
-        ]);
-    })->name('cordonnees.client.success');
 
     Route::post('/note', function (Request $request) {
         $user = User::findOrFail($request->user_id);

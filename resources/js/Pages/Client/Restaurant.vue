@@ -11,7 +11,12 @@ const restosearch = ref("");
 const showComponent = ref(false);
 const texte = ref(false);
 const selectedRestaurant = ref('')
+const pulse = ref(0);
 const drop = ref(false);
+
+onMounted(() => {
+  pulse.value = props.users.length
+});
 
 const props = defineProps({
   canLogin: Boolean,
@@ -568,6 +573,7 @@ const scrollToResults = () => {
         <article
           v-for="user in recherche"
           :key="user.id"
+          :class="{'animate-pulse':users.length == 0}"
           class="product-card hover:shadow-xl duration-300 cart-type-neon overflow-hidden bg-white"
         >
           <span
