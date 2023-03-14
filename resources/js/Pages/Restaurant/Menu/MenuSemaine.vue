@@ -54,7 +54,7 @@
       </ul>
       <div class="flex justify-center flex-col">
         <button
-          class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded my-4"
+          class="bg-vert hover:bg-haver text-white font-bold py-2 px-4 rounded my-4"
           @click="showCreate"
         >
           Ajouter un menu

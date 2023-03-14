@@ -15,7 +15,7 @@ const form = useForm({
     tel:'',
     heureOuvert:'',
     heureFerme:'',
-    photo:'',
+    profile_photo:'',
     adresse:'',
     description:'',
     password_confirmation: '',
@@ -27,7 +27,12 @@ const submit = () => {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
+
+const onFileChange=(e)=>{
+      form.profile_photo=e.target.files
+    };
 </script>
+
 
 <template>
     <Head title="Register" />
@@ -39,7 +44,7 @@ const submit = () => {
                         EatEasy</h1>
         </template>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" enctype="multipart/form-data">
           <div class="flex flex-wrap">
             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <InputLabel for="name" value="Nom restaurant" />
@@ -60,7 +65,7 @@ const submit = () => {
                     type="email"
                     class="mt-1 block w-72"
 
-                    autocomplete="username"
+                    autocomplete="email"
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
@@ -128,7 +133,7 @@ const submit = () => {
                 />
                 <InputError class="mt-2" :message="form.errors.heureOuvert" />
             </div>
-            <div mt="w-full md:w-1/2 px-3">
+            <div classe="w-full md:w-1/2 px-3">
             <InputLabel for="heureFerme" value="Heure Fermeture" />
             <TextInput
                     id="heureFerme"
@@ -141,6 +146,22 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.heureFerme" />
             </div>
           </div>
+          <div class="w-full md:w-1/2 px-3">
+            <InputLabel for="profile_photo" value="Photo de profil" />
+            <TextInput
+                    id="profile_photo"
+                    type="file"
+                    class="mt-1 block w-72"
+                    autocomplete="profile_photo"
+                    @input="form.profile_photo=$event.target.files[0]"
+                    name="profile_photo"
+                />
+
+
+                <InputError class="mt-2" :message="form.errors.profile_photo" />
+            </div>
+           <!-- <p>{{ form.profile_photo }}</p> -->
+
 
 
             <div v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature" class="mt-4">
