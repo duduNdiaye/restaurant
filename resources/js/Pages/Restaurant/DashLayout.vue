@@ -8,6 +8,7 @@ export default {
             showDropDown: false,
             showSide: true,
             user: "",
+            PopUpLogout:false,
 
         };
     },
@@ -26,6 +27,10 @@ export default {
         // toggle user
         toggleDrop() {
             this.showDropDown = !this.showDropDown;
+        },
+        ShowLogoutPopup()
+        {
+          this.PopUpLogout=!this.PopUpLogout;
         },
     },
     created() {
@@ -107,7 +112,7 @@ import { Link } from '@inertiajs/vue3';
           <!-- User login -->
           <div class="w-[200px] ">
             <div class="flex items-center justify-start space-x-4" @click="toggleDrop">
-              <img class="w-10 h-10 rounded-full border-2 border-gray-500" :src="$page.props.user.photo" alt="">
+              <img class="w-10 h-10 rounded-full border-2 border-gray-500" :src="'/storage/'+$page.props.user.profile_photo_path " alt="">
               <div class="font-semibold text-left">
                 <div>{{  $page.props.user.name  }}</div>
                 <div class="text-xs text-gray-500 dark:text-gray-400 hover:dark:text-gray-800 hover:text-gray-900 ">{{  $page.props.user.role  }}</div>
@@ -119,9 +124,8 @@ import { Link } from '@inertiajs/vue3';
                 <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
                 <Link :href="route('restau.profile')" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Infos profil</Link>
                 <Link :href="route('profile.show')" class="text-gray-700 block hover:bg-slate-900 hover:text-white px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Paramètre profil</Link>
-                <form method="POST" @submit.prevent="logout">
-                  <button type="submit" class="text-gray-700 block w-full  hover:bg-slate-900 hover:text-white px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Sign out</button>
-                </form>
+
+                  <button @click="ShowLogoutPopup" type="submit" class="text-gray-700 block w-full  hover:bg-slate-900 hover:text-white px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Déconnexion</button>
               </div>
             </div>
           </div>
@@ -140,6 +144,33 @@ import { Link } from '@inertiajs/vue3';
 
 
   </div>
+  <!-- Modal Overlay -->
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50" v-if="PopUpLogout" @click.self="ShowLogoutPopup">
+  <!-- Modal Container -->
+  <div class="bg-white rounded-lg shadow-lg p-6 mx-2 sm:mx-0 max-w-md w-full">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-medium text-gray-900">Déconnexion</h3>
+      <button class="text-gray-500 hover:text-gray-700 focus:outline-none" @click="closeModal()">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+          <path d="M18 6L6 18M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <!-- Modal Body -->
+    <div class="text-gray-700 mb-6">
+      <p>Êtes-vous sûr de vouloir vous déconnecter?</p>
+    </div>
+    <!-- Modal Footer -->
+    <div class="flex justify-end">
+      <form method="POST" @submit.prevent="logout">
+        <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none mr-2" >Déconnexion</button>
+      </form>
+      <button class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 focus:outline-none" @click="ShowLogoutPopup">Annuler</button>
+    </div>
+  </div>
+</div>
+
 
 </template>
 <style scoped>

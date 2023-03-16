@@ -20,7 +20,7 @@
 <!-- <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24" viewBox="0 0 20 20" fill="currentColor">
   <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
 </svg> -->
-<img :src="user.photo" class="h-48 w-48 rounded-full"  :alt="user.name" >
+<img :src="'/storage/'+user.profile_photo_path" class="h-48 w-48 rounded-full"  :alt="user.name" >
       </div>
     </div>
 
@@ -73,6 +73,7 @@
 </template>
 <script>
 import { Link } from '@inertiajs/vue3';
+import { method } from 'lodash';
 import DashLayout from '../DashLayout.vue';
 
 export default{
@@ -80,6 +81,13 @@ export default{
     props:{
         user:Object,
         articles:Object
+    },
+    methods:{
+        userimage(){
+           var ab='/storage/'+this.user.profile_photo_path
+           console.log(ab)
+           return ab
+        }
     }
 };
 </script>

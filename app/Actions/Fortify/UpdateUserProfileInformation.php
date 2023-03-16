@@ -20,10 +20,10 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'adresse'=>['required','string'],
-            'tel'=>['required','string','max:20','unique:users,tel,'.$user->id,],
-            'heureOuvert'=>['required','integer'],
-            'heureFerme'=>['required','integer'],
+            'adresse' => ['required', 'string'],
+            'tel' => ['required', 'string', 'max:20', 'unique:users,tel,' . $user->id,],
+            'heureOuvert' => ['required', 'integer'],
+            'heureFerme' => ['required', 'integer'],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
         ])->validateWithBag('updateProfileInformation');
 
@@ -31,18 +31,20 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             $user->updateProfilePhoto($input['photo']);
         }
 
-        if ($input['email'] !== $user->email &&
-            $user instanceof MustVerifyEmail) {
+        if (
+            $input['email'] !== $user->email &&
+            $user instanceof MustVerifyEmail
+        ) {
             $this->updateVerifiedUser($user, $input);
         } else {
             $user->forceFill([
                 'name' => $input['name'],
                 'email' => $input['email'],
-                'adresse'=>$input['adresse'],
-                'tel'=>$input['tel'],
-                'heureOuvert'=>$input['heureOuvert'],
-                'heureFerme'=>$input['heureFerme'],
-                'description'=>$input['description']
+                'adresse' => $input['adresse'],
+                'tel' => $input['tel'],
+                'heureOuvert' => $input['heureOuvert'],
+                'heureFerme' => $input['heureFerme'],
+                'description' => $input['description']
             ])->save();
         }
     }
@@ -57,11 +59,11 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         $user->forceFill([
             'name' => $input['name'],
             'email' => $input['email'],
-            'adresse'=>$input['adresse'],
-            'tel'=>$input['tel'],
-            'heureOuvert'=>$input['heureOuvert'],
-            'heureFerme'=>$input['heureFerme'],
-            'description'=>$input['description'],
+            'adresse' => $input['adresse'],
+            'tel' => $input['tel'],
+            'heureOuvert' => $input['heureOuvert'],
+            'heureFerme' => $input['heureFerme'],
+            'description' => $input['description'],
             'email_verified_at' => null,
         ])->save();
 
