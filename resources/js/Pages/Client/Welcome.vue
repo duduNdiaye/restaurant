@@ -15,17 +15,21 @@ const props = defineProps({
 const posit = ref(false);
 const cart = ref([]);
 const count = ref(0);
+const add = ref("");
 const count1 = ref(false);
 const contenu = ref("Articles");
 const isLoading = ref(false);
 const drop = ref(false);
-const defaut = ref(false)
+const defaut = ref(false);
+const alert = ref(false);
 
 const latitude = ref(0);
 const longitude = ref(0);
 const errorMessage = "";
+const search = ref(false);
+const panier = ref(false);
 
-const click = ref("En cliquant ici");
+const click = ref("Partager ma position");
 
 const restosearch = ref("");
 let isPage1 = ref(true);
@@ -35,8 +39,10 @@ const data = () => ({
 });
 
 const getPosition = () => {
+  props.users = null;
   if (navigator.geolocation) {
     isLoading.value = true;
+
     click.value = "Patientez...";
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -44,15 +50,10 @@ const getPosition = () => {
         longitude.value = position.coords.longitude;
         console.log(latitude.value);
         console.log(longitude.value);
-        posit.value = true;
-        const results = document.getElementById("resultss");
-        if (results) {
-          results.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-            inline: "nearest",
-          });
-        }
+        alert.value = true;
+        setTimeout(() => {
+          alert.value = false;
+        }, 2000);
       },
       (error) => {
         console.log(error.message);
@@ -80,6 +81,14 @@ const created = () => {
 };
 
 onMounted(() => {
+  if (localStorage.getItem("cart")) {
+    cart.value = JSON.parse(localStorage.getItem("cart"));
+    count.value = cart.value.length;
+  }
+  if (count.value != 0) {
+    count1.value = true;
+  }
+
   const lat1Rad = (ulat.value * Math.PI) / 180;
   const lon1Rad = (ulng.value * Math.PI) / 180;
   const lat2Rad = (rlat.value * Math.PI) / 180;
@@ -117,6 +126,43 @@ const removeItemFromCart = (car) => {
 
   // enregistrer les données du panier dans le localStorage
   localStorage.setItem("cart", JSON.stringify(cart.value));
+};
+
+const addItemToCart = (article) => {
+  console.log(article.nomResto);
+  //Vérifie si l'article est déjà dans le panier
+  let index = cart.value.findIndex((item) => item.nom === article.nom);
+  if (index === -1) {
+    cart.value.push({
+      nom: article.nom,
+      photo: article.photo,
+      prix: parseFloat(article.prix),
+      quantite: 1,
+      total: parseFloat(article.prix),
+      restau: article.nomResto ?? "Nom du restaurant non spécifié",
+    });
+    count1.value = true;
+  } else {
+    cart.value[index].quantite++;
+    cart.value[index].total += parseFloat(article.prix);
+  }
+
+  count.value = cart.value.length;
+
+  localStorage.setItem("cart", JSON.stringify(cart.value));
+
+  cartAnimation.value = true;
+  setTimeout(() => {
+    cartAnimation.value = false;
+  }, 1000);
+
+  panier.value = true; // affiche le modal de validation
+  console.log(panier.value);
+  setTimeout(() => {
+    console.log("here");
+    panier.value = false;
+  }, 2000);
+  console.log(panier.value);
 };
 
 const Augmenter = (car) => {
@@ -168,29 +214,31 @@ const recherche = computed(() => {
     return props.users.filter((user) =>
       user.name.toLowerCase().startsWith(restosearch.value.toLocaleLowerCase())
     );
-  } else if (latitude.value != 0) {
-    const maxDistance = 2; // distance maximale en km
-    const filteredRestos = props.users.filter((user) => {
-      const R = 6371; // rayon de la terre en km
-      const dLat = toRadians(user.latitude - latitude.value);
-      const dLng = toRadians(user.longitude - longitude.value);
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRadians(latitude.value)) *
-          Math.cos(toRadians(user.latitude)) *
-          Math.sin(dLng / 2) *
-          Math.sin(dLng / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const distance = R * c;
-      return distance <= maxDistance;
-    });
-    return filteredRestos;
-  } else if(defaut == true) {
+  } else if (defaut == true) {
+    click.value = "Partager ma position";
+    return props.users;
+  } else {
     return props.users;
   }
-  else{
-    return props.users;
-  }
+});
+
+const resto = computed(() => {
+  const maxDistance = 2; // distance maximale en km
+  const filteredRestos = props.users.filter((user) => {
+    const R = 6371; // rayon de la terre en km
+    const dLat = toRadians(user.latitude - latitude.value);
+    const dLng = toRadians(user.longitude - longitude.value);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(latitude.value)) *
+        Math.cos(toRadians(user.latitude)) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    return distance <= maxDistance;
+  });
+  return filteredRestos;
 });
 
 const toRadians = (degrees) => {
@@ -213,33 +261,31 @@ const scrollToResults = () => {
   // Vérifie si la référence vers la section des résultats est définie
   const results = document.getElementById("results");
   if (results) {
-    results.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    results.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
   }
 };
 
-// const resto = computed(() => {
-//   if (latitude.value != 0) {
-//     console.log("vasy way");
-//     const maxDistance = 2; // distance maximale en km
-//     const filteredRestos = props.users.filter((user) => {
-//       const R = 6371; // rayon de la terre en km
-//       const dLat = toRadians(user.latitude - latitude.value);
-//       const dLng = toRadians(user.longitude - longitude.value);
-//       const a =
-//         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-//         Math.cos(toRadians(latitude.value)) *
-//           Math.cos(toRadians(user.latitude)) *
-//           Math.sin(dLng / 2) *
-//           Math.sin(dLng / 2);
-//       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//       const distance = R * c;
-//       return distance <= maxDistance;
-//     });
-//     return filteredRestos;
-//   } else {
-//     return props.users;
-//   }
-// });
+const scrollToPosition = () => {
+  // Vérifie si la référence vers la section des résultats est définie
+  const results = document.getElementById("position");
+  if (results) {
+    results.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+  }
+};
+const scrollBack = () => {
+  // Vérifie si la référence vers la section des résultats est définie
+  const results = document.getElementById("default");
+  if (results) {
+    results.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+  }
+};
+const scrollArticle = () => {
+  // Vérifie si la référence vers la section des résultats est définie
+  const results = document.getElementById("article");
+  if (results) {
+    results.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+  }
+};
 </script>
 
 <template>
@@ -249,214 +295,65 @@ const scrollToResults = () => {
     <header>
       <nav
         id="navbar"
-        class="fixed md:flex bg-white border-gray-100 border-b-2 z-40 transform-cpu text-center items-center justify-between px-4 py-3 w-full"
+        class="fixed flex space-x-5 md:px-3 bg-haver z-40 transform-cpu items-center justify-center lg:justify-between lg:px-3 py-3 w-full"
       >
-        <div class="flex items-center">
-          <h1
-            class="text-3xl lg:block md:block hidden lg:ml-0 text-center bg-black text-white px-2 md:ml-0 font-title font-extrabold"
+        <div class="flex space-x-10">
+          <a
+            :href="route('resto.accueil')"
+            class="text-vert lg:block bg-white hidden rounded-full px-3 lg:mt-2 h-fit font-bold"
+            >Le panier</a
           >
-            EatEasy
-          </h1>
-          <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
-          <div>
-            <p class="font-bold text-xl ml-8 lg:hidden md:hidden" v-if="texte">
-              Que desirez-vous manger?
-            </p>
-          </div>
 
-          <div class="pt-2 relative md:hidden lg:block sm:block mx-auto text-gray-600">
-            <input
-              @input="onInput()"
-              v-model="restosearch"
-              class="border-none bg-gray-200 focus:ring-0 focus:border-none lg:ml-16 lg:w-96 h-[3rem] px-5 pr-16 rounded-lg text-sm focus:outline-none"
-              type="search"
-              autocomplete="off"
-              name="search"
-              placeholder="Search"
-            />
-            <button class="absolute right-0 top-0 mt-5 mr-4">
-              <svg
-                class="text-gray-600 h-4 w-4 fill-current"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                version="1.1"
-                id="Capa_1"
-                x="0px"
-                y="0px"
-                viewBox="0 0 56.966 56.966"
-                style="enable-background: new 0 0 56.966 56.966"
-                xml:space="preserve"
-                width="512px"
-                height="512px"
-              >
-                <path
-                  d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"
-                />
-              </svg>
-            </button>
-            <div
-              v-if="drop"
-              class="absolute rounded-md border border-gray-300 lg:ml-16 lg:w-96 mt-2 bg-white overflow-hidden"
-            >
-              <div class="py-2 px-3">
-                <p
-                  v-for="user in resto"
-                  @click="Chercher(user.name), (drop = false), scrollToResults()"
-                  :key="user.id"
-                  class="cursor-pointor text-sm hover:bg-gray-100 text-start font-medium text-gray-600 py-2 border-b border-gray-100"
-                >
-                  {{ user.name }}
-                </p>
-              </div>
-            </div>
-          </div>
+          <button
+            @click="search = true"
+            class="text-vert md:block lg:block hidden bg-white rounded-full px-3 lg:mt-2 h-fit font-bold"
+          >
+            Recherche
+          </button>
+          <button
+            @click="scrollArticle()"
+            class="text-vert md:block lg:block hidden bg-white rounded-full px-3 lg:mt-2 h-fit font-bold"
+          >
+            Nos articles
+          </button>
         </div>
-
-        <div
-          class="md:flex bg-white lg:border-none md:border-none lg:bg-opacity-0 border-t-2 border-b-2 border-gray-200 md:items-center md:px-0 px-3 md:pb-0 pb-10 md:static absolute md:w-auto w-full top-14 duration-300 ease-in"
-          :class="[open ? 'left-0' : 'left-[-100%]']"
+        <h1
+          class="text-3xl lg:text-center bg-black text-white px-2 md:ml-0 font-title font-extrabold"
         >
-          <div class="md:mx-4 md:my-0 my-6 flex">
-            <button
-              @click="(showModal = !showModal), (showModal1 = !showModal1)"
-              class="px-3 text-black py-2 font-bold hover:text-indigo-600"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
-                />
-              </svg>
-            </button>
-            <span class="text-black font-bold mt-2 w-[6rem] h-5 rounded-full"
-              >Ma position</span
-            >
-          </div>
-          <div class="md:mx-4 md:my-0 my-6">
-            <a :href="route('resto.accueil')" class="text-black font-bold"
-              >Nos restaurants</a
-            >
-          </div>
-          <div class="md:mx-4 md:my-0 my-6">
-            <a
-              href="#"
-              class="text-black px-3 py-2 font-bold text-black hover:text-indigo-600"
-              >Contact</a
-            >
-          </div>
-          <div v-if="canLogin" class="flex flex-col md:flex-row md:my-0 my-6">
-            <a
-              v-if="$page.props.user"
-              :href="route('dashboard')"
-              class="px-3 py-2 bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
-              >Button 1</a
-            >
+          EatEasy
+        </h1>
+        <div v-if="canLogin" class="flex space-x-10">
+          <button
+            @click="scrollToPosition()"
+            class="text-vert lg:block hidden bg-white rounded-full px-3 lg:mt-1 h-fit font-bold"
+          >
+            Geolocalisation
+          </button>
+          <a
+            v-if="$page.props.user"
+            :href="route('dashboard')"
+            class="px-3 py-2 bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
+            >Button 1</a
+          >
 
-            <template v-else>
-              <a
-                :href="route('login')"
-                class="px-3 py-2 lg:ml-4 md:ml-4 text-center bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
-                >Login
-              </a>
-              <a
-                v-if="canRegister"
-                :href="route('register')"
-                class="px-3 py-2 lg:ml-4 md:ml-4 font-bold text-center bg-vert text-white rounded hover:bg-haver mt-3 md:mt-0"
-                >Register
-              </a>
-            </template>
-          </div>
+          <template v-else>
+            <a
+              :href="route('login')"
+              class="px-5 h-fit justify-center lg:ml-4 md:ml-4 text-center bg-white font-bold text-vert rounded-full hover:bg-haver lg:mt-1 md:mt-0"
+              >Login
+            </a>
+            <a
+              v-if="canRegister"
+              :href="route('register')"
+              class="px-3 h-fit lg:ml-4 md:ml-4 font-bold text-center bg-white text-vert rounded-full lg:mt-1 hover:bg-haver md:mt-0"
+              >Register
+            </a>
+          </template>
         </div>
       </nav>
     </header>
 
-    <!-- <div class="bg-grocery h-screen lg:block md:block hidden">
-      <section class="text-gray-600 body-font">
-        <div
-          class="container mx-auto flex flex-col px-5 lg:py-40 md:py-48 py-16 justify-center items-center"
-        >
-          <div
-            class="w-full lg:w-[36rem] md:w-2/3 flex flex-col mb-16 items-center text-center"
-          >
-            <h1 class="title-font sm:text-6xl text-3xl mb-4 font-black text-gray-900">
-              Plus besoin de faire la queue pour mangez!
-            </h1>
-
-
-            <div class="bg-white flex shadow-xl border-2 border-black w-[33rem]">
-              <span class="text-black text-xl font-bold flex px-3 py-5 items-start"
-                ><svg
-                  class="w-6 h-6 icon"
-                  viewBox="0 0 512 512"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="#ffffff"
-                  stroke="#ffffff"
-                >
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                  <g
-                    id="SVGRepo_tracerCarrier"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></g>
-                  <g id="SVGRepo_iconCarrier">
-                    <path
-                      fill="#000000"
-                      d="M256 17.108c-75.73 0-137.122 61.392-137.122 137.122.055 23.25 6.022 46.107 11.58 56.262L256 494.892l119.982-274.244h-.063c11.27-20.324 17.188-43.18 17.202-66.418C393.122 78.5 331.73 17.108 256 17.108zm0 68.56a68.56 68.56 0 0 1 68.56 68.562A68.56 68.56 0 0 1 256 222.79a68.56 68.56 0 0 1-68.56-68.56A68.56 68.56 0 0 1 256 85.67z"
-                    ></path>
-                  </g></svg
-                >Donnez votre adresse
-                <svg
-                  v-if="isLoading"
-                  :class="{ 'animate-spin ml-20': isLoading }"
-                  id="spinner"
-                  class="w-6 h-6 ml-20 icon text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  stroke="#ffffff"
-                >
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                  <g
-                    id="SVGRepo_tracerCarrier"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></g>
-                  <g id="SVGRepo_iconCarrier">
-                    <path
-                      d="M20.0001 12C20.0001 13.3811 19.6425 14.7386 18.9623 15.9405C18.282 17.1424 17.3022 18.1477 16.1182 18.8587C14.9341 19.5696 13.5862 19.9619 12.2056 19.9974C10.825 20.0328 9.45873 19.7103 8.23975 19.0612"
-                      stroke="#000000"
-                      stroke-width="3.55556"
-                      stroke-linecap="round"
-                    ></path>
-                  </g></svg
-              ></span>
-              <button
-                :class="{ 'btn-clicked bg-gray-600': isLoading }"
-                @click="getPosition()"
-                class="text-white bg-black text-xl font-bold flex px-3 py-5 ml-auto"
-              >
-                {{ click }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div> -->
-
-    <div class="relative w-full h-[33rem] overflow-hidden">
+    <div class="relative w-full lg:h-[33rem] overflow-hidden">
       <div class="carousel">
         <div class="carousel-inner">
           <div :class="['carousel-item', index1 === current ? 'active' : '']">
@@ -465,8 +362,8 @@ const scrollToResults = () => {
               alt="item.caption"
               class="w-full"
             />
-            <div class="carousel-caption flex justify-center items-center flex flex-col">
-              <h3 class="text-6xl text-white font-bold bg-black w-fit">
+            <div class="carousel-caption flex flex-col items-center justify-center">
+              <h3 class="text-4xl text-white font-black bg-black lg:w-96">
                 Bienvenue sur EATEASY
               </h3>
             </div>
@@ -499,7 +396,7 @@ const scrollToResults = () => {
       </div>
     </div>
 
-    <section class="text-gray-600 body-font bg-white mt-10">
+    <section class="text-gray-600 body-font bg-white lg:mt-10">
       <div class="container px-2 py-4 mx-auto flex flex-wrap lg:block md:block hidden">
         <div class="flex flex-wrap -m-4">
           <div
@@ -680,7 +577,7 @@ const scrollToResults = () => {
       <div class="flex items-center justify-center p-2 m-2">
         <img
           src="../der.jpg"
-          class="w-[32rem] rounded-lg lg:hidden md:hidden h-52 mt-20 flex items-center justify-center"
+          class="w-[32rem] rounded-lg lg:hidden md:hidden h-52 mt-5 flex items-center justify-center"
           alt=""
         />
       </div>
@@ -1915,9 +1812,10 @@ const scrollToResults = () => {
     <div class="flex border-t border-solid border-border-200 border-opacity-100">
       <aside
         ref="aside"
-        class="bg-white lg:w-[20rem] lg:block hidden h-[39.2rem] p-3 px-8 overflow-y-auto"
+        :class="{ 'lg:sticky lg:top-16 relative': isAsideSticky }"
+        class="bg-white lg:w-[22rem] h-[39.2rem] border-r border-gray-100 lg:block hidden p-3 px-8"
       >
-        <div class="max-h-full flex flex-col overflow-hidden mt-8">
+        <div class="max-h-full flex flex-col overflow-hidden overflow-y-auto">
           <button
             class="text-lg flex items-center justify-center space-x-3 bg-gray-200 rounded-full py-2 font-semibold"
           >
@@ -1944,14 +1842,15 @@ const scrollToResults = () => {
             </svg>
             <span>Trier</span>
           </button>
-          <div class="flex mt-8 px-6 flex-col items-start justify-center space-y-4">
-            <button @click="defaut = true,latitude = 0, longitude = 0"
+          <div class="flex mt-2 px-6 flex-col items-start justify-center space-y-4">
+            <button
+              @click="(defaut = true), (latitude = 0), (longitude = 0), scrollBack()"
               class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
             >
               Restos par defaut
             </button>
             <button
-              @click="getPosition()"
+              @click="scrollToPosition()"
               class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
             >
               Proche de ma position
@@ -1982,18 +1881,53 @@ const scrollToResults = () => {
               Patisserie
             </button>
           </div>
+          <span
+            class="text-sm flex mt-6 items-center justify-center space-x-3 bg-gray-200 rounded-full py-2 font-semibold"
+          >
+            <span>Quelques articles</span>
+          </span>
+          <div class="flex mt-2 mb-6 px-6 flex-col items-start justify-center space-y-4">
+            <button
+              @click="scrollArticle()"
+              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+            >
+              Nos articles
+            </button>
+            <button
+              @click="getPosition()"
+              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+            >
+              Pizza
+            </button>
+            <button
+              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+            >
+              Burger
+            </button>
+            <button
+              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+            >
+              Boissons
+            </button>
+            <button
+              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
+            >
+              Plat nationaux
+            </button>
+          </div>
         </div>
       </aside>
-      <div class="w-full h-fit px-4 pb-8 mb-12 lg:p-8">
+      <div class="w-full h-fit px-4 pb-8 mb-12 lg:p-8" id="default">
+        <span class="font-bold text-3xl">Les restaurants disponibles</span>
         <div
           id="results"
-          class="grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
+          class="mt-5 mb-10 grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
         >
           <article
             v-for="user in recherche"
             :key="user.id"
-            :class="{ 'animate-pulse': users.length == 0 }"
-            class="product-card hover:shadow-xl duration-300 cart-type-neon overflow-hidden bg-white"
+            :class="{ 'animate-pulse': recherche.length == 0 }"
+            class="product-card hover:scale-105 rounded-md mb-5 shadow-xl duration-100 p-3 cart-type-neon overflow-hidden bg-white"
           >
             <span
               class="block overflow-hidden w-auto lg:h-56 bg-transparent opacity-100 lg:m-0 lg:p-0 lg:inset-0 m-0 p-0 inset-0"
@@ -2077,6 +2011,182 @@ const scrollToResults = () => {
             </span>
           </article>
         </div>
+        <div class="h-[30rem]" v-if="resto.length">
+          <span class="font-bold text-3xl">Les restaurants proche de ma position</span>
+          <div
+            id="results"
+            class="mt-5 grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
+          >
+            <article
+              v-for="user in resto"
+              :key="user.id"
+              :class="{ 'animate-pulse': recherche.length == 0 }"
+              class="product-card hover:scale-105 rounded-md shadow-xl duration-100 p-3 cart-type-neon overflow-hidden bg-white"
+            >
+              <span
+                class="block overflow-hidden w-auto lg:h-56 bg-transparent opacity-100 lg:m-0 lg:p-0 lg:inset-0 m-0 p-0 inset-0"
+              >
+                <a :href="route('restaurant.details', user.id)" class="rounded-md">
+                  <img
+                    :src="user.photo"
+                    alt="Product image"
+                    class="w-[32rem] h-40 mb-6 product-image"
+                  />
+                </a>
+                <header
+                  class="md:p-6 lg:mt-[-3rem] mt-[-1.5rem] lg:ml-[-1.4rem] lg:mr-[-1.4rem]"
+                >
+                  <div class="flex">
+                    <span
+                      class="text-lg lg:text-xl font-semibold text-heading md:text-base"
+                    >
+                      {{ user.name }}</span
+                    >
+
+                    <div
+                      class="flex space-x-1 bg-gray-200 rounded-full px-2 ml-auto mt-2"
+                    >
+                      <svg
+                        class="w-8 h-8 icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g
+                          id="SVGRepo_tracerCarrier"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></g>
+                        <g id="SVGRepo_iconCarrier">
+                          <path
+                            d="M21.12 9.88005C21.0781 9.74719 20.9996 9.62884 20.8935 9.53862C20.7873 9.4484 20.6579 9.38997 20.52 9.37005L15.1 8.58005L12.67 3.67005C12.6008 3.55403 12.5027 3.45795 12.3853 3.39123C12.2678 3.32451 12.1351 3.28943 12 3.28943C11.8649 3.28943 11.7322 3.32451 11.6147 3.39123C11.4973 3.45795 11.3991 3.55403 11.33 3.67005L8.89999 8.58005L3.47999 9.37005C3.34211 9.38997 3.21266 9.4484 3.10652 9.53862C3.00038 9.62884 2.92186 9.74719 2.87999 9.88005C2.83529 10.0124 2.82846 10.1547 2.86027 10.2907C2.89207 10.4268 2.96124 10.5512 3.05999 10.6501L6.99999 14.4701L6.06999 19.8701C6.04642 20.0091 6.06199 20.1519 6.11497 20.2826C6.16796 20.4133 6.25625 20.5267 6.36999 20.6101C6.48391 20.6912 6.61825 20.7389 6.75785 20.7478C6.89746 20.7566 7.03675 20.7262 7.15999 20.6601L12 18.1101L16.85 20.6601C16.9573 20.7189 17.0776 20.7499 17.2 20.7501C17.3573 20.7482 17.5105 20.6995 17.64 20.6101C17.7537 20.5267 17.842 20.4133 17.895 20.2826C17.948 20.1519 17.9636 20.0091 17.94 19.8701L17 14.4701L20.93 10.6501C21.0305 10.5523 21.1015 10.4283 21.1351 10.2922C21.1687 10.1561 21.1634 10.0133 21.12 9.88005Z"
+                            fill="#000000"
+                          ></path>
+                        </g>
+                      </svg>
+                      <span
+                        class="text-black font-bold text-sm flex items-center justify-center"
+                        >{{ user.notation }}</span
+                      >
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="flex space-x-3">
+                      <svg
+                        class="h-6 w-6 icon"
+                        viewBox="0 -0.05 26.1 26.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="#000000"
+                      >
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g
+                          id="SVGRepo_tracerCarrier"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></g>
+                        <g id="SVGRepo_iconCarrier">
+                          <g
+                            id="Group_719"
+                            data-name="Group 719"
+                            transform="translate(-50 -100)"
+                          >
+                            <path
+                              id="Path_1486"
+                              data-name="Path 1486"
+                              d="M63,126c-7.2,0-13-1.6-13-3.5,0-1.3,2.6-2.4,6.5-3l1.6,1.7c-3.6.2-5.5.8-5.5,1.3,0,.8,4.3,1.5,10.4,1.5s10.5-.7,10.5-1.5c0-.6-1.9-1.1-5.5-1.3l1.6-1.7c3.9.6,6.5,1.7,6.5,3C76,124.4,70.2,126,63,126Zm4-17a4,4,0,1,1-4-4A4.012,4.012,0,0,1,67,109Zm-6,0a2,2,0,1,0,2-2A2.006,2.006,0,0,0,61,109Zm3,12-1,1-1-1c-.3-.4-6.6-5.8-7.8-10.5-.1-.3-.3-1.4.8-1.5.9-.1,1.1,1,1.1,1,.8,3.5,5.2,6.9,6.9,9,1.8-2.3,7-6.1,7-10,0-4.5-2.6-7-7-7-3.3,0-5.6,1.4-6.5,4,0,0-.4,1.2-1.1,1-.8-.2-.9-.8-.6-1.7A9,9,0,0,1,72,109C72,114,64.4,120.6,64,121Z"
+                              fill="#444"
+                            ></path>
+                          </g>
+                        </g>
+                      </svg>
+                      <span>{{ user.adresse }}</span>
+                    </div>
+                  </div>
+                </header>
+              </span>
+            </article>
+          </div>
+        </div>
+        <div id="position" v-else>
+          <span class="font-bold text-3xl">Les restaurants proche de ma position</span>
+          <div
+            class="mt-5 p-4 flex shadow-xl flex-col h-[30rem] bg-gray-100 space-y-3 items-center justify-center"
+          >
+            <span class="flex justify-center items-center"
+              >Voir les restaurants proches de ma position</span
+            >
+            <button @click="getPosition()" class="bg-black text-white p-3">
+              {{ click }}
+            </button>
+          </div>
+        </div>
+        <div class="mt-20" id="article">
+          <span class="font-bold text-3xl">Nos article</span>
+          <div
+            id="results"
+            class="mt-5 grid lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3"
+          >
+            <article
+              v-for="article in articles"
+              :key="article.id"
+              class="product-card shadow-xl w-fit cart-type-neon overflow-hidden bg-white duration-100 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
+            >
+              <span
+                @mouseover="add = article.id"
+                @mouseleave="add = ''"
+                class="box-border block overflow-hidden w-auto lg:h-56 bg-transparent opacity-100 border-0 m-0 p-0 inset-0"
+              >
+                <button @click="showModals(article)" class="rounded-md w-full">
+                  <img
+                    :src="article.photo"
+                    alt="Product image"
+                    class="lg:w-[15rem] lg:h-36 mb-6 object-cover object-center"
+                  />
+                </button>
+                <header
+                  class="md:p-6 lg:mt-[-4rem] md:mt-[-4rem] md:ml-[-1.4rem] md:mr-[-1.4rem] mt-[-1.5rem] lg:ml-[-1.4rem] lg:mr-[-1.4rem]"
+                >
+                  <div class="py-2 flex flex-col">
+                    <div class="flex">
+                      <div class="flex flex-col">
+                        <h3
+                          class="lg:text-2xl md:text-2xl text-black font-semibold md:text-sm"
+                        >
+                          {{ article.nom }}
+                        </h3>
+                        <span class="lg:text-sm font-medium text-heading md:text-base">
+                          {{ article.prix }} FCFA</span
+                        >
+                      </div>
+                      <button @click="addItemToCart(article)" class="ml-auto">
+                        <svg
+                          class="w-12 h-12 icon text-haver"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                          <g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <path
+                              d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"
+                              fill="#292D32"
+                            ></path>
+                          </g>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </header>
+              </span>
+            </article>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2085,7 +2195,7 @@ const scrollToResults = () => {
       class="flex h-[40rem] border-t border-solid border-border-200 border-opacity-100"
     >
       <div class="w-full h-fit px-4 pb-8 lg:p-8">
-        <div class="w-full py-5 border mb-5 bg-white shadow-2xl border-gray-200">
+        <div class="w-full py-5 border mb-10 bg-white shadow-2xl border-gray-200">
           <div id="resultss" class="text-2xl flex space-x-3 text-black px-5 font-bold">
             <svg
               class="w-6 h-6 icon"
@@ -2146,7 +2256,8 @@ const scrollToResults = () => {
                     <svg
                       class="w-4 h-4 icon"
                       viewBox="0 0 24 24"
-                      fill="none"
+                      fill="#a9d8d1"
+                      stroke="#a9d8d1"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -2210,35 +2321,6 @@ const scrollToResults = () => {
           v-if="selectedArticle"
           :article="selectedArticle"
         />
-        <!-- <transition name="panier">
-          <div
-            v-if="panier"
-            class="bg-vert font-bold flex h-14 z-[55] text-white rounded-md p-4 fixed top-[39rem] right-4"
-          >
-            <div class="flex mb-3">
-              <span class="text-2xl font-bold">Article ajoute!</span>
-              <svg
-                class="w-8 h-8 icon ml-4"
-                viewBox="0 0 1024 1024"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="#000000"
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    fill="#000000"
-                    d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z"
-                  ></path>
-                </g>
-              </svg>
-            </div>
-          </div>
-        </transition> -->
       </div>
     </div>
   </div>
@@ -2611,6 +2693,104 @@ const scrollToResults = () => {
       </a>
     </div>
   </div>
+  <transition name="pan">
+    <div
+      v-if="alert"
+      class="bg-white font-bold z-[52] flex h-14 text-white p-4 fixed top-10 left-[30rem]"
+    >
+      <div class="flex mb-3">
+        <span class="text-lg text-black font-bold">Voici les restos proches de vous</span>
+        <svg
+          class="w-6 h-6 ml-3 icon"
+          viewBox="0 0 512 512"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="#000000"
+        >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              fill="#000000"
+              d="M256 17.108c-75.73 0-137.122 61.392-137.122 137.122.055 23.25 6.022 46.107 11.58 56.262L256 494.892l119.982-274.244h-.063c11.27-20.324 17.188-43.18 17.202-66.418C393.122 78.5 331.73 17.108 256 17.108zm0 68.56a68.56 68.56 0 0 1 68.56 68.562A68.56 68.56 0 0 1 256 222.79a68.56 68.56 0 0 1-68.56-68.56A68.56 68.56 0 0 1 256 85.67z"
+            ></path>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </transition>
+  <transition name="pan">
+    <div
+      v-if="search"
+      class="bg-white rounded-md h-96 font-bold z-[52] left-1/3 text-white p-4 fixed top-10"
+    >
+      <div class="pt-2 relative md:hidden lg:block sm:block mx-auto text-gray-600">
+        <input
+          @input="onInput()"
+          v-model="restosearch"
+          class="border border-black bg-white focus:ring-0 focus:border-black lg:w-96 h-[3rem] px-5 rounded-full text-sm focus:outline-none"
+          type="search"
+          autocomplete="off"
+          name="search"
+          placeholder="Search"
+        />
+
+        <div v-if="drop" class="overflow-y-scroll h-full">
+          <p
+            v-for="user in recherche"
+            @click="
+              Chercher(user.name), (drop = false), scrollToResults(), (search = false)
+            "
+            :key="user.id"
+            class="cursor-pointor mx-3 mt-2 text-sm hover:bg-gray-100 text-start font-medium text-gray-600 py-2 border-b border-gray-100"
+          >
+            {{ user.name }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </transition>
+  <div
+    v-if="alert"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
+  ></div>
+  <div
+    @click.self="search = false"
+    v-if="search"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-50 bg-black flex justify-center"
+  ></div>
+  <transition name="panier">
+    <div
+      v-if="panier"
+      class="bg-vert font-bold flex h-14 z-[55] text-white rounded-md p-4 fixed top-[39rem] right-4"
+    >
+      <div class="flex mb-3">
+        <span class="text-2xl font-bold">Article ajoute!</span>
+        <svg
+          class="w-8 h-8 icon ml-4"
+          viewBox="0 0 1024 1024"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="#000000"
+        >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              fill="#000000"
+              d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z"
+            ></path>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -2686,6 +2866,7 @@ export default {
       const pageYOffset = window.scrollY;
       if (pageYOffset >= this.navbarHeight) {
         this.isAsideSticky = true;
+        console.log("coco");
       } else {
         this.isAsideSticky = false;
       }
@@ -2698,6 +2879,24 @@ export default {
 };
 </script>
 <style scoped>
+.panier-enter-active,
+.panier-leave-active {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.panier-enter,
+.panier-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.panier-leave,
+.panier-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
 .bg-grocery {
   background-image: url(../grocery.png);
   background-size: cover;
@@ -2706,7 +2905,7 @@ export default {
 }
 
 .bg-resto {
-  background-image: url(../../../../storage/app/public/accu.jpg);
+  background-image: url(../../../../storage/app/public/vbe.jpg);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -2752,24 +2951,6 @@ export default {
   to {
     transform: translateX(0);
   }
-}
-.panier-enter-active,
-.panier-leave-active {
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-.panier-enter,
-.panier-leave-to {
-  opacity: 0;
-  transform: translateX(100%);
-}
-
-.panier-leave,
-.panier-enter-to {
-  opacity: 1;
-  transform: translateX(0);
 }
 
 .carousel {
@@ -2876,5 +3057,24 @@ export default {
 
 .animate-shake {
   animation-name: shake;
+}
+
+.pan-enter-active,
+.pan-leave-active {
+  transition: transform 0.2s ease, opacity 0.5s ease;
+  transform: translateY(-30%);
+  opacity: 0;
+}
+
+.pan-enter,
+.pan-leave-to {
+  opacity: 0;
+  transform: translateY(-30%);
+}
+
+.pan-leave,
+.pan-enter-to {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

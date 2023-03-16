@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->double('latitude');
+        Schema::table('menu_jours', function (Blueprint $table) {
+            $table->dropColumn('articles');
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('latitude');
+        Schema::table('menu_jours', function (Blueprint $table) {
+            $table->double('articles');
         });
     }
 };

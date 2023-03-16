@@ -116,7 +116,7 @@ onMounted(() => {
   const date = new Date();
   const dayOfWeek = days[date.getDay()];
   jj.value = dayOfWeek;
-  console.log(props.menu[0].articles);
+  console.log(props.menu[0]);
 });
 
 const toggleMenu = () => {
@@ -570,8 +570,8 @@ const recherche = computed(() => {
           </span>
         </article>
       </div>
-      <div class="mt-4" id="menu">
-        <div class="flex space-x-2">
+      <div class="mt-4 " id="menu" >
+        <div class="flex space-x-2 shadow-2xl py-3 border-t border-gray-100">
           <svg viewBox="0 0 24 24" class="w-16 h-16 icon justify-center items-center">
             <path
               fill-rule="evenodd"
@@ -587,7 +587,7 @@ const recherche = computed(() => {
               d="M18.817 0L4.136 4.175H4.02v19.191H19.98V4.175h-1.162V0zm-1.5 4.175V1.986L9.62 4.175h7.697zm1.162 1.5H5.52v16.191H18.48V5.675z"
             ></path>
           </svg>
-          <span class="text-black justify-center items-center flex font-bold text-5xl">
+          <span class="text-black  justify-center items-center flex font-bold text-5xl">
             Menu du Jour</span
           >
         </div>
