@@ -89,6 +89,16 @@ onMounted(() => {
     count1.value = true;
   }
 
+  for(let i = 0; i < props.articles.length; i++){
+      for(let u = 0; u < props.users.length; u++)
+      {
+        if(props.articles[i].user_id == props.users[u].id)
+        {
+            props.articles[i].nomResto = props.users[u].name
+        }
+      }
+  }
+
   const lat1Rad = (ulat.value * Math.PI) / 180;
   const lon1Rad = (ulng.value * Math.PI) / 180;
   const lat2Rad = (rlat.value * Math.PI) / 180;
@@ -306,28 +316,60 @@ const scrollArticle = () => {
 
           <button
             @click="search = true"
-            class="text-vert md:block lg:block hidden bg-white rounded-full px-3 lg:mt-2 h-fit font-bold"
+            class="md:block lg:block hidden px-3 lg:mt-2 h-fit font-bold"
           >
-            Recherche
+            <svg
+              class="w-6 h-6 icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M15 15L21 21"
+                  stroke="#323232"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+                <path
+                  d="M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                  stroke="#323232"
+                  stroke-width="2"
+                ></path>
+              </g>
+            </svg>
           </button>
           <button
             @click="scrollArticle()"
-            class="text-vert md:block lg:block hidden bg-white rounded-full px-3 lg:mt-2 h-fit font-bold"
+            class="hover:text-vert text-black text-lg md:block lg:block hidden hover:bg-white hover:rounded-full px-3 lg:mt-2 h-fit font-bold"
           >
             Nos articles
           </button>
         </div>
         <h1
-          class="text-3xl lg:text-center bg-black text-white px-2 md:ml-0 font-title font-extrabold"
+          class="text-4xl lg:text-center text-black px-2 md:ml-0 font-title font-extrabold"
         >
           EatEasy
         </h1>
         <div v-if="canLogin" class="flex space-x-10">
           <button
             @click="scrollToPosition()"
-            class="text-vert lg:block hidden bg-white rounded-full px-3 lg:mt-1 h-fit font-bold"
+            class="hover:text-vert lg:block hidden text-lg flex flex-col text-black hover:bg-white hover:rounded-full px-3 lg:mt-1 h-fit font-bold"
           >
-            Geolocalisation
+            <div class="relative flex h-3 w-3 ml-auto">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"
+              ></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
+            </div>
+            <span>Geolocalisation</span>
           </button>
           <a
             v-if="$page.props.user"
@@ -358,7 +400,7 @@ const scrollArticle = () => {
         <div class="carousel-inner">
           <div :class="['carousel-item', index1 === current ? 'active' : '']">
             <img
-              src="../../../../storage/app/public/pexels-chan-walrus-958545.jpg"
+              src="/storage/pexels-chan-walrus-958545.jpg"
               alt="item.caption"
               class="w-full"
             />
@@ -370,7 +412,7 @@ const scrollArticle = () => {
           </div>
           <div :class="['carousel-item', index2 === current ? 'active' : '']">
             <img
-              src="../../../../storage/app/public/pexels-ella-olsson-3026808.jpg"
+              src="/storage/pexels-ella-olsson-3026808.jpg"
               alt="item.caption"
               class="w-full"
             />
@@ -382,7 +424,7 @@ const scrollArticle = () => {
           </div>
           <div :class="['carousel-item', index3 === current ? 'active' : '']">
             <img
-              src="../../../../storage/app/public/pexels-narda-yescas-1566837.jpg"
+              src="/storage/pexels-narda-yescas-1566837.jpg"
               alt="item.caption"
               class="w-full"
             />
@@ -2111,12 +2153,12 @@ const scrollArticle = () => {
         <div id="position" v-else>
           <span class="font-bold text-3xl">Les restaurants proche de ma position</span>
           <div
-            class="mt-5 p-4 flex shadow-xl flex-col h-[30rem] bg-gray-100 space-y-3 items-center justify-center"
+            class="mt-5 p-4 flex shadow-xl flex-col h-[30rem] bg-grocery space-y-3 items-center justify-center"
           >
             <span class="flex justify-center items-center"
               >Voir les restaurants proches de ma position</span
             >
-            <button @click="getPosition()" class="bg-black text-white p-3">
+            <button @click="getPosition()" class="bg- font-bold bg-black text-white p-3">
               {{ click }}
             </button>
           </div>
@@ -2315,12 +2357,6 @@ const scrollArticle = () => {
             </span>
           </article>
         </div>
-        <DetailsArticle
-          @close="selectedArticle = null"
-          :addItemToCart="addItemToCart"
-          v-if="selectedArticle"
-          :article="selectedArticle"
-        />
       </div>
     </div>
   </div>
@@ -2791,6 +2827,12 @@ const scrollArticle = () => {
       </div>
     </div>
   </transition>
+  <DetailsArticle
+    @close="selectedArticle = null"
+    :addItemToCart="addItemToCart"
+    v-if="selectedArticle"
+    :article="selectedArticle"
+  />
 </template>
 
 <script>
@@ -2872,6 +2914,7 @@ export default {
       }
     },
     showModals(article) {
+      console.log("details");
       this.selectedArticle = article;
       this.show = !this.show;
     },
@@ -2898,7 +2941,7 @@ export default {
   transform: translateX(0);
 }
 .bg-grocery {
-  background-image: url(../grocery.png);
+  background-image: url(../../../../storage/app/public/geo.jpg);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
