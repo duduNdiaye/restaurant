@@ -29,13 +29,13 @@ const submit = () => {
 };
 </script>
 
-<template>
+<template class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
     <Head title="Log in" />
 
     <AuthenticationCard class="">
         <template #logo>
             <h1
- class="text-3xl lg:ml-0 text-center bg-black text-white px-2 md:ml-0  font-title font-extrabold">
+ class="text-3xl lg:ml-0 text-center bg-haver text-white px-2 md:ml-0  font-title font-extrabold">
                         EatEasy</h1>
         </template>
 
@@ -43,9 +43,9 @@ const submit = () => {
             {{ status }}
         </div>
 
-       <div  >
+    <div  class="max-w-md mx-auto my-10 ">
         <form @submit.prevent="submit"  class="">
-            <div >
+            <div class=" ">
                 <div class="w-full    md:w-1/2 lg:w-5/6 px-3 mb-6  md:mb-0">
                 <InputLabel for="email" value="Email"  />
                 <TextInput
@@ -82,7 +82,7 @@ const submit = () => {
             </div>
 
             <div class="flex   justify-start  mt-8 lg:ml-2">
-                <PrimaryButton class="text-slate-50 bg-zinc-900 font-extrabold " :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton class="text-white bg-vert hover:bg-green-900 font-extrabold " :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Se connecter
                 </PrimaryButton>
                 <Link v-if="canResetPassword" :href="route('password.request')" class="underline ml-4 mt-1  text-sm text-gray-600 hover:text-gray-900">
@@ -93,5 +93,6 @@ const submit = () => {
             </div>
         </form>
        </div>
+
     </AuthenticationCard>
 </template>

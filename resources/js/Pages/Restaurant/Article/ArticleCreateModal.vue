@@ -1,11 +1,13 @@
 <script setup>
 import {  useForm } from '@inertiajs/vue3';
+import InputError from '../../../Components/InputError.vue';
 
 const props = defineProps({
     articles: {
         type: Object,
         default: () => ({}),
     },
+
 });
 
 const form = useForm({
@@ -21,7 +23,13 @@ const form = useForm({
 
 });
 const submit = () => {
-  form.post(route('store.article'))
+  form.post(route('store.article'),
+  {
+    onSuccess:()=>{
+        showMessage();
+        closeModal();
+    }
+  })
     // this.showCreateModal=false
 
 
@@ -44,11 +52,13 @@ const submit = () => {
                 <div class="col-span-6">
                   <label for="nom" class="block text-sm font-medium text-gray-700">Nom Article</label>
                   <input type="text" name="nom" id="nom" v-model="form.nom" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <InputError class="mt-2" :message="form.errors.nom" />
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                   <label for="prix" class="block text-sm font-medium text-gray-700">Prix</label>
                   <input type="number" name="prix" id="prix" v-model="form.prix"   class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <InputError class="mt-2" :message="form.errors.prix" />
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
@@ -59,19 +69,24 @@ const submit = () => {
                     <option value="boissons">Boissons</option>
                     <option value="desserts">Desserts</option>
                   </select>
+                  <InputError class="mt-2" :message="form.errors.categorie" />
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                   <label for="quantite" class="block text-sm font-medium text-gray-700">Quantité</label>
                   <input type="number" name="quantite" id="quantite" v-model="form.quantite" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <InputError class="mt-2" :message="form.errors.quantite" />
                 </div>
                 <div class="col-span-6 sm:col-span-3">
                   <label for="tempsPreparation" class="block text-sm font-medium text-gray-700">Temps de preparation</label>
                   <input type="time" name="tempsPreparation" v-model="form.tempsPreparation" id="tempsPreparation" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <InputError class="mt-2" :message="form.errors.tempsPreparation" />
+
                 </div>
                 <div class="col-span-6 sm:col-span-3">
                   <label for="description" class="block text-sm font-medium text-gray-700">description</label>
                   <input type="text" name="description" id="description" v-model="form.description"  class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <InputError class="mt-2" :message="form.errors.description" />
                 </div>
                 <div class="col-span-6 sm:col-span-3">
                   <label for="ingredients" class="block text-sm font-medium text-gray-700">Ingredients</label>
@@ -84,7 +99,7 @@ const submit = () => {
 
                 <div class="flex justify-start relative space-x-4 mt-4">
   <button type="button" class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" @click="closeModal" >Quitter  </button>
-  <button type="button" class="px-4 py-2 text-white bg-blue-400 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" @click="submit();closeModal();showMessage()">Ajouter</button>
+  <button type="button" class="px-4 py-2 text-white bg-blue-400 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" @click="submit();">Ajouter</button>
 </div>
               </div>
             </form>
@@ -117,6 +132,9 @@ const submit = () => {
         {
             this.$emit('affiche')
         },
+    },
+    components:{
+        InputError
     }
 };
 </script>

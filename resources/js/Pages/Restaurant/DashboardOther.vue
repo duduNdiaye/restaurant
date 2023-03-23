@@ -19,9 +19,9 @@
           <td class="border px-4 py-2">{{ commande.dateHeure }}</td>
           <td class="border px-4 py-2">{{ commande.coutTotal }}</td>
           <td class="border px-4 py-2">{{ commande.modeReception }}</td>
-          <td class="border px-4 py-2">
+          <td class="border px-4 py-2 text-center">
             <a href="#" class="text-blue-500 hover:text-blue-700">Voir</a> |
-            <a href="#" class="text-yellow-500 hover:text-blue-700">Modifier</a> |
+            <!-- <a href="#" class="text-yellow-500 hover:text-blue-700">Modifier</a> | -->
             <a href="#" class="text-red-500 hover:text-red-700">Supprimer</a>
 
           </td>

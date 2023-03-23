@@ -54,6 +54,11 @@ class ArticleController extends Controller
             'nom' =>'required|string',
             'prix'=> 'required|min:100|integer',
             'categorie'=>'required',
+            'quantite'=>'required',
+            // 'ingredients'=>'required',
+            'tempsPreparation'=>'required',
+            'description'=>'required',
+
 
         ]);
         //
@@ -94,6 +99,17 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
+        $request->validate([
+            'nom' =>'required|string',
+            'prix'=> 'required|min:100|integer',
+            'categorie'=>'required',
+            'quantite'=>'required',
+            // 'ingredients'=>'required',
+            'tempsPreparation'=>'required',
+            'description'=>'required',
+
+
+        ]);
         //
         $article->update($request->all());
 
