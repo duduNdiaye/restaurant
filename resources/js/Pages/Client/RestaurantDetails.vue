@@ -177,7 +177,7 @@ const recherche = computed(() => {
   >
     <div class="flex items-center space-x-7">
       <h1 class="text-3xl flex bg-black text-white px-2 font-title font-extrabold">
-        EatEasy
+        ClicMiam
       </h1>
     </div>
 
@@ -748,7 +748,7 @@ const recherche = computed(() => {
       <h1
         class="text-3xl justify-center mt-4 items-center flex bg-black text-white px-2 font-title font-extrabold"
       >
-        EatEasy
+        ClicMiam
       </h1>
     </div>
     <div class="flex flex-col space-y-10">

@@ -89,14 +89,12 @@ onMounted(() => {
     count1.value = true;
   }
 
-  for(let i = 0; i < props.articles.length; i++){
-      for(let u = 0; u < props.users.length; u++)
-      {
-        if(props.articles[i].user_id == props.users[u].id)
-        {
-            props.articles[i].nomResto = props.users[u].name
-        }
+  for (let i = 0; i < props.articles.length; i++) {
+    for (let u = 0; u < props.users.length; u++) {
+      if (props.articles[i].user_id == props.users[u].id) {
+        props.articles[i].nomResto = props.users[u].name;
       }
+    }
   }
 
   const lat1Rad = (ulat.value * Math.PI) / 180;
@@ -310,7 +308,7 @@ const scrollArticle = () => {
         <div class="flex space-x-10">
           <a
             :href="route('resto.accueil')"
-            class="text-vert lg:block bg-white hidden rounded-full px-3 lg:mt-2 h-fit font-bold"
+            class="hover:text-vert lg:block bg-black border-white text-white hover:bg-white hidden rounded-full px-3 lg:mt-2 h-fit font-bold"
             >Le panier</a
           >
 
@@ -356,18 +354,18 @@ const scrollArticle = () => {
         <h1
           class="text-4xl lg:text-center text-black px-2 md:ml-0 font-title font-extrabold"
         >
-          EatEasy
+          ClicMiam
         </h1>
         <div v-if="canLogin" class="flex space-x-10">
           <button
             @click="scrollToPosition()"
-            class="hover:text-vert lg:block hidden text-lg flex flex-col text-black hover:bg-white hover:rounded-full px-3 lg:mt-1 h-fit font-bold"
+            class="hover:text-vert lg:block hidden text-lg lg:flex text-black hover:bg-white hover:rounded-full px-3 lg:mt-1 h-fit font-bold"
           >
-            <div class="relative flex h-3 w-3 ml-auto">
+            <div class="relative flex h-3 w-3">
               <span
                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"
               ></span>
-              <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
+              <span class="inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
             </div>
             <span>Geolocalisation</span>
           </button>
@@ -375,20 +373,20 @@ const scrollArticle = () => {
             v-if="$page.props.user"
             :href="route('dashboard')"
             class="px-3 py-2 bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
-            >Button 1</a
+            >dashboard</a
           >
 
           <template v-else>
             <a
               :href="route('login')"
-              class="px-5 h-fit justify-center lg:ml-4 md:ml-4 text-center bg-white font-bold text-vert rounded-full hover:bg-haver lg:mt-1 md:mt-0"
-              >Login
+              class="px-3 h-fit justify-center lg:ml-4 md:ml-4 text-center bg-white font-bold text-vert hover:text-white rounded-full hover:bg-black lg:mt-1 md:mt-0"
+              >Se connecter
             </a>
             <a
               v-if="canRegister"
               :href="route('register')"
-              class="px-3 h-fit lg:ml-4 md:ml-4 font-bold text-center bg-white text-vert rounded-full lg:mt-1 hover:bg-haver md:mt-0"
-              >Register
+              class="px-3 h-fit lg:ml-4 md:ml-4 font-bold text-center hover:text-white bg-white text-vert rounded-full lg:mt-1 hover:bg-black md:mt-0"
+              >S'inscrire
             </a>
           </template>
         </div>
@@ -406,7 +404,7 @@ const scrollArticle = () => {
             />
             <div class="carousel-caption flex flex-col items-center justify-center">
               <h3 class="text-4xl text-white font-black bg-black lg:w-96">
-                Bienvenue sur EATEASY
+                Bienvenue sur ClicMiam
               </h3>
             </div>
           </div>
@@ -441,6 +439,7 @@ const scrollArticle = () => {
     <section class="text-gray-600 body-font bg-white lg:mt-10">
       <div class="container px-2 py-4 mx-auto flex flex-wrap lg:block md:block hidden">
         <div class="flex flex-wrap -m-4">
+
           <div
             class="p-4 lg:w-4/12 w-full lg:block md:block hidden hover:scale-105 transition duration-200"
           >

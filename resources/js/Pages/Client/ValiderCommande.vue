@@ -36,6 +36,7 @@ const resume = ref(true);
 const methode = ref(false);
 const alert = ref(false);
 const indication = ref(false);
+const orderId = ref(null);
 
 onMounted(() => {
   if (localStorage.getItem("cart")) {
@@ -166,6 +167,10 @@ const Terminal = (nomClient, telephoneClient, adresseClient) => {
   Adresse.value = adresseClient;
   yesNon.value = true;
   console.log(adresseClient);
+  const uno = nomClient.split(" ");
+  const dos = uno.shift() ?? "";
+  console.log(dos);
+  orderId.value = dos + Math.random().toString(36).substr(2, 2);
 };
 
 const shake = () => {
@@ -175,11 +180,11 @@ const shake = () => {
   }, 1000);
 };
 
-const orderId = Math.random().toString(36).substr(2, 9);
+
 
 const sendOrderData = () => {
   const form = useForm({
-    orderId: orderId,
+    orderId: orderId.value,
     Total: total.value,
     MonCommentaire: commentaires.value,
     TypeReception: reception.value,
@@ -230,7 +235,7 @@ const sendOrderData = () => {
             :href="route('acceuil')"
             class="text-3xl lg:block md:block hidden lg:ml-0 text-center bg-black text-white px-2 md:ml-0 font-title font-extrabold"
           >
-            EatEasy
+            ClicMiam
           </a>
           <ApplicationMark class="h-9 w-auto lg:hidden md:hidden" />
           <p class="font-bold lg:text-xl text-lg ml-8 lg:hidden md:hidden">
@@ -257,20 +262,20 @@ const sendOrderData = () => {
               v-if="$page.props.user"
               :href="route('dashboard')"
               class="px-3 py-2 bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
-              >Button 1</a
+              >Dashboard</a
             >
 
             <template v-else>
               <a
                 :href="route('login')"
                 class="px-3 py-2 lg:ml-4 bg md:ml-4 text-center bg-vert font-bold text-white rounded hover:bg-haver mt-3 md:mt-0"
-                >Login
+                >Se connecter
               </a>
               <a
                 v-if="canRegister"
                 :href="route('register')"
                 class="px-3 py-2 lg:ml-4 md:ml-4 font-bold text-center bg-vert text-white rounded hover:bg-haver mt-3 md:mt-0"
-                >Register
+                >S'inscrire
               </a>
             </template>
           </div>
@@ -289,7 +294,7 @@ const sendOrderData = () => {
               class="p-4 font-bold flex justify-between capitalize text-heading lg:text-xl"
             >
               <span class="text-gray-500 lg:text-sm lg:block md:block hidden"
-                >Votre commande sur EATEASY</span
+                >Votre commande sur ClicMiam</span
               >
               <span class="flex text-lg text-center">Resume du panier({{ count }})</span>
             </div>
@@ -385,9 +390,7 @@ const sendOrderData = () => {
                     </div>
                   </div>
                   <div class="flex items-center space-x-6 mt-6">
-                    <button class="text-gray-600 text-sm mr-2">
-                      Ajouter aux favoris
-                    </button>
+
                     <button
                       @click="removeItemFromCart(car)"
                       class="text-lg hover:font-black"
@@ -539,22 +542,22 @@ const sendOrderData = () => {
           </div>
           <div class="mb-4 uppercase flex flex-col rtl:space-x-reverse" v-if="resume">
             <span class="text-xl flex font-bold font-serif">Nous acceptons</span>
-            <div class="flex">
+            <div class="flex justify-between">
               <!-- <div class="flex py-3 relative mr-3">
                     <span class="bg-vert font-bold text-white w-11 px-2 py-1 absolute z-10 rounded-full">PAY</span>
                     <span class="bg-green-600 font-bold w-24 px-2 flex items-center  justify-end rounded-full text-white">TECH</span>
                 </div> -->
               <img
-                src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282733431754785346.webp"
-                class="h-12 mr-3"
+                src="/storage/orange.jpg"
+                class="h-16 w-16 "
               />
               <img
-                src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282732803587566708.webp"
-                class="h-12 mr-3"
+                src="/storage/wave.png"
+                class="h-16 w-16"
               />
               <img
-                src="../../../../storage/app/public/paytech.jpg"
-                class="h-12 w-28 lg:w-full"
+                src="/storage/free.png"
+                class="h-16 w-16 "
               />
             </div>
           </div>
@@ -715,7 +718,7 @@ const sendOrderData = () => {
           >
             <div class="flex flex-col space-y-1">
               <div class="flex flex-col items-center justify-center">
-                <span class="text-3xl font-bold text-red-500">Merci {{ Nom }} !</span>
+                <span class="text-3xl font-bold text-red-500 text-center">Merci {{ Nom }} !</span>
                 <span class="text-black text-2xl">Votre commande a bien ete cree.</span>
                 <span class="text-gray-600 text-sm"
                   >Un e-mail de confirmation vous a ete envoye</span

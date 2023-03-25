@@ -5,14 +5,16 @@ use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Article;
 use App\Models\Commande;
+use App\Models\MenuJour;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\MenuJourController;
-use App\Models\MenuJour;
-use Illuminate\Http\Request;
+use App\Mail\SendNewCommandeMail;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,10 +49,6 @@ Route::middleware([
     Route::get('/dashboard', function (Request $request) {
         switch (Auth::user()->role) {
             case 'restaurant':
-                // $articles = Article::when($request->search,function($query,$searchTerm){
-                //     $query->where('nom','like','%'.$searchTerm.'%')
-                //     ->OrWhere('categorie','like','%'.$searchTerm.'%');
-                // })->where('user_id', Auth::id())->paginate(5)->withQueryString();
 
                 $commandes = Commande::all();
                 return Inertia::render(
@@ -72,6 +70,8 @@ Route::middleware([
                 break;
         }
     })->name('dashboard');
+
+
     Route::get('/dashboard/articles', [ArticleController::class, 'index'])->name('articles.list');
     Route::get('/dashboard/stats', function () {
         return Inertia::render('Restaurant/DashboardStats');
@@ -107,6 +107,7 @@ Route::group(['prefix' => 'commandes'], function () {
 
         ]);
     })->name('restaurant.details');
+
     Route::get('/resto', function () {
 
         $users = User::where('role', 'restaurant')->get();
@@ -121,6 +122,8 @@ Route::group(['prefix' => 'commandes'], function () {
 
         ]);
     })->name('resto.accueil');
+
+
     Route::post('/validation', function (Request $request) {
         Commande::create([
             'nomClient' => $request->NomClient,
@@ -134,6 +137,12 @@ Route::group(['prefix' => 'commandes'], function () {
             'heure' => $request->Lheure,
             'adresse' => $request->AdresseClient
         ]);
+        $nomC = $request->NomClient;
+        $resto = $request->nomResto;
+        $numCommande = $request->orderId;
+        $date = $request->laDate;
+        $heure = $request->Lheure;
+        Mail::to($request->demande_auteur['email'])->send(new SendNewCommandeMail($nomC, $resto, $numCommande, $date, $heure));
     })->name('validation.commande');
 
 
@@ -157,6 +166,7 @@ Route::group(['prefix' => 'commandes'], function () {
             'nombrenote' => $lesnotes + 1
         ]);
     })->name('note.resto');
+
 });
 
 Route::post('/article/new', [ArticleController::class, 'store'])->name('store.article');
