@@ -54,7 +54,7 @@
       </ul>
       <div class="flex justify-center flex-col">
         <button
-          class="bg-vert hover:bg-haver text-white font-bold py-2 px-4 rounded my-4"
+          class="bg-haver hover:bg-vert text-slate-900 hover:text-white font-bold py-2 px-4 rounded my-4"
           @click="showCreate"
         >
           Ajouter un menu
@@ -109,7 +109,7 @@
                       </svg>
                     </button>
 
-                    <button class="p-2 rounded-full bg-red-500 hover:bg-red-600">
+                    <button @click="showDelete(menu)" class="p-2 rounded-full bg-red-500 hover:bg-red-600">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         class="w-4 h-4 text-white"
@@ -142,6 +142,9 @@
           :articles="articles"
           @close="showEditModal = false"
         />
+        <MenuDelete v-if="showDeleteModal"
+        :menujour="menusupprime"
+        @close="showDeleteModal=false"/>
       </div>
     </div>
   </DashLayout>
@@ -151,6 +154,7 @@
 import DashLayout from "../DashLayout.vue";
 import MenuCreate from "./MenuCreate.vue";
 import MenuEdit from "./MenuEdit.vue";
+import MenuDelete from "./MenuDelete.vue"
 
 export default {
   name: "resources-js-pages-restaurant-menu-menu-semaine",
@@ -174,7 +178,9 @@ export default {
       dayOfWeek: "",
       showCreateModal: false,
       showEditModal: false,
+      showDeleteModal:false,
       menuedite: null,
+      menusupprime:null,
     };
   },
   methods: {
@@ -209,9 +215,13 @@ export default {
       this.showEditModal = !this.showEditModal;
       this.menuedite = menuedite;
     },
+    showDelete(menu){
+        this.showDeleteModal=!this.showDeleteModal
+        this.menusupprime=menu
+    }
   },
   computed: {},
-  components: { DashLayout, MenuCreate, MenuEdit },
+  components: { DashLayout, MenuCreate, MenuEdit,MenuDelete },
 };
 </script>
 

@@ -79,6 +79,7 @@ Route::middleware([
     Route::get('dashboard/menu', [MenuJourController::class, 'index'])->name('dashboard.menu');
     Route::post('/menu/new', [MenuJourController::class, 'store'])->name('store.menu');
     Route::put('/menu/edit', [MenuJourController::class, 'update'])->name('edit.menu');
+    Route::delete('/menu/delete', [MenuJourController::class,'destroy'])->name('delete.menu');
     Route::get('/restau/profile', function () {
         $auth_user = User::findOrFail(Auth::id());
         $articles = Article::where('user_id', Auth::id())->count();
