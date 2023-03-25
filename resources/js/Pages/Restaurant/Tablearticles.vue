@@ -3,7 +3,7 @@
 <DashLayout>
 <div class="flex flex-col">
     <button
-      class="bg-vert hover:bg-haver text-white font-bold py-2 px-4 rounded my-4"
+      class="bg-haver hover:bg-vert text-slate-900 hover:text-white font-bold py-2 px-4 rounded my-4"
       @click="showmodal">
       Créer un nouvel article
     </button>
@@ -70,7 +70,7 @@
                 </td>
                 <td class="border py-2 px-4">
             <button type="submit" class=" text-white font-bold py-1 px-1 rounded mr-2"
-             @click="">
+             @click="showArticle(article)">
              <svg width="25px" height="25px" viewBox="-2.4 -2.4 28.80 28.80" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#1a5fb4"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <circle cx="12" cy="12" r="4" fill="#33363F"></circle> <path d="M21 12C21 12 20 4 12 4C4 4 3 12 3 12" stroke="#33363F" stroke-width="2"></path> </g></svg>
             </button>
             <button type="submit"
@@ -110,6 +110,10 @@ v-if="activedelete"
 @close="activedelete=false"
 >
 </ArticleDeleteModal>
+<ArticleDetails
+v-if="activeshow"
+:article="articleAafficher"
+@close="activeshow=false"></ArticleDetails>
 </DashLayout>
 
 </template>
@@ -120,6 +124,7 @@ import ArticleEditModal from './Article/ArticleEditModal .vue';
 import ArticleDeleteModal from './Article/ArticleDeleteModal.vue';
 import DashLayout from './DashLayout.vue';
 import Pagination from '../../Components/Pagination.vue';
+import ArticleDetails from './Article/ArticleDetails.vue';
   export default  {
     name: "tablearticles",
     props: {
@@ -131,7 +136,9 @@ import Pagination from '../../Components/Pagination.vue';
             activedit:false,
             articledites:null,
             activedelete:false,
+            activeshow:false,
             articleAsupprimer:null,
+            articleAafficher:null,
             search:'',
             message:''
 
@@ -152,6 +159,10 @@ import Pagination from '../../Components/Pagination.vue';
             this.activedelete=!this.activedelete
             this.articleAsupprimer=article
             console.log(this.activedelete)
+        },
+        showArticle(article){
+            this.activeshow=!this.activeshow
+            this.articleAafficher=article
         },
         // search(){
         //     // this.$inertia.get("/dashboard",{search:this.searchTerm})
@@ -177,7 +188,7 @@ import Pagination from '../../Components/Pagination.vue';
 
     },
 
-    components: { ArticleCreateModal, ArticleEditModal, ArticleDeleteModal, DashLayout, Pagination },
+    components: { ArticleCreateModal, ArticleEditModal, ArticleDeleteModal, DashLayout, Pagination, ArticleDetails },
 
 };
 
