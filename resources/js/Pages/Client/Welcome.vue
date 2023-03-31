@@ -318,7 +318,7 @@ const scrollArticle = () => {
       >
         <div class="flex space-x-10">
           <a
-            :href="route('resto.accueil')"
+            :href="route('client.commande')"
             class="hover:text-vert lg:block bg-black border-white text-white hover:bg-white hidden rounded-full px-3 lg:mt-2 h-fit font-bold"
             >Le panier</a
           >
