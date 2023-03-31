@@ -51,10 +51,18 @@ Route::middleware([
             case 'restaurant':
 
                 $commandes = Commande::where('restaurantId',Auth::id())->get();
+                $commandes_count=Commande::where('restaurantId',Auth::id())->count();
+                $articles_count=Article::where('user_id',Auth::id())->count();
+                $clients=Commande::select('nomClient','numeroClient','email')->where('restaurantId',Auth::id())->distinct()->count();
+                $revenu=Commande::where('restaurantId',Auth::id())->sum('coutTotal');
+
                 return Inertia::render(
                     'Restaurant/Dashboard',
                     [
-
+                        'revenu_total'=>$revenu,
+                        'nbre_clients'=>$clients,
+                        'nbre_articles'=>$articles_count,
+                        'nbre_commandes'=>$commandes_count,
                         'commandes' => $commandes
 
                     ]
@@ -74,7 +82,15 @@ Route::middleware([
 
     Route::get('/dashboard/articles', [ArticleController::class, 'index'])->name('articles.list');
     Route::get('/dashboard/stats', function () {
-        return Inertia::render('Restaurant/DashboardStats');
+        $ordersByDayOfWeek = Commande::selectRaw('DATE_FORMAT(date, "%W") as dayOfWeek, COUNT(*) as totalOrders')
+        ->groupBy('dayOfWeek')->orderBy('dayOfWeek')
+        ->get();
+        $total_commandes=Commande::where('restaurantId',Auth::id())->count();
+        return Inertia::render('Restaurant/DashboardStats',
+    [
+        'total_commandes'=>$total_commandes,
+        'commandes_par_jour'=>$ordersByDayOfWeek,
+    ]);
     })->name('dashboard.stats');
     Route::get('dashboard/menu', [MenuJourController::class, 'index'])->name('dashboard.menu');
     Route::post('/menu/new', [MenuJourController::class, 'store'])->name('store.menu');

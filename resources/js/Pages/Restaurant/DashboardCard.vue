@@ -1,4 +1,4 @@
-<template >
+<template>
  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
       <div class="p-4">
@@ -10,7 +10,7 @@
           </div>
           <div class="ml-4">
             <p class="text-gray-500 text-sm font-medium uppercase tracking-wide">Nombre de clients</p>
-            <p class="text-3xl font-semibold">500</p>
+            <p class="text-3xl font-semibold">{{ nbre_clients }}</p>
           </div>
         </div>
       </div>
@@ -25,7 +25,7 @@
           </div>
           <div class="ml-4">
             <p class="text-gray-500 text-sm font-medium uppercase tracking-wide">Nombre d'articles</p>
-            <p class="text-3xl font-semibold">250</p>
+            <p class="text-3xl font-semibold">{{nbre_articles}}</p>
           </div>
         </div>
       </div>
@@ -40,7 +40,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium uppercase tracking-wide text-gray-600">Nombre de commandes</p>
-            <p class="text-3xl font-semibold text-gray-800">42</p>
+            <p class="text-3xl font-semibold text-gray-800">{{ nbre_commandes }}</p>
           </div>
         </div>
       </div>
@@ -55,7 +55,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium uppercase tracking-wide text-gray-600 ">Revenu total</p>
-            <p class="text-3xl font-semibold text-gray-800 pt-3">700.000 FCFA</p>
+            <p class="text-3xl font-semibold text-gray-800 pt-3">{{revenu_total}} FCFA</p>
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@
 
   export default  {
     name: 'resources-js-components-dashboard-card',
-    props: [],
+    props: ['nbre_commandes','nbre_articles','nbre_clients','revenu_total'],
     mounted () {
 
     },

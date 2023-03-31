@@ -76,6 +76,10 @@ import Tablearticles from './Tablearticles.vue';
  const props = defineProps({
    articles: {},
    commandes: {},
+   nbre_articles:{},
+   nbre_commandes:{},
+   nbre_clients:{},
+   revenu_total:{}
 
  });
  const logout = () => {
@@ -86,7 +90,7 @@ import Tablearticles from './Tablearticles.vue';
 </script>
 <template>
    <DashLayout>
-            <DashboardCard v-show="ShowCards" />
+            <DashboardCard v-show="ShowCards" :nbre_articles="nbre_articles" :nbre_commandes="nbre_commandes" :nbre_clients="nbre_clients" :revenu_total="revenu_total" />
             <TableArticles v-if="ShowArticles"  :articles-all="articles" />
             <DashboardOther v-if="ShowCards" :commandes="commandes"/>
             <MenuSemaine v-if="showMenu"/>
