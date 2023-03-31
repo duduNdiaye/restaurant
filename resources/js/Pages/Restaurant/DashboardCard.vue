@@ -55,7 +55,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium uppercase tracking-wide text-gray-600 ">Revenu total</p>
-            <p class="text-3xl font-semibold text-gray-800 pt-3">$12,345</p>
+            <p class="text-3xl font-semibold text-gray-800 pt-3">700.000 FCFA</p>
           </div>
         </div>
       </div>

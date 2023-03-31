@@ -21,7 +21,9 @@ class Commande extends Model
         'adresse',
         'modeReception',
         'panier',
-        'numeroCommande'
+        'numeroCommande',
+        'restaurantId',
+        'email'
     ];
     public function articles(): BelongsToMany
     {

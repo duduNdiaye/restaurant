@@ -136,14 +136,16 @@ Route::group(['prefix' => 'commandes'], function () {
             'numeroCommande' => $request->orderId,
             'date' => $request->laDate,
             'heure' => $request->Lheure,
-            'adresse' => $request->AdresseClient
+            'adresse' => $request->AdresseClient,
+            'restaurantId' => $request->IDrestaurant,
+            'email' => $request->mailclient
         ]);
         $nomC = $request->NomClient;
-        $resto = $request->nomResto;
+        $resto = $request->Lerestaurant;
         $numCommande = $request->orderId;
         $date = $request->laDate;
         $heure = $request->Lheure;
-        Mail::to($request->demande_auteur['email'])->send(new SendNewCommandeMail($nomC, $resto, $numCommande, $date, $heure));
+        Mail::to($request->mailclient)->send(new SendNewCommandeMail($nomC, $resto, $numCommande, $date, $heure));
     })->name('validation.commande');
 
 

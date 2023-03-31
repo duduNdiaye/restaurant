@@ -37,7 +37,9 @@ const methode = ref(false);
 const alert = ref(false);
 const indication = ref(false);
 const orderId = ref(null);
-
+const restaurantID = ref(null);
+const lemail = ref("");
+const restaurant = ref("");
 onMounted(() => {
   if (localStorage.getItem("cart")) {
     cart.value = JSON.parse(localStorage.getItem("cart"));
@@ -45,6 +47,8 @@ onMounted(() => {
   }
   if (count.value != 0) {
     count1.value = true;
+    restaurantID.value = cart.value[0].resto_id
+    restaurant.value = cart.value[0].restau
   }
 
   const now = new Date();
@@ -161,10 +165,11 @@ const MonCommentaire = (commentaire, fait) => {
   Commentaires.value = fait;
 };
 
-const Terminal = (nomClient, telephoneClient, adresseClient) => {
+const Terminal = (nomClient, telephoneClient, adresseClient,adressemail) => {
   Nom.value = nomClient;
   Telephone.value = telephoneClient;
   Adresse.value = adresseClient;
+  lemail.value = adressemail;
   yesNon.value = true;
   console.log(adresseClient);
   const uno = nomClient.split(" ");
@@ -182,7 +187,9 @@ const shake = () => {
 
 
 
+
 const sendOrderData = () => {
+  console.log(restaurant.value)
   const form = useForm({
     orderId: orderId.value,
     Total: total.value,
@@ -193,6 +200,8 @@ const sendOrderData = () => {
     NomClient: Nom,
     TelClient: Telephone.value,
     AdresseClient: Adresse,
+    IDrestaurant: restaurantID.value,
+    mailclient: lemail.value,
     panierr: JSON.stringify(cart.value),
   });
 
@@ -736,6 +745,8 @@ const sendOrderData = () => {
                   <span class="text-red-500 uppercase font-bold">{{ ladate }}</span>
                   <span class="text-red-500">a</span>
                   <span class="text-red-500 font-bold">{{ heures }}</span>
+                  <span class="text-red-500 font-bold">au restaurant</span>
+                  <span class="text-red-500 font-bold uppercase">{{ restaurant }}</span>
 
                 </div>
               </div>

@@ -112,7 +112,7 @@ import { Link } from '@inertiajs/vue3';
           <!-- User login -->
           <div class="w-[200px] ">
             <div class="flex items-center justify-start space-x-4" @click="toggleDrop">
-              <img class="w-10 h-10 rounded-full border-2 border-gray-500" :src="'/storage/'+$page.props.user.profile_photo_path " alt="">
+              <img class="w-10 h-10 rounded-full border-2 border-gray-500" :src="$page.props.user.photo " alt="">
               <div class="font-semibold text-left">
                 <div>{{  $page.props.user.name  }}</div>
                 <div class="text-xs text-gray-500 dark:text-gray-400 hover:dark:text-gray-800 hover:text-gray-900 ">{{  $page.props.user.role  }}</div>

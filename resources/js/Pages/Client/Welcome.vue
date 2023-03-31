@@ -28,6 +28,7 @@ const longitude = ref(0);
 const errorMessage = "";
 const search = ref(false);
 const panier = ref(false);
+const restoName = ref("");
 
 const click = ref("Partager ma position");
 
@@ -137,26 +138,25 @@ const removeItemFromCart = (car) => {
 };
 
 const addItemToCart = (article) => {
-  console.log(article.nomResto);
   //Vérifie si l'article est déjà dans le panier
   let index = cart.value.findIndex((item) => item.nom === article.nom);
   if (index === -1) {
     cart.value.push({
+      id: article.id,
       nom: article.nom,
       photo: article.photo,
       prix: parseFloat(article.prix),
       quantite: 1,
       total: parseFloat(article.prix),
       restau: article.nomResto ?? "Nom du restaurant non spécifié",
+      resto_id: article.user_id
     });
     count1.value = true;
   } else {
     cart.value[index].quantite++;
     cart.value[index].total += parseFloat(article.prix);
   }
-
   count.value = cart.value.length;
-
   localStorage.setItem("cart", JSON.stringify(cart.value));
 
   cartAnimation.value = true;
@@ -227,6 +227,17 @@ const recherche = computed(() => {
     return props.users;
   } else {
     return props.users;
+  }
+});
+
+const Articles = computed(() => {
+  if (count.value) {
+    console.log("Filtre moi ca petasse")
+    return props.articles.filter((article) =>
+       article.nomResto == cart.value[0].restau
+    );
+  } else {
+    return props.articles;
   }
 });
 
@@ -1896,11 +1907,7 @@ const scrollArticle = () => {
             >
               Proche de ma position
             </button>
-            <button
-              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
-            >
-              Les mieux notes
-            </button>
+
             <button
               class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
             >
@@ -2166,12 +2173,12 @@ const scrollArticle = () => {
           <span class="font-bold text-3xl">Nos article</span>
           <div
             id="results"
-            class="mt-5 grid lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3"
+            class="mt-5 grid lg:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3"
           >
             <article
-              v-for="article in articles"
+              v-for="article in Articles"
               :key="article.id"
-              class="product-card shadow-xl w-fit cart-type-neon overflow-hidden bg-white duration-100 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
+              class="product-card  w-fit cart-type-neon overflow-hidden bg-white duration-100 hover:-translate-y-0.5 hover:-translate-x-0.1 hover:shadow"
             >
               <span
                 @mouseover="add = article.id"
@@ -2182,7 +2189,7 @@ const scrollArticle = () => {
                   <img
                     :src="article.photo"
                     alt="Product image"
-                    class="lg:w-[15rem] lg:h-36 mb-6 object-cover object-center"
+                    class="lg:w-[12rem] lg:h-36 mb-6 object-cover object-center"
                   />
                 </button>
                 <header
@@ -2192,7 +2199,7 @@ const scrollArticle = () => {
                     <div class="flex">
                       <div class="flex flex-col">
                         <h3
-                          class="lg:text-2xl md:text-2xl text-black font-semibold md:text-sm"
+                          class="lg:text-xl md:text-2xl text-black font-semibold md:text-sm"
                         >
                           {{ article.nom }}
                         </h3>
@@ -2221,6 +2228,9 @@ const scrollArticle = () => {
                           </g>
                         </svg>
                       </button>
+                    </div>
+                    <div class="text-xs text-white bg-red-200 p-1">
+                       Restaurant  {{article.nomResto}}
                     </div>
                   </div>
                 </header>
@@ -2800,7 +2810,7 @@ const scrollArticle = () => {
   <transition name="panier">
     <div
       v-if="panier"
-      class="bg-vert font-bold flex h-14 z-[55] text-white rounded-md p-4 fixed top-[39rem] right-4"
+      class="bg-vert font-bold flex h-14 z-[55] text-white rounded-md p-4 fixed top-[35rem] right-4"
     >
       <div class="flex mb-3">
         <span class="text-2xl font-bold">Article ajoute!</span>
