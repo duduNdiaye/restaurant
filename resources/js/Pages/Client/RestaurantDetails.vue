@@ -170,7 +170,7 @@ const recherche = computed(() => {
 </script>
 <template>
   <div class="flex items-center h-60 justify-center">
-    <img :src="usere.photo" class="h-full w-full object-cover object-center" alt="" />
+    <img :src="'/storage/'+usere.profile_photo_path" class="h-full w-full object-cover object-center" alt="" />
   </div>
   <div
     class="flex px-5 items-center justify-center z-40 transform-cpu bg-white text-center border-b border-gray-200 md:px-5 lg:px-24 py-3 w-full"
@@ -519,7 +519,7 @@ const recherche = computed(() => {
           >
             <button @click="showModals(article)" class="rounded-md w-full">
               <img
-                :src="article.photo"
+                :src="'/storage/'+article.photo"
                 alt="Product image"
                 class="w-full h-56 mb-6 object-cover object-center"
               />
@@ -842,7 +842,7 @@ const recherche = computed(() => {
           >
             <div class="flex items-center justify-center">
               <img
-                :src="usere.photo"
+                :src="'/storage/'+usere.profile_photo_path"
                 class="rounded-full object-cover object-center w-12 h-12"
                 alt=""
               />

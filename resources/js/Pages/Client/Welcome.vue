@@ -2076,7 +2076,7 @@ const scrollArticle = () => {
               >
                 <a :href="route('restaurant.details', user.id)" class="rounded-md">
                   <img
-                    :src="user.photo"
+                    :src="'/storage/'+user.photo_profile_path"
                     alt="Product image"
                     class="w-[32rem] h-40 mb-6 product-image"
                   />
@@ -2187,7 +2187,7 @@ const scrollArticle = () => {
               >
                 <button @click="showModals(article)" class="rounded-md w-full">
                   <img
-                    :src="article.photo"
+                    :src="'/storage/'+article.photo"
                     alt="Product image"
                     class="lg:w-[12rem] lg:h-36 mb-6 object-cover object-center"
                   />
@@ -2288,7 +2288,7 @@ const scrollArticle = () => {
             >
               <a :href="route('restaurant.details', user.id)" class="rounded-md">
                 <img
-                  :src="user.photo"
+                  :src="'/storage/'+user.photo_profile_path"
                   alt="Product image"
                   class="w-[32rem] h-40 mb-6 product-image"
                 />
