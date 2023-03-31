@@ -22,6 +22,13 @@ const form = useForm({
 
 
 });
+const emit=defineEmits('close','affiche');
+const showMessage=()=>{
+    emit('affiche')
+};
+const closeModal=()=>{
+    emit('close')
+};
 const submit = () => {
   form.post(route('store.article'),
   {
@@ -94,7 +101,8 @@ const submit = () => {
                 </div>
                 <div class="col-span-6 sm:col-span-3">
                   <label for="photo" class="block text-sm font-medium text-gray-700">Photo</label>
-                  <input type="text" name="photo" id="photo" v-model="form.photo" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <input type="file" name="photo" id="photo" @input="form.photo=$event.target.files[0]">
+                  <InputError class="mt-2" :message="form.errors.photo" />
                 </div>
 
                 <div class="flex justify-start relative space-x-4 mt-4">
@@ -125,13 +133,7 @@ const submit = () => {
 
     },
     methods:{
-        closeModal(){
-            this.$emit('close')
-        },
-        showMessage()
-        {
-            this.$emit('affiche')
-        },
+
     },
     components:{
         InputError

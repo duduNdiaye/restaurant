@@ -56,13 +56,15 @@ class ArticleController extends Controller
             'categorie'=>'required',
             'quantite'=>'required',
             // 'ingredients'=>'required',
-            'tempsPreparation'=>'required',
+            'photo'=>'required|image',
+
             'description'=>'required',
 
 
         ]);
         //
         $article=new Article($request->all());
+        $article->photo=$request->file('photo')->store("articles-photos");
         $article->user_id=Auth::id();
         $article->saveOrFail();
 
@@ -105,13 +107,23 @@ class ArticleController extends Controller
             'categorie'=>'required',
             'quantite'=>'required',
             // 'ingredients'=>'required',
-            'tempsPreparation'=>'required',
             'description'=>'required',
+
 
 
         ]);
         //
-        $article->update($request->all());
+        $input=$request->all();
+        if ($photo = $request->file('photo')) {
+            $photo=$request->file('photo')->store("articles-photos");
+            $input['photo']="$photo";
+
+        }
+        else{
+            unset($input['photo']);
+        }
+
+        $article->update($input);
 
     }
 
