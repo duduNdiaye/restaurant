@@ -40,8 +40,8 @@ const onFileChange=(e)=>{
     <AuthenticationCard>
         <template #logo>
             <h1
- class="text-3xl lg:ml-0 text-center bg-black text-white px-2 md:ml-0  font-title font-extrabold">
-                        EatEasy</h1>
+ class="text-3xl lg:ml-0 text-center bg-haver text-slate-900 px-2 md:ml-0  font-title font-extrabold">
+                        ClicMiam</h1>
         </template>
 
         <form @submit.prevent="submit" enctype="multipart/form-data">
@@ -182,7 +182,7 @@ const onFileChange=(e)=>{
                     Déja Inscrit?
                 </Link>
 
-                <PrimaryButton class="ml-4 font-extrabold bg-black text-slate-200" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton class="ml-4 font-extrabold bg-haver hover:bg-vert text-slate-200" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     S'inscrire
                 </PrimaryButton>
             </div>

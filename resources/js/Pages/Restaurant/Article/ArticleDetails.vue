@@ -17,7 +17,7 @@
       <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
         <div class="sm:flex sm:items-start">
           <!-- Image de l'article -->
-          <img :src= article.photo :alt=article.nom  class="w-48 h-48 object-cover rounded-lg">
+          <img :src="'/storage/'+article.photo" :alt=article.nom  class="w-48 h-48 object-cover rounded-lg">
 
           <!-- Détails de l'article -->
           <div class="mt-3 text-left sm:mt-0 sm:ml-4 sm:text-left">

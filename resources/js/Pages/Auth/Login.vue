@@ -35,8 +35,8 @@ const submit = () => {
     <AuthenticationCard class="">
         <template #logo>
             <h1
- class="text-3xl lg:ml-0 text-center bg-haver text-white px-2 md:ml-0  font-title font-extrabold">
-                        EatEasy</h1>
+ class="text-3xl lg:ml-0 text-center bg-haver text-black px-2 md:ml-0  font-title font-extrabold">
+                        ClicMiam</h1>
         </template>
 
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">

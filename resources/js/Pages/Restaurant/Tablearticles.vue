@@ -66,7 +66,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ article.quantite }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ article.tempsPreparation }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <img :src=" article.photo" alt="Article" class="w-10 h-10 rounded-full" />
+                  <img :src="'/storage/'+article.photo" alt="Article" class="w-10 h-10 rounded-full" />
                 </td>
                 <td class="border py-2 px-4">
             <button type="submit" class=" text-white font-bold py-1 px-1 rounded mr-2"
