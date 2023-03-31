@@ -50,7 +50,7 @@ Route::middleware([
         switch (Auth::user()->role) {
             case 'restaurant':
 
-                $commandes = Commande::all();
+                $commandes = Commande::where('restaurantId',Auth::id())->get();
                 return Inertia::render(
                     'Restaurant/Dashboard',
                     [

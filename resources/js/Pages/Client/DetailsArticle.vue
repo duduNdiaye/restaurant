@@ -54,7 +54,7 @@
                                       alt=""
                                       class="w-[60rem] h-full mb-6 product-image"
                                       aria-hidden="true"
-                                      :src="article.photo"
+                                      :src="'/storage/'+article.photo"
                                     /> </span
                                 ></span>
                               </div>
