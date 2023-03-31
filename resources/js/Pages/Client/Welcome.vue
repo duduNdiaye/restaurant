@@ -1982,7 +1982,7 @@ const scrollArticle = () => {
             >
               <a :href="route('restaurant.details', user.id)" class="rounded-md">
                 <img
-                  :src="user.photo"
+                  :src="'/storage/'+user.profile_photo_path"
                   alt="Product image"
                   class="w-[32rem] h-40 mb-6 product-image"
                 />

@@ -113,17 +113,28 @@ class ArticleController extends Controller
 
         ]);
         //
-        $input=$request->all();
-        if ($photo = $request->file('photo')) {
-            $photo=$request->file('photo')->store("articles-photos");
-            $input['photo']="$photo";
+        // $input=$request->all();
+        // if ($request->file('photo')) {
+        //     $photo=$request->file('photo')->store("articles-photos");
+        //     $input['photo']="$photo";
 
+        // }
+        // else{
+        //     unset($input['photo']);
+        // }
+        // dd($input);
+        // $article->update($input);
+        $article->nom=$request->nom;
+        $article->prix=$request->prix;
+        $article->quantite=$request->quantite;
+        $article->description=$request->description;
+        $article->categorie=$request->categorie;
+        $article->tempsPreparation=$request->tempsPreparation;
+        $article->ingredients=$request->ingredients;
+        if ($request->file('photo')){
+            $article->photo=$request->file('photo')->store("articles-photos");
         }
-        else{
-            unset($input['photo']);
-        }
-
-        $article->update($input);
+        $article->updateOrFail();
 
     }
 
