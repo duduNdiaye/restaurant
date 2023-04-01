@@ -20,6 +20,7 @@ const form = useForm({
                 ingredients:props.articles.ingredients,
                 photo:props.articles.photo
             }
+
 );
 const emit=defineEmits('close','affiche');
 const showMessage=()=>{
@@ -35,19 +36,11 @@ const submit = () => {
     onSuccess:()=>{
         showMessage();
         closeModal();
-<<<<<<< HEAD
-        console.log("tchill an?!")
-    },
-    onError:(error)=>{
-        console.log("probleme bro: ",error)
-    }
-=======
     },
     _method:'PUT'
->>>>>>> 0fc1be92e3bd48e6c8c875fbef157f81aaec363a
   })
     // this.showCreateModal=false
-    console.log(form)
+    console.log(props.articles)
 };
 </script>
 <!-- le template--->
@@ -107,11 +100,7 @@ const submit = () => {
                   <label for="ingredients" class="block text-sm font-medium text-gray-700">Ingredients</label>
                   <input type="text" name="ingredients" id="ingredients" v-model="form.ingredients" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                 </div>
-                <div class="col-span-6 sm:col-span-3">
-                  <label for="photo" class="block text-sm font-medium text-gray-700">Photo</label>
-                  <input type="file" name="photo" id="photo" @input="form.photo=$event.target.files[0]" >
 
-                </div>
 
                 <div class="flex justify-start relative space-x-4 mt-4">
   <button type="button" class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" @click="closeModal" >Quitter  </button>
