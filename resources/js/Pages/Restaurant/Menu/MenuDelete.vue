@@ -9,7 +9,7 @@ import { useForm } from '@inertiajs/vue3';
 });
 
 const form = useForm({
-
+    id:props.menujour.id
 });
 function submit() {
   form.delete(route('delete.menu',props.menujour.id))
@@ -41,6 +41,7 @@ function submit() {
             <h3 class="text-lg leading-6 font-medium text-gray-900">Êtes-vous sûr(e) de vouloir supprimer ce menu ?</h3>
             <div class="mt-2">
               <p class="text-sm text-gray-500">Cette action est irréversible.</p>
+              <p>{{ menujour.id }}</p>
             </div>
           </div>
         </div>
