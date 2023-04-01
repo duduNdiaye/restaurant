@@ -101,17 +101,7 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
-        $request->validate([
-            'nom' =>'required|string',
-            'prix'=> 'required|min:100|integer',
-            'categorie'=>'required',
-            'quantite'=>'required',
-            // 'ingredients'=>'required',
-            'description'=>'required',
 
-
-
-        ]);
         //
         // $input=$request->all();
         // if ($request->file('photo')) {

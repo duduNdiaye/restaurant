@@ -28,34 +28,37 @@ class CreateNewUser implements CreatesNewUsers
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => $this->passwordRules(),
-            'tel'=>['required','string'],
-            'heureOuvert'=>['required','Integer','min:0','max:23'],
-            'heureFerme'=>['required','Integer','min:0','max:23'],
-            'adresse'=>['required'],
+            'tel' => ['required', 'string'],
+            'heureOuvert' => ['required', 'Integer', 'min:0', 'max:23'],
+            'heureFerme' => ['required', 'Integer', 'min:0', 'max:23'],
+            'adresse' => ['required'],
+
 
 
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
         //
         //
-       $request = app(Request::class);
-          // Enregistrer la photo de profil de l'utilisateur
-          if ($request->hasFile('profile_photo')) {
+        $request = app(Request::class);
+        // Enregistrer la photo de profil de l'utilisateur
+        if ($request->hasFile('profile_photo')) {
             $path = $request->file('profile_photo')->store('profile-photos');
         } else {
             $path = null;
         }
         //fin stockage
 
-        $user=User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-            'tel'=>$input['tel'],
-            'heureOuvert'=>$input['heureOuvert'],
-            'heureFerme'=>$input['heureFerme'],
-            'adresse'=>$input['adresse'],
-            'profile_photo_path' =>$path,
+            'tel' => $input['tel'],
+            'heureOuvert' => $input['heureOuvert'],
+            'heureFerme' => $input['heureFerme'],
+            'adresse' => $input['adresse'],
+            'latitude' => $input['Lalatitude'],
+            'longitude' => $input['Lalongitude'],
+            'profile_photo_path' => $path,
 
         ]);
 

@@ -11,5 +11,5 @@ Votre numero de commande est :
 
 
 Cordialement,<br>
-{{ config('app.name') }}
+ClickMiam
 </x-mail::message>

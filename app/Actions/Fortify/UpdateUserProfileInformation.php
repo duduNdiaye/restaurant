@@ -44,7 +44,9 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'tel' => $input['tel'],
                 'heureOuvert' => $input['heureOuvert'],
                 'heureFerme' => $input['heureFerme'],
-                'description' => $input['description']
+                'description' => $input['description'],
+                'latitude' => $input['Lalatitude'],
+                'longitude' => $input['Lalongitude'],
             ])->save();
         }
     }
@@ -61,10 +63,9 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'email' => $input['email'],
             'adresse' => $input['adresse'],
             'tel' => $input['tel'],
-            'heureOuvert' => $input['heureOuvert'],
-            'heureFerme' => $input['heureFerme'],
-            'description' => $input['description'],
-            'email_verified_at' => null,
+            'heureOuvert' => $input['heureOuvert'],'heureFerme' => $input['heureFerme'], 'description' => $input['description'], 'email_verified_at' => null, 'latitude' => $input['Lalatitude'],
+            'longitude' => $input['Lalongitude'],
+
         ])->save();
 
         $user->sendEmailVerificationNotification();

@@ -13,6 +13,43 @@ const props = defineProps({
     user: Object,
 });
 
+const isLoading = ref(false);
+const click = ref("Partager votre position");
+const latitude = ref(0);
+const longitude = ref(0);
+const panier = ref(false);
+
+
+const getPosition = () => {
+  //props.users = null;
+  if (navigator.geolocation) {
+    isLoading.value = true;
+
+    click.value = "Patientez...";
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        form.Lalatitude = position.coords.latitude;
+        form.Lalongitude = position.coords.longitude;
+        console.log(form.Lalatitude);
+        console.log(form.Lalongitude);
+        panier.value = true;
+        click.value = "MERCI"
+        setTimeout(() => {
+          panier.value = false;
+        }, 2000);
+      },
+      (error) => {
+        console.log(error.message);
+      }
+    );
+  } else {
+    console.log("Your browser does not support geolocation API");
+  }
+};
+
+
+
+
 const form = useForm({
     _method: 'PUT',
     name: props.user.name,
@@ -22,6 +59,8 @@ const form = useForm({
     heureOuvert:props.user.heureOuvert,
     heureFerme:props.user.heureFerme,
     description:props.user.description,
+    Lalatitude:props.user.latitude,
+    Lalongitude:props.user.longitude,
     photo: null,
 });
 
@@ -38,7 +77,10 @@ const updateProfileInformation = () => {
         errorBag: 'updateProfileInformation',
         preserveScroll: true,
         onSuccess: () => clearPhotoFileInput(),
+
     });
+    console.log(form.Lalatitude);
+    console.log(form.Lalongitude);
 };
 
 const sendEmailVerification = () => {
@@ -241,6 +283,14 @@ const clearPhotoFileInput = () => {
                 />
                 <InputError :message="form.errors.heureFerme" class="mt-2" />
             </div>
+
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="heureFerme" value="heure de fermeture" />
+
+                <button type="button" @click="getPosition()"
+                 class="border-2 w-full font-bold border-black p-3 text-black hover:text-white hover:bg-black hover:scale-105 transition duration-100">{{click}}</button>
+            </div>
+
             <!-- photo -->
 
 
@@ -256,4 +306,56 @@ const clearPhotoFileInput = () => {
             </PrimaryButton>
         </template>
     </FormSection>
+
+    <transition name="panier">
+    <div
+      v-if="panier"
+      class="bg-vert font-bold flex h-14 z-[55] text-white rounded-md p-4 fixed top-[35rem] right-4"
+    >
+      <div class="flex mb-3">
+        <span class="text-xl font-bold">Localisation recuperee avec succes!</span>
+        <svg
+          class="w-8 h-8 icon ml-4"
+          viewBox="0 0 1024 1024"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="#000000"
+        >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              fill="#000000"
+              d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z"
+            ></path>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </transition>
 </template>
+<style>
+
+.panier-enter-active,
+.panier-leave-active {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.panier-enter,
+.panier-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.panier-leave,
+.panier-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+</style>

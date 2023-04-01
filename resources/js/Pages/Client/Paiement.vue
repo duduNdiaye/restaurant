@@ -1,3 +1,4 @@
+
 <template>
     <transition name="panierr">
       <div v-if="show" class="w-full fixed top-4 z-[51] lg:left-80 md:left-36 max-w-2xl rounded-xl h-[32rem] bg-white p-6 md:p-12 mt-16">
@@ -6,23 +7,21 @@
         </div>
 
         <div class="space-y-2 h-[20rem] flex flex-col w-full">
-          <div class="bg-gray-100 w-full h-16 flex items-center px-4">
-            <span class="text-gray-500 font-bold">Compagnie</span>
+          <div class="bg-gray-100 w-full h-16 flex justify-between items-center px-4">
+            <span class="text-gray-500 font-bold">Type paiement</span>
 
-            <img
-
-              src="../../../../storage/app/public/paytech.jpg"
-              class="h-12 w-24 ml-auto"
-            />
+           <span class="bg-haver text-white font-bold p-2">Apres reception</span>
           </div>
           <div class="flex space-x-4">
             <input
+            :class="`shake ${indication ? 'animate-shake ' : ''}`"
             v-model="nom"
               type="text"
               placeholder="Nom*"
               class="h-16 rounded border w-full border-gray-300 hover:border-black focus:ring-black focus:border-none focus:outline-none"
             />
             <input
+            :class="`shake ${indication ? 'animate-shake ' : ''}`"
             v-model="telephone"
               placeholder="Telephone*"
               type="text"
@@ -30,6 +29,7 @@
             />
           </div>
           <input
+          :class="`shake ${indication ? 'animate-shake ' : ''}`"
             v-model="adresse"
             placeholder="Adresse*"
             type="text"
@@ -37,6 +37,7 @@
           />
 
           <input
+            :class="`shake ${indication ? 'animate-shake ' : ''}`"
              v-model="email"
             placeholder="example@gmail.com"
             type="email"
@@ -46,7 +47,7 @@
 
         <div class="mt-8 flex justify-end">
           <button @click="PayerCommande(),closeModal()"
-
+            :disabled="AllCompleted1()"
             class="inline-flex px-4 py-2 text-white items-center justify-center shrink-0 font-bold leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-accent-700 bg-vert text-light border border-transparent hover:bg-accent-hover"
           >
             Payer
@@ -57,6 +58,7 @@
 </template>
 <script>
 export default {
+
     data(){
         return{
             nom:null,
@@ -83,6 +85,9 @@ export default {
       required: true,
     },
   },
+  computed(){
+    AllCompleted1();
+  },
   methods: {
     closeModal() {
       this.$emit("close");
@@ -92,6 +97,14 @@ export default {
       this.fini = true
       this.$emit("PhaseFinale",this.nom,this.telephone,this.adresse,this.email);
     },
+    AllCompleted1(){
+        if(this.nom != null && this.telephone !=null && this.adresse!=null && this.email!=null){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
   },
 };
 </script>

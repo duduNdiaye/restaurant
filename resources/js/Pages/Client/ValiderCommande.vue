@@ -320,9 +320,9 @@ const sendOrderData = () => {
               >
                 <div class="flex-shrink-0 w-32 lg:w-48">
                   <img
-                    :src="car.photo"
+                    :src="'/storage/' + car.photo"
                     alt="Nom de l'article"
-                    class="w-full h-auto md:w-56"
+                    class="w-full h-36 md:w-56"
                   />
                 </div>
                 <div class="flex flex-col justify-between lg:ml-4 mt-2 lg:mt-0">
@@ -583,37 +583,22 @@ const sendOrderData = () => {
                 >Veuiller choisir la methode</span
               >
               <div class="flex flex-col space-y-2">
-                <div class="flex space-x-2">
+                <div class="flex space-x-3 justify-between">
                   <button
                     :class="`shake ${click ? 'animate-shake ' : ''}`"
-                    @click="Paypal()"
-                    class="bg-white focus:border-2 focus:border-vert active:border-vert border border-gray-300 rounded-md w-24 h-16 p-2"
+                    @click="Payal()"
+                    class="bg-white focus:border-2 focus:border-vert active:border-vert border border-gray-300 rounded-md w-full h-16 p-2"
                   >
-                    <img
-                      src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282733431754785346.webp"
-                      class="h-12 mr-3"
-                    />
+                    Payer maintenant
                   </button>
                   <button
                     :class="`shake ${click ? 'animate-shake' : ''}`"
                     @click="Card()"
-                    class="bg-white border focus:border-2 focus:border-vert active:border-vert border-gray-300 rounded-md w-24 h-16 p-2"
+                    class="bg-white border focus:border-2 focus:border-vert active:border-vert border-gray-300 rounded-md w-full h-16 p-2"
                   >
-                    <img
-                      src="//img.ltwebstatic.com/images2_pi/2018/06/06/15282732803587566708.webp"
-                      class="h-12 mr-3"
-                    />
+                   Payer apres
                   </button>
-                  <button
-                    :class="`shake ${click ? 'animate-shake' : ''}`"
-                    @click="Paytech()"
-                    class="bg-white focus:border-2 focus:border-vert active:border-vert border border-gray-300 rounded-md w-24 h-16 p-2"
-                  >
-                    <img
-                      src="../../../../storage/app/public/paytech.jpg"
-                      class="h-12 w-28 lg:w-full"
-                    />
-                  </button>
+
                 </div>
 
                 <div>
@@ -705,6 +690,11 @@ const sendOrderData = () => {
   <div
     @click.self="final = false"
     v-if="final"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
+  ></div>
+  <div
+    @click.self="payerm = false"
+    v-if="payerm"
     class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
   ></div>
   <div
@@ -880,6 +870,67 @@ const sendOrderData = () => {
       </div>
     </div>
   </transition>
+  <transition name="pani">
+    <div
+      v-if="payerm"
+      class="bg-white font-bold z-[50] flex h-14 text-white p-4 fixed top-10 left-[30rem]"
+    >
+      <div class="flex mb-3">
+        <span class="text-lg text-black font-bold">Fonctionnalite non encore disponible</span>
+        <svg
+          class="w-8 h-8 icon ml-4"
+          version="1.1"
+          id="Layer_1"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 511.999 511.999"
+          xml:space="preserve"
+          fill="#000000"
+        >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <g>
+              <circle
+                style="fill: #ffffff"
+                cx="255.999"
+                cy="255.998"
+                r="212.621"
+              ></circle>
+              <path
+                style="fill: #ffffff"
+                d="M107.652,356.448l248.798-248.795c-28.648-19.435-63.221-30.794-100.448-30.794 c-98.938,0-179.142,80.205-179.142,179.142C76.858,293.226,88.216,327.799,107.652,356.448z"
+              ></path>
+            </g>
+            <path
+              style="opacity: 0.1; enable-background: new"
+              d="M89.216,321.497c-0.473-5.767-0.721-11.597-0.721-17.486 c0-116.755,94.649-211.404,211.404-211.404c12.308,0,24.369,1.053,36.1,3.072c-24.08-12.04-51.245-18.821-79.999-18.821 c-98.938,0-179.142,80.205-179.142,179.142C76.858,279.117,81.241,301.21,89.216,321.497z"
+            ></path>
+            <path
+              style="fill: #ff6465"
+              d="M256,8.329C119.215,8.329,8.33,119.215,8.33,255.999S119.215,503.67,256,503.67 s247.671-110.886,247.671-247.671S392.786,8.329,256,8.329z M76.858,255.999c0-98.938,80.205-179.142,179.142-179.142 c37.227,0,71.8,11.358,100.448,30.794L107.652,356.448C88.216,327.799,76.858,293.226,76.858,255.999z M256,435.143 c-37.227,0-71.8-11.358-100.448-30.794L404.35,155.552c19.435,28.648,30.794,63.221,30.794,100.448 C435.143,354.937,354.938,435.143,256,435.143z"
+            ></path>
+            <path
+              d="M256,0c-23.87,0-47.508,3.286-70.263,9.767c-4.423,1.26-6.989,5.868-5.728,10.292c1.26,4.423,5.862,6.991,10.292,5.728 c21.27-6.058,43.374-9.13,65.699-9.13c63.931,0,124.035,24.896,169.24,70.102c45.206,45.206,70.102,105.31,70.102,169.24 c0,88.293-48.368,169.132-126.228,210.969c-4.051,2.177-5.573,7.227-3.395,11.279c1.504,2.799,4.375,4.389,7.344,4.389 c1.33,0,2.681-0.32,3.935-0.994c83.272-44.745,135.001-131.205,135.001-225.642c0-68.381-26.629-132.667-74.98-181.019 C388.668,26.629,324.381,0,256,0z"
+            ></path>
+            <path
+              d="M361.126,100.759c-31.079-21.086-67.432-32.231-105.125-32.231c-103.372,0-187.471,84.099-187.471,187.471 c0,37.691,11.145,74.043,32.23,105.123c1.395,2.056,3.633,3.38,6.106,3.616c0.263,0.024,0.526,0.038,0.788,0.038 c2.198,0,4.32-0.871,5.889-2.44L362.339,113.54c1.756-1.756,2.636-4.204,2.402-6.676 C364.506,104.392,363.18,102.153,361.126,100.759z M109.103,343.218c-15.677-26.332-23.916-56.276-23.916-87.218 c0-94.187,76.626-170.813,170.813-170.813c30.943,0,60.887,8.238,87.218,23.916L109.103,343.218z"
+            ></path>
+            <path
+              d="M343.188,496.758c4.324-1.567,6.56-6.342,4.994-10.668c-1.566-4.327-6.343-6.559-10.668-4.995 c-26.097,9.454-53.523,14.247-81.514,14.247c-63.93,0-124.033-24.896-169.24-70.102c-45.207-45.206-70.103-105.31-70.103-169.241 c0-46.779,13.494-92.088,39.026-131.031c24.888-37.966,59.812-67.974,100.995-86.784c4.184-1.911,6.027-6.852,4.116-11.036 s-6.853-6.027-11.036-4.117c-44.043,20.117-81.392,52.208-108.005,92.804C14.439,157.5,0.001,205.968,0.001,255.999 c0,68.38,26.629,132.667,74.982,181.019s112.639,74.98,181.019,74.98C285.932,512,315.267,506.872,343.188,496.758z"
+            ></path>
+            <path
+              d="M147.261,405.135c0.235,2.472,1.56,4.711,3.616,6.106c31.079,21.086,67.432,32.231,105.125,32.231 c103.372,0,187.471-84.099,187.471-187.471c0-37.692-11.144-74.044-32.23-105.123c-1.394-2.056-3.633-3.38-6.105-3.616 c-2.469-0.232-4.922,0.646-6.678,2.402L149.663,398.459C147.907,400.215,147.026,402.663,147.261,405.135z M402.899,168.782 c15.675,26.329,23.915,56.277,23.915,87.218c0,94.187-76.626,170.813-170.813,170.813c-30.943,0-60.887-8.238-87.218-23.916 L402.899,168.782z"
+            ></path>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </transition>
 </template>
 <script>
 import Commentaire from "./Commentaire.vue";
@@ -901,6 +952,7 @@ export default {
       card: false,
       click: false,
       warning: false,
+      payerm:false
     };
   },
 
@@ -921,7 +973,7 @@ export default {
         this.warning = true;
         setTimeout(() => {
           this.click = false;
-        }, 1000);
+        }, 2000);
       } else {
         this.paiement = true;
         this.warning = false;
@@ -934,11 +986,12 @@ export default {
       this.card = false;
     },
 
-    Paypal() {
-      this.paypal = true;
-      this.paytech = false;
-      this.card = false;
-      this.warning = false;
+    Payal() {
+      this.payerm = true;
+      setTimeout(() => {
+       this.payerm = false;
+    }, 3000);
+
     },
     Paytech() {
       this.paytech = true;

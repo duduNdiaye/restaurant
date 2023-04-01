@@ -20,19 +20,28 @@ const count1 = ref(false);
 const contenu = ref("Articles");
 const isLoading = ref(false);
 const drop = ref(false);
+const drop1 = ref(false);
+
 const defaut = ref(false);
 const alert = ref(false);
+const alert1 = ref(false);
+
 
 const latitude = ref(0);
 const longitude = ref(0);
 const errorMessage = "";
 const search = ref(false);
+const searchart = ref(false);
+
 const panier = ref(false);
 const restoName = ref("");
+const boutons = ref(false);
 
 const click = ref("Partager ma position");
 
 const restosearch = ref("");
+const restosearchart = ref("");
+
 let isPage1 = ref(true);
 const cartAnimation = ref(false);
 const data = () => ({
@@ -52,6 +61,8 @@ const getPosition = () => {
         console.log(latitude.value);
         console.log(longitude.value);
         alert.value = true;
+         alert1.value = true;
+         click.value = "Partager ma position";
         setTimeout(() => {
           alert.value = false;
         }, 2000);
@@ -90,6 +101,8 @@ onMounted(() => {
     count1.value = true;
   }
 
+
+
   for (let i = 0; i < props.articles.length; i++) {
     for (let u = 0; u < props.users.length; u++) {
       if (props.articles[i].user_id == props.users[u].id) {
@@ -112,6 +125,10 @@ onMounted(() => {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = EARTH_RADIUS.value * c;
 });
+
+const toggleMenu = () => {
+  boutons.value = !boutons.value;
+};
 
 const total = computed(() => {
   return cart.value.reduce((acc, item) => acc + item.prix * item.quantite, 0);
@@ -230,18 +247,26 @@ const recherche = computed(() => {
   }
 });
 
+
+
 const Articles = computed(() => {
   if (count.value) {
-    console.log("Filtre moi ca petasse")
+
     return props.articles.filter((article) =>
        article.nomResto == cart.value[0].restau
     );
-  } else {
+  } else if(restosearchart.value){
+     return props.articles.filter((article) =>
+      article.nom.toLowerCase().startsWith(restosearchart.value.toLocaleLowerCase())
+    );
+  }
+   else {
     return props.articles;
   }
 });
 
 const resto = computed(() => {
+
   const maxDistance = 2; // distance maximale en km
   const filteredRestos = props.users.filter((user) => {
     const R = 6371; // rayon de la terre en km
@@ -272,8 +297,20 @@ const onInput = () => {
   }
 };
 
+const onInput1 = () => {
+  if (restosearchart.value != "") {
+    drop1.value = true;
+  } else {
+    drop1.value = false;
+  }
+};
+
 const Chercher = (name) => {
   restosearch.value = name;
+};
+
+const Chercher1 = (nom) => {
+  restosearchart.value = nom;
 };
 
 const scrollToResults = () => {
@@ -305,6 +342,14 @@ const scrollArticle = () => {
     results.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
   }
 };
+
+const scrollRetour = () => {
+  // Vérifie si la référence vers la section des résultats est définie
+  const results = document.getElementById("accueil");
+  if (results) {
+    results.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+  }
+};
 </script>
 
 <template>
@@ -316,9 +361,9 @@ const scrollArticle = () => {
         id="navbar"
         class="fixed flex space-x-5 md:px-3 bg-haver z-40 transform-cpu items-center justify-center lg:justify-between lg:px-3 py-3 w-full"
       >
-        <div class="flex space-x-10">
+        <div class="flex space-x-10" id="accueil">
           <a
-            :href="route('client.commande')"
+            :href="route('resto.accueil')"
             class="hover:text-vert lg:block bg-black border-white text-white hover:bg-white hidden rounded-full px-3 lg:mt-2 h-fit font-bold"
             >Le panier</a
           >
@@ -356,7 +401,7 @@ const scrollArticle = () => {
             </svg>
           </button>
           <button
-            @click="scrollArticle()"
+            @click="searchart = true"
             class="hover:text-vert text-black text-lg md:block lg:block hidden hover:bg-white hover:rounded-full px-3 lg:mt-2 h-fit font-bold"
           >
             Nos articles
@@ -390,13 +435,13 @@ const scrollArticle = () => {
           <template v-else>
             <a
               :href="route('login')"
-              class="px-3 h-fit justify-center lg:ml-4 md:ml-4 text-center bg-white font-bold text-vert hover:text-white rounded-full hover:bg-black lg:mt-1 md:mt-0"
+              class="px-3 hidden lg:block md:block h-fit justify-center lg:ml-4 md:ml-4 text-center bg-white font-bold text-vert hover:text-white rounded-full hover:bg-black lg:mt-1 md:mt-0"
               >Se connecter
             </a>
             <a
               v-if="canRegister"
               :href="route('register')"
-              class="px-3 h-fit lg:ml-4 md:ml-4 font-bold text-center hover:text-white bg-white text-vert rounded-full lg:mt-1 hover:bg-black md:mt-0"
+              class="px-3 h-fit hidden lg:block md:block lg:ml-4 md:ml-4 font-bold text-center hover:text-white bg-white text-vert rounded-full lg:mt-1 hover:bg-black md:mt-0"
               >S'inscrire
             </a>
           </template>
@@ -421,7 +466,7 @@ const scrollArticle = () => {
           </div>
           <div :class="['carousel-item', index2 === current ? 'active' : '']">
             <img
-              src="/storage/pexels-ella-olsson-3026808.jpg"
+              src="/storage/pexels-kindel-media-6868621.jpg"
               alt="item.caption"
               class="w-full"
             />
@@ -662,7 +707,7 @@ const scrollArticle = () => {
         </div>
         <div>
           <button
-            @click="toggleMenu()"
+            @click="scrollRetour()"
             class="absolute md:hidden mt-5 top-0.5 cursor-pointer text-4xl"
           >
             <svg
@@ -704,7 +749,7 @@ const scrollArticle = () => {
         </div>
         <div>
           <button
-            @click="(showModal = !showModal), (showModal1 = !showModal1)"
+           @click="scrollToPosition()"
             class="absolute md:hidden mt-5 top-0.5 cursor-pointer text-4xl"
           >
             <svg
@@ -731,7 +776,7 @@ const scrollArticle = () => {
         <div>
           <button
             class="mt-2"
-            @click="(showSearchBar = !showSearchBar), (texte = !texte)"
+            @click="(search = !search)"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -1865,7 +1910,7 @@ const scrollArticle = () => {
       <aside
         ref="aside"
         :class="{ 'lg:sticky lg:top-16 relative': isAsideSticky }"
-        class="bg-white lg:w-[22rem] h-[39.2rem] border-r border-gray-100 lg:block hidden p-3 px-8"
+        class="bg-white lg:w-[22rem] h-[34rem] border-r border-gray-100 lg:block hidden p-3 px-8"
       >
         <div class="max-h-full flex flex-col overflow-hidden overflow-y-auto">
           <button
@@ -1894,9 +1939,9 @@ const scrollArticle = () => {
             </svg>
             <span>Trier</span>
           </button>
-          <div class="flex mt-2 px-6 flex-col items-start justify-center space-y-4">
+          <div class="flex mt-2 px-6 flex-col items-start justify-center space-y-8">
             <button
-              @click="(defaut = true), (latitude = 0), (longitude = 0), scrollBack()"
+              @click="(defaut = true), (latitude = 0), (longitude = 0),alert1=false, scrollBack()"
               class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
             >
               Restos par defaut
@@ -1908,61 +1953,15 @@ const scrollArticle = () => {
               Proche de ma position
             </button>
 
-            <button
-              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
-            >
-              Avec livraison
-            </button>
-            <button
-              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
-            >
-              Plat nationaux
-            </button>
-            <button
-              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
-            >
-              Fast Food
-            </button>
-            <button
-              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
-            >
-              Patisserie
-            </button>
-          </div>
-          <span
-            class="text-sm flex mt-6 items-center justify-center space-x-3 bg-gray-200 rounded-full py-2 font-semibold"
-          >
-            <span>Quelques articles</span>
-          </span>
-          <div class="flex mt-2 mb-6 px-6 flex-col items-start justify-center space-y-4">
-            <button
+
+              <button
               @click="scrollArticle()"
               class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
             >
               Nos articles
             </button>
-            <button
-              @click="getPosition()"
-              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
-            >
-              Pizza
-            </button>
-            <button
-              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
-            >
-              Burger
-            </button>
-            <button
-              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
-            >
-              Boissons
-            </button>
-            <button
-              class="text-sm font-bold text-gray-500 hover:text-black hover:duration-200"
-            >
-              Plat nationaux
-            </button>
-          </div>
+
+            </div>
         </div>
       </aside>
       <div class="w-full h-fit px-4 pb-8 mb-12 lg:p-8" id="default">
@@ -1982,7 +1981,7 @@ const scrollArticle = () => {
             >
               <a :href="route('restaurant.details', user.id)" class="rounded-md">
                 <img
-                  :src="'/storage/'+user.profile_photo_path"
+                  :src="'/storage/' + user.profile_photo_path"
                   alt="Product image"
                   class="w-[32rem] h-40 mb-6 product-image"
                 />
@@ -2059,10 +2058,10 @@ const scrollArticle = () => {
             </span>
           </article>
         </div>
-        <div class="h-[30rem]" v-if="resto.length">
-          <span class="font-bold text-3xl">Les restaurants proche de ma position</span>
+        <div class="h-[30rem]" v-if="alert1 == true">
+          <span  id="results" class="font-bold text-3xl">Les restaurants proche de ma position</span>
           <div
-            id="results"
+
             class="mt-5 grid lg:grid-cols-[repeat(auto-fill,minmax(270px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3"
           >
             <article
@@ -2076,7 +2075,7 @@ const scrollArticle = () => {
               >
                 <a :href="route('restaurant.details', user.id)" class="rounded-md">
                   <img
-                    :src="'/storage/'+user.photo_profile_path"
+                    :src="'/storage/'+user.profile_photo_path"
                     alt="Product image"
                     class="w-[32rem] h-40 mb-6 product-image"
                   />
@@ -2187,7 +2186,7 @@ const scrollArticle = () => {
               >
                 <button @click="showModals(article)" class="rounded-md w-full">
                   <img
-                    :src="'/storage/'+article.photo"
+                    :src="'/storage/'+ article.photo"
                     alt="Product image"
                     class="lg:w-[12rem] lg:h-36 mb-6 object-cover object-center"
                   />
@@ -2288,7 +2287,7 @@ const scrollArticle = () => {
             >
               <a :href="route('restaurant.details', user.id)" class="rounded-md">
                 <img
-                  :src="'/storage/'+user.photo_profile_path"
+                  :src="'/storage/' + user.profile_photo_path"
                   alt="Product image"
                   class="w-[32rem] h-40 mb-6 product-image"
                 />
@@ -2518,7 +2517,7 @@ const scrollArticle = () => {
             "
             ><img
               alt="Baby Spinach"
-              :src="car.photo"
+              :src="'/storage/' + car.photo"
               decoding="async"
               data-nimg="fill"
               sizes="100vw"
@@ -2798,6 +2797,38 @@ const scrollArticle = () => {
       </div>
     </div>
   </transition>
+   <transition name="pan">
+    <div
+      v-if="searchart"
+      class="bg-white rounded-md h-96 font-bold z-[52] left-1/3 text-white p-4 fixed top-10"
+    >
+      <div class="pt-2 relative md:hidden lg:block sm:block mx-auto text-gray-600">
+        <input
+          @input="onInput1()"
+          v-model="restosearchart"
+          class="border border-black bg-white focus:ring-0 focus:border-black lg:w-96 h-[3rem] px-5 rounded-full text-sm focus:outline-none"
+          type="search"
+          autocomplete="off"
+          name="search"
+          placeholder="Search"
+        />
+
+        <div v-if="drop1" class="h-full ">
+          <div
+            v-for="article in Articles"
+            @click="
+              Chercher1(article.nom), (drop1 = false), scrollArticle(), (searchart = false)
+            "
+            :key="article.id"
+            class="cursor-pointor flex justify-between mx-3 mt-2 text-sm hover:bg-gray-100 text-start font-medium text-gray-600 py-2 border-b border-gray-100"
+          >
+           <span> {{ article.nom }}</span>
+           <span class="bg-red-200 text-white p-1">{{article.nomResto}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
   <div
     v-if="alert"
     class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-30 bg-black flex justify-center"
@@ -2807,6 +2838,12 @@ const scrollArticle = () => {
     v-if="search"
     class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-50 bg-black flex justify-center"
   ></div>
+   <div
+    @click.self="searchart = false"
+    v-if="searchart"
+    class="z-50 transform-gpu fixed top-0 left-0 w-full h-full bg-opacity-50 bg-black flex justify-center"
+  ></div>
+
   <transition name="panier">
     <div
       v-if="panier"
@@ -2842,12 +2879,91 @@ const scrollArticle = () => {
     v-if="selectedArticle"
     :article="selectedArticle"
   />
+  <div
+    v-if="boutons"
+    class="top-0 z-[55] flex flex-col space-y-20 bg-white bottom-0 left-0 right-0 h-screen w-screen fixed"
+  >
+    <div class="flex bg-vert py-4 h-28 justify-center items-start">
+      <button @click="boutons = !boutons"
+        class="text-3xl justify-center mt-4 items-center flex bg-black text-white px-2 font-title font-extrabold"
+      >
+        ClicMiam
+      </button>
+    </div>
+    <div class="flex flex-col space-y-10">
+      <div class="flex items-center justify-center">
+        <a
+          :href="route('acceuil')"
+          class="text-black font-bold focus:border-b focus:border-black font-semibold"
+          >Accueil</a
+        >
+      </div>
+      <button
+        @click="scrollToPosition(), boutons = false"
+        class="text-black font-semibold font-bold rounded-full px-2"
+      >
+        geolocation
+      </button>
+      <button
+        @click="scrollArticle(), boutons = false"
+        class="text-black font-semibold font-bold focus:border-b focus:border-black"
+      >
+      Nos articles
+      </button>
+      <div v-if="canLogin" class="flex flex-col items-center justify-center">
+        <a v-if="$page.props.user" class="bg-white flex py-2 space-x-2 px-3">
+          <svg
+            class="w-5 h-5 mt-[0.5] icon flex justify-center items-center"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <rect width="24" height="24" fill="white"></rect>
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9999 6C9.79077 6 7.99991 7.79086 7.99991 10C7.99991 12.2091 9.79077 14 11.9999 14C14.209 14 15.9999 12.2091 15.9999 10C15.9999 7.79086 14.209 6 11.9999 6ZM17.1115 15.9974C17.8693 16.4854 17.8323 17.5491 17.1422 18.1288C15.7517 19.2966 13.9581 20 12.0001 20C10.0551 20 8.27215 19.3059 6.88556 18.1518C6.18931 17.5723 6.15242 16.5032 6.91351 16.012C7.15044 15.8591 7.40846 15.7251 7.68849 15.6097C8.81516 15.1452 10.2542 15 12 15C13.7546 15 15.2018 15.1359 16.3314 15.5954C16.6136 15.7102 16.8734 15.8441 17.1115 15.9974Z"
+                fill="#323232"
+              ></path>
+            </g>
+          </svg>
+          <span class="font-bold text-black flex justify-center items-center"
+            >Connecter</span
+          >
+        </a>
+        <template v-else>
+          <div class="justify-center items-center flex flex-col space-y-10">
+            <a :href="route('login')" class="bg-white flex rounded-full">
+              <span class="font-bold text-black flex justify-center items-center"
+                >Se connecter</span
+              >
+            </a>
+            <a
+              v-if="canRegister"
+              :href="route('register')"
+              class="bg-white flex rounded-full"
+            >
+              <span class="font-bold text-black flex justify-center items-center"
+                >S'inscrire</span
+              >
+            </a>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import { ref } from "vue";
 import DetailsArticle from "./DetailsArticle.vue";
-import Restaurant from "./Restaurant.vue";
 
 export default {
   data() {
@@ -2873,7 +2989,7 @@ export default {
       current: 0,
     };
   },
-  components: { DetailsArticle, Restaurant },
+  components: { DetailsArticle },
 
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
@@ -2894,9 +3010,7 @@ export default {
     }, 5000);
   },
   methods: {
-    toggleMenu() {
-      this.open = !this.open;
-    },
+
     toggleCart() {
       this.showComponent = !this.showComponent;
     },

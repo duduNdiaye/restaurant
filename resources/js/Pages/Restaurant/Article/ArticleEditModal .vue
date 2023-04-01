@@ -20,7 +20,6 @@ const form = useForm({
                 ingredients:props.articles.ingredients,
                 photo:props.articles.photo
             }
-
 );
 const emit=defineEmits('close','affiche');
 const showMessage=()=>{
@@ -35,10 +34,14 @@ const submit = () => {
     onSuccess:()=>{
         showMessage();
         closeModal();
+        console.log("tchill an?!")
+    },
+    onError:(error)=>{
+        console.log("probleme bro: ",error)
     }
   })
     // this.showCreateModal=false
-    console.log(props.articles)
+    console.log(form)
 };
 </script>
 <!-- le template--->

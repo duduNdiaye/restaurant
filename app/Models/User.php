@@ -38,6 +38,8 @@ class User extends Authenticatable
         'adresse',
         'description',
         'profile_photo_path',
+        'latitude',
+        'longitude'
 
 
     ];

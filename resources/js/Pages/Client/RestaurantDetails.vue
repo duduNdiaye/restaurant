@@ -25,6 +25,7 @@ const message = ref("Merci d'avoir note");
 const lanote = ref(false);
 const jj = ref("");
 const boutons = ref(false);
+const restosearch = ref(false);
 
 const Noter = (i) => {
   if (i == 1) {
@@ -82,6 +83,8 @@ const scrollToResults = () => {
     results.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
   }
 };
+
+
 
 onMounted(() => {
   if (localStorage.getItem("cart")) {
@@ -165,6 +168,11 @@ const addItem = (article) => {
 };
 
 const recherche = computed(() => {
+   if(restosearch.value){
+     return props.articles.filter((article) =>
+      article.nom.toLowerCase().startsWith(restosearch.value.toLocaleLowerCase() && article.user_id==props.usere.id)
+    );
+  }
   return props.articles.filter((article) => article.user_id == props.usere.id);
 });
 </script>
@@ -370,13 +378,15 @@ const recherche = computed(() => {
         </div>
 
         <div class="flex lg:block md:block hidden justify-center items-center ml-auto">
-          <select class="focus:ring-black focus:outline-none focus:border-none mb-5 w-96">
-            <option value="1">PIZZAS</option>
-            <option value="2">PLATS NATIONAUX</option>
-            <option value="3">BURGERS</option>
-            <option value="4">BOISSON</option>
-            <option value="4">AUTRES</option>
-          </select>
+          <input
+          @input="onInput()"
+          v-model="restosearch"
+          class="border border-black bg-white focus:ring-0 focus:border-black lg:w-96 h-[3rem] px-5 rounded-full text-sm focus:outline-none"
+          type="search"
+          autocomplete="off"
+          name="search"
+          placeholder="Search"
+        />
         </div>
       </div>
       <div class="lg:flex-row md:flex-row flex flex-col space-y-2 lg:space-x-1">
