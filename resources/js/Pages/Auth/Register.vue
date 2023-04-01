@@ -59,6 +59,7 @@ const form = useForm({
 });
 
 const submit = () => {
+<<<<<<< HEAD
   form.post(route("register"), {
     onSuccess: () => {
         console.log("all is fine");
@@ -69,6 +70,12 @@ const submit = () => {
     },
     onFinish: () => form.reset("password", "password_confirmation"),
   });
+=======
+
+    form.post(route('register'), {
+        onFinish: () => form.reset('password', 'password_confirmation'),
+    });
+>>>>>>> 929e07ef7d1eb6a59d4917d31fb9ca5d69b50a19
 };
 
 const onFileChange = (e) => {

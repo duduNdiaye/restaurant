@@ -29,6 +29,7 @@ const closeModal=()=>{
     emit('close')
 };
 const submit = () => {
+    console.log(form)
   form.put(route('update.article',props.articles.id),
   {
     onSuccess:()=>{
@@ -103,7 +104,7 @@ const submit = () => {
                 </div>
                 <div class="col-span-6 sm:col-span-3">
                   <label for="photo" class="block text-sm font-medium text-gray-700">Photo</label>
-                  <input type="file" name="photo" id="photo" @change="form.photo=$event.target.files[0]" >
+                  <input type="file" name="photo" id="photo" @input="form.photo=$event.target.files[0]" >
 
                 </div>
 
