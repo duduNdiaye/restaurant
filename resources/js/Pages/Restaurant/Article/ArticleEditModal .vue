@@ -35,11 +35,16 @@ const submit = () => {
     onSuccess:()=>{
         showMessage();
         closeModal();
+<<<<<<< HEAD
         console.log("tchill an?!")
     },
     onError:(error)=>{
         console.log("probleme bro: ",error)
     }
+=======
+    },
+    _method:'PUT'
+>>>>>>> 0fc1be92e3bd48e6c8c875fbef157f81aaec363a
   })
     // this.showCreateModal=false
     console.log(form)
@@ -57,7 +62,7 @@ const submit = () => {
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Modifier un article</h3>
-            <form >
+            <form enctype="multipart/form-data">
               <div class="grid grid-cols-6 gap-6" >
                 <div class="col-span-6">
                   <label for="nom" class="block text-sm font-medium text-gray-700">Nom Article</label>
@@ -70,7 +75,7 @@ const submit = () => {
                   <input type="number" name="prix" id="prix"  v-model="form.prix"   class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                   <InputError class="mt-2" :message="form.errors.prix" />
                 </div>
-
+                <input type="hidden" name="_method" value="PUT">
                 <div class="col-span-6 sm:col-span-3">
                   <label for="categorie" class="block text-sm font-medium text-gray-700">Catégorie</label>
                   <select id="categorie" name="categorie" v-model="form.categorie" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">

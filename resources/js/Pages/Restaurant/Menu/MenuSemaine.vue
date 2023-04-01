@@ -70,7 +70,7 @@
             <table class="w-full">
               <thead>
                 <tr>
-                  <th class="py-2 px-4 bg-gray-300">Type de repas</th>
+                  <th class="py-2 px-4 bg-gray-300">Jour </th>
                   <th class="py-2 px-4 bg-gray-300">Menu</th>
                   <th class="py-2 px-4 bg-gray-300">Actions</th>
                 </tr>
