@@ -35,22 +35,18 @@ const submit = () => {
     onSuccess:()=>{
         showMessage();
         closeModal();
-<<<<<<< HEAD
         console.log("tchill an?!")
     },
     onError:(error)=>{
         console.log("probleme bro: ",error)
     }
-=======
     },
     _method:'PUT'
->>>>>>> 0fc1be92e3bd48e6c8c875fbef157f81aaec363a
   })
     // this.showCreateModal=false
     console.log(form)
 };
 </script>
-<!-- le template--->
 <template >
 <div class="fixed z-10 inset-0 overflow-y-auto" v-if="isSubmitted">
 
